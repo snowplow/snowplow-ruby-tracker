@@ -18,5 +18,15 @@ module Snowplow
 
   class Tracker
 
+    def initialize(args)
+
+      name = args["cf_domain"] + " " + args["uri"]
+      @name = name
+    end
+
+    private
+
+    def Snowplow.
+
   end
 end
