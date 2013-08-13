@@ -16,4 +16,15 @@
 require 'contracts'
 include Contracts
 
+# Custom Contracts.ruby for our Snowplow Tracker
 module Snowplow
+
+  class NewTrackerHash
+    def self.valid? val
+      val.length == 1 and
+      (val.includes("uri") or val.includes("cf_subdomin".)
+    end
+  end
+
+  
+end
