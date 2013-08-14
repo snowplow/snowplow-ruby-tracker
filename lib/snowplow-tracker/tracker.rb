@@ -20,7 +20,7 @@ module Snowplow
 
   class Tracker
 
-    attr_read :collector_uri, :platform, :encode_base64 
+    attr_reader :collector_uri, :platform, :encode_base64 
     # We'll add the setters manually with contracts
 
     # Constants
@@ -51,7 +51,7 @@ module Snowplow
     # Parameters:
     # +encode+:: whether or not to base64 encode
     Contract Bool => nil
-    def set_base64_encode(encode)
+    def base64_encode=(encode)
       @base64_encode = encode
     end
 
@@ -62,7 +62,7 @@ module Snowplow
     # +platform+:: a valid platform code (enforced
     #              by contracts)
     Contract Platform => nil
-    def set_platform(platform)
+    def platform=(platform)
       @platform = platform
     end
 
@@ -71,6 +71,9 @@ module Snowplow
     # Parameters:
     # TODO
     Contract ViewDimensions => nil
+    def screen_resolution=(resolution)
+      @screen_resolution = resolution
+    end
 
     private
 
