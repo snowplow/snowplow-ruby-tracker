@@ -13,18 +13,29 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
+require 'set'
 require 'contracts'
 include Contracts
 
 # Custom Contracts.ruby for our Snowplow Tracker
 module Snowplow
 
+  # Validate the hash passed to the constructor
+  # of a new Tracker
   class NewTrackerHash
     def self.valid? val
       val.length == 1 and
-      (val.includes("uri") or val.includes("cf_subdomin".)
+      (val.includes("uri") or val.includes("cf_subdomin")
     end
   end
 
+  # Check tracker platform is valid
+  class Platform
+    @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
+
+    def self.valid? val
+      VALID_PALATFORMS.include?(val)
+    end
+  end
   
 end
