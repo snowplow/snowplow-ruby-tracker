@@ -37,9 +37,5 @@ module Snowplow
       @@valid_platforms.include?(val)
     end
   end
-
-  # Synonym for view dimensions
-  # TODO: change to be positive integer
-  ViewDimensions = Num, Num
   
 end

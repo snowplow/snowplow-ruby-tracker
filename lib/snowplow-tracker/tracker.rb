@@ -18,9 +18,31 @@ include Contracts
 
 module Snowplow
 
+  class ViewDimensions
+
+    # Parameters:
+    # +width+:: width of user's screen in pixels
+    # +height+:: height of user's screen in pixels
+
+
+    # Helper to convert a pair of view dimensions
+    # (width and height) into a "heightxwidth"
+    # String ready for Snowplow Tracker Protocol
+    Contract ViewDimensions => String
+    def stringify_dimensions(width, height)
+      "#{width}x#{height}"
+    end
+
+  end
+
   class Tracker
 
-    attr_reader :collector_uri, :platform, :encode_base64 
+    attr_reader :collector_uri,
+                :platform,
+                :encode_base64,
+                :screen_resolution,
+                :viewport,
+
     # We'll add the setters manually with contracts
 
     # Constants
@@ -49,10 +71,12 @@ module Snowplow
     # payloads
     #
     # Parameters:
-    # +encode+:: whether or not to base64 encode
+    # +base64_encode+:: whether to base64 encode
+    #                   or not
     Contract Bool => nil
-    def base64_encode=(encode)
-      @base64_encode = encode
+    def base64_encode=(base64_encode)
+      @base64_encode = base64_encode
+      nil
     end
 
     # Setter for platform property i.e. the
@@ -64,15 +88,28 @@ module Snowplow
     Contract Platform => nil
     def platform=(platform)
       @platform = platform
+      nil
     end
 
-    # Setter for screen resolution
+    # Setter for the user's screen resolution
+    #
+
+    Contract ViewDimensions => nil
+    def screen_resolution=(width, height)
+      @screen_resolution = screen_resolution
+      nil
+    end
+
+    # Setter for app viewport, i.e. the screen
+    # space taken up by this app
     #
     # Parameters:
-    # TODO
-    Contract ViewDimensions => nil
-    def screen_resolution=(resolution)
-      @screen_resolution = resolution
+    # +width+:: width of user's screen in pixels
+    # +height+:: height of user's screen in pixels
+    Contract ViewDimensions => nil    
+    def viewport=(width, height)
+      @viewport = viewport
+      nil
     end
 
     private
