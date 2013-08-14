@@ -22,7 +22,7 @@ module Snowplow
   class Tracker
 
     attr_read :collector_uri, :platform, :encode_base64 
-    # We will handle the setters manually with validation
+    # We'll add the setters manually with contracts
 
     # Constants
     @@default_encode_base64 = true
@@ -37,6 +37,7 @@ module Snowplow
     #          or :cf_subdomain =>
   	Contract NewTrackerHash => Tracker
     def initialize(args)
+      
       host = args["host"] || to_host(args["cf_subdomain"])
       @collector_uri = to_collector_uri(host)
     
@@ -44,9 +45,24 @@ module Snowplow
       @encode_base64 = @@default_encode_base64
     end
 
-    # Setter for encode_base64 property
-    # 
+    # Setter for encode_base64 property i.e.
+    # whether or not to base64 encode JSON
+    # payloads
+    #
+    # Parameters:
+    # +encode+:: whether or not to base64 encode
     Contract Bool => nil
+    def set_base64_encode(encode)
+      @base64_encode = encode
+    end
+
+    # Setter for platform property i.e. the
+    # platform on which this tracker is running
+    #
+    # Parameters:
+    # +platform+:: a valid platform code (enforced
+    #              by contracts)
+    Contract Platform => nil
     def set_platform(platform)
       @platform = platform
     end
