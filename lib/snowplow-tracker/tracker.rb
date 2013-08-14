@@ -34,7 +34,7 @@ module Snowplow
     # Parameters:
     # +args+:: hash containing either :host =>
     #          or :cf_subdomain =>
-  	Contract NewTrackerHash => Tracker
+    Contract NewTrackerHash => Tracker
     def initialize(args)
       
       host = args["host"] || to_host(args["cf_subdomain"])
@@ -65,6 +65,12 @@ module Snowplow
     def set_platform(platform)
       @platform = platform
     end
+
+    # Setter for screen resolution
+    #
+    # Parameters:
+    # TODO
+    Contract ViewDimensions => nil
 
     private
 

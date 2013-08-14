@@ -23,9 +23,9 @@ module Snowplow
   # Validate the hash passed to the constructor
   # of a new Tracker
   class NewTrackerHash
-    def self.valid? val
-      val.length == 1 and
-      (val.includes("uri") or val.includes("cf_subdomin")
+    def self.valid?(val)
+      val.length == 1 &&
+        (val.include("uri") || val.include("cf_subdomin"))
     end
   end
 
@@ -33,9 +33,13 @@ module Snowplow
   class Platform
     @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
 
-    def self.valid? val
-      VALID_PALATFORMS.include?(val)
+    def self.valid?(val)
+      @@valid_platforms.include?(val)
     end
   end
+
+  # Synonym for view dimensions
+  # TODO: change to be positive integer
+  ViewDimensions = Num, Num
   
 end
