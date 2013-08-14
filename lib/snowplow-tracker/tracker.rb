@@ -18,7 +18,6 @@ include Contracts
 
 module Snowplow
 
-
   class Tracker
 
     attr_read :collector_uri, :platform, :encode_base64 
