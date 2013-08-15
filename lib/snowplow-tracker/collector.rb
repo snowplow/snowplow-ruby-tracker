@@ -41,7 +41,7 @@ module Snowplow
       @name = name
       @http_method = http_method
 
-      host = args["host"] || to_host(args["cf"])
+      host = endpoint["host"] || to_host(endpoint["cf"])
       set_host_endpoint(host)
     end
 
