@@ -40,16 +40,12 @@ module Snowplow
   class Tracker
 
     attr_reader :collector_uri,
-                :platform,
                 :encode_base64,
-                :screen_resolution,
-                :viewport,
 
     # We'll add the setters manually with contracts
 
     # Constants
     @@default_encode_base64 = true
-    @@default_platform = "pc"
 
     # Constructor for a new Snowplow Tracker,
     # talking to a URI-based collector on the
@@ -81,38 +77,6 @@ module Snowplow
       nil
     end
 
-    # Setter for platform property i.e. the
-    # platform on which this tracker is running
-    #
-    # Parameters:
-    # +platform+:: a valid platform code (enforced
-    #              by contracts)
-    Contract Platform => nil
-    def platform=(platform)
-      @platform = platform
-      nil
-    end
-
-    # Setter for the user's screen resolution
-    #
-
-    Contract ViewDimensions => nil
-    def screen_resolution=(width, height)
-      @screen_resolution = screen_resolution
-      nil
-    end
-
-    # Setter for app viewport, i.e. the screen
-    # space taken up by this app
-    #
-    # Parameters:
-    # +width+:: width of user's screen in pixels
-    # +height+:: height of user's screen in pixels
-    Contract ViewDimensions => nil    
-    def viewport=(width, height)
-      @viewport = viewport
-      nil
-    end
 
   end
 end

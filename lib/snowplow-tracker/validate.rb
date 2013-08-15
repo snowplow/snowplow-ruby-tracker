@@ -29,14 +29,5 @@ module Snowplow
       val.is_a? Integer
     end
   end
-
-  # Check for valid tracker platform
-  class Platform
-    @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
-
-    def self.valid?(val)
-      @@valid_platforms.include?(val)
-    end
-  end
   
 end
