@@ -13,7 +13,8 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
-require 'snowplow-tracker/validate.rb'
-require 'snowplow-tracker/consumer.rb'
+require 'snowplow-tracker/context.rb'
+require 'snowplow-tracker/collector.rb'
+# require 'snowplow-tracker/consumer.rb'
 require 'snowplow-tracker/tracker.rb'
 require 'snowplow-tracker/version.rb'

@@ -89,6 +89,23 @@ module Snowplow
       @platform = platform
     end
 
+    # Setter
+    # TODO
+    #
+    # TODO
+
+    # Creates a copy of this Context with the
+    # time modified as supplied
+    #
+    # Parameters:
+    # +timestamp+:: the time to set this Context to
+    Contract Time => Contract
+    def at(timestamp)
+      self.dup.tap do |ctx| 
+      ctx.when = timestamp
+      end
+    end
+
     # Setter for platform property i.e. the
     # platform on which this tracker is running
     #
@@ -103,10 +120,11 @@ module Snowplow
 
     # Setter for the user's screen resolution
     #
-
+    # Parameters:
+    # +view_dimensions+:: a ViewDimensions object
     Contract ViewDimensions => nil
-    def screen_resolution=(width, height)
-      @screen_resolution = screen_resolution
+    def screen_resolution=(view_dimensions)
+      @screen_resolution = view_dimensions
       nil
     end
 
@@ -114,12 +132,30 @@ module Snowplow
     # space taken up by this app
     #
     # Parameters:
-    # +width+:: width of user's screen in pixels
-    # +height+:: height of user's screen in pixels
+    # +view_dimensions+:: a ViewDimensions object
     Contract ViewDimensions => nil    
-    def viewport=(width, height)
-      @viewport = viewport
+    def viewport=(view_dimensions)
+      @viewport = view_dimensions
       nil
+    end
+
+    # Setter for color depth
+    #
+    # Parameters:
+    # +color_depth+:: color depth
+    Contract PosInt => nil
+    def color_depth=(color_depth)
+      @color_depth = color_depth
+      nil
+    end
+
+    # Setter for application ID
+    #
+    # Parameters:
+    # +app_id+:: application ID
+    Contract String => nil
+    def app_id=(app_id)
+      @app_id = app_id
     end
 
   end
