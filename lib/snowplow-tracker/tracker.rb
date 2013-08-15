@@ -114,35 +114,5 @@ module Snowplow
       nil
     end
 
-    private
-
-    # Helper to generate the collector URI from
-    # a collector hostname
-    # Example:
-    # as_collector_uri("snplow.myshop.com") => "http://snplow.myshop.com/i"
-    #
-    # Parameters:
-    # +host+:: the host name of the collector
-    #
-    # Returns the collector URI
-    Contract String => String
-    def Snowplow.to_collector_uri(host)
-      "http://#{host}/i"
-    end
-
-    # Helper to convert a CloudFront subdomain
-    # to a collector hostname
-    # Example:
-    # to_host("f3f77d9def5") => "f3f77d9def5.cloudfront.net"
-    #
-    # Parameters:
-    # +cf_subdomain+:: the CloudFront subdomain
-    #
-    # Returns the collector host
-    Contract String => String
-    def Snowplow.to_host
-      "#{cf_subdomain}.cloudfront.net"
-    end
-
   end
 end
