@@ -18,21 +18,50 @@ include Contracts
 
 module Snowplow
 
+  # Stores a width x height tuple. Used to express
+  # screen resolution, app viewport etc
   class ViewDimensions
+
+    attr_reader :width, # Manual writer
+                :height # Manual writer
 
     # Constructor for a pair of view dimensions
     #
     # Parameters:
     # +width+:: width of user's screen in pixels
     # +height+:: height of user's screen in pixels
-    Contract 
+    Contract PosInt, PosInt => ViewDimensions
+    def initialize(width, height)
+      @width = width
+      @height = height
+    end
 
-    # Helper to convert a pair of view dimensions
-    # (width and height) into a "heightxwidth"
-    # String ready for Snowplow Tracker Protocol
-    Contract ViewDimensions => String
-    def stringify_dimensions(width, height)
-      "#{width}x#{height}"
+    # String representation of these
+    # view dimensions, in the format of the
+    # Snowplow Tracker Protocol
+    #
+    # Returns "heightxwidth"
+    Contract => String
+    def to_s
+      "#{@width}x#{@height}"  
+    end
+
+    # Sets the view width
+    #
+    # Parameters:
+    # +width+:: view width, a positive integer
+    Contract PosInt => nil
+    def width=(width)
+      @width = width
+    end
+
+    # Sets the view height
+    #
+    # Parameters:
+    # +height+:: view height, a positive integer
+    Contract PosInt => nil
+    def height=(height)
+      @height = height
     end
 
   end
@@ -41,10 +70,10 @@ module Snowplow
 
     @@default_platform = "pc"
 
-    attr_reader :name,
-                :platform,
-                :screen_resolution,
-                :viewport,
+    attr_accessor :name
+    attr_reader :platform,          # Manual writer
+                :screen_resolution, # Manual writer
+                :viewport,          # Manual writer
 
     # Constructor for a new event Context
     #
@@ -98,7 +127,7 @@ module Snowplow
   # Internal helpers defining Ruby Contracts
   module Internal
 
-    # Type synonym
+    # Type synonyms
     OptionPlatform = Or[Platform, nil]
 
     # Check for valid tracker platform
@@ -109,7 +138,6 @@ module Snowplow
         @@valid_platforms.include?(val)
       end
     end
-
   end
 
 end

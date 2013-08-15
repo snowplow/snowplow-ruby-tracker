@@ -17,7 +17,7 @@ require 'set'
 require 'contracts'
 include Contracts
 
-# Custom Contracts.ruby for our Snowplow Tracker
+# Custom Contracts used across our Tracker
 module Snowplow
 
   # Validate a number is an integer

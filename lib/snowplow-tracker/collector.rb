@@ -24,6 +24,7 @@ module Snowplow
 
     attr_accessor :name
     attr_reader   :endpoint_uri # writer implemented manually
+    attr_reader   :http_method  # writer implemented manually
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)
@@ -36,9 +37,12 @@ module Snowplow
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
     Contract String, CollectorEndpoint => Collector
-    def initialize(name, endpoint)
+    def initialize(name, http_method=:get, endpoint)
+      @name = name
+      @http_method = http_method
+
       host = args["host"] || to_host(args["cf"])
-      @endpoint_uri = to_collector_uri(host)
+      set_host_endpoint(host)
     end
 
     # Manually set the Collector's endpoint to CloudFront
@@ -86,7 +90,7 @@ module Snowplow
     #
     # Returns the collector host
     Contract String => String
-    def Collector.to_host
+    def Collector.to_host(cf_subdomain)
       "#{cf_subdomain}.cloudfront.net"
     end
 
@@ -95,14 +99,25 @@ module Snowplow
   # For private classes
   module Internal
 
-    # Validate the hash passed to the constructor
+    # Validates the hash passed to the constructor
     # of a new Collector
     class CollectorEndpoint
       def self.valid?(val)
-        val.length == 1 &&
+        val.is_a? Hash &&
+          val.length == 1 &&
           (val.has_key? "uri" || val.has_key? "cf_subdomin")
       end
     end
 
+    # Validates the HTTP method used to send to
+    # the Collector
+    class CollectorHttpMethod
+      @@valid_methods = Set.new(:get)
+
+      def self.valid?(val)
+        @@valid_methods.include?(val)
+      end
+    end
   end
+
 end
