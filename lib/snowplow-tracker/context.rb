@@ -18,14 +18,47 @@ include Contracts
 
 module Snowplow
 
+  class ViewDimensions
+
+    # Constructor for a pair of view dimensions
+    #
+    # Parameters:
+    # +width+:: width of user's screen in pixels
+    # +height+:: height of user's screen in pixels
+    Contract 
+
+    # Helper to convert a pair of view dimensions
+    # (width and height) into a "heightxwidth"
+    # String ready for Snowplow Tracker Protocol
+    Contract ViewDimensions => String
+    def stringify_dimensions(width, height)
+      "#{width}x#{height}"
+    end
+
+  end
+
   class Context
 
     @@default_platform = "pc"
 
-    attr_reader :platform,
-
+    attr_reader :name,
+                :platform,
                 :screen_resolution,
                 :viewport,
+
+    # Constructor for a new event Context
+    #
+    # Parameters:
+    # +name+:: a name for this Context. Could
+    #          be used to indicate scope or a
+    #          point in time
+    # +platform+:: the device platform which
+    #              grounds this Context 
+    Contract String, Internal::OptionPlatform => Context
+    def initialize(name, platform=@@default_platform)
+      @name = name
+      @platform = platform
+    end
 
     # Setter for platform property i.e. the
     # platform on which this tracker is running
@@ -33,7 +66,7 @@ module Snowplow
     # Parameters:
     # +platform+:: a valid platform code (enforced
     #              by contracts)
-    Contract Platform => nil
+    Contract Internal::Platform => nil
     def platform=(platform)
       @platform = platform
       nil
@@ -62,7 +95,11 @@ module Snowplow
 
   end
 
+  # Internal helpers defining Ruby Contracts
   module Internal
+
+    # Type synonym
+    OptionPlatform = Or[Platform, nil]
 
     # Check for valid tracker platform
     class Platform
@@ -72,7 +109,7 @@ module Snowplow
         @@valid_platforms.include?(val)
       end
     end
-    
+
   end
 
 end
