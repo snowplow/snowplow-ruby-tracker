@@ -20,10 +20,12 @@ module Snowplow
 
   class ViewDimensions
 
+    # Constructor for a pair of view dimensions
+    #
     # Parameters:
     # +width+:: width of user's screen in pixels
     # +height+:: height of user's screen in pixels
-
+    Contract 
 
     # Helper to convert a pair of view dimensions
     # (width and height) into a "heightxwidth"

@@ -20,16 +20,17 @@ include Contracts
 # Custom Contracts.ruby for our Snowplow Tracker
 module Snowplow
 
-  # Validate the hash passed to the constructor
-  # of a new Tracker
-  class NewTrackerHash
+  # Validate a number is an integer
+  PosInt = And[Pos, Int]
+
+  # Validate a number is an integer
+  class Int
     def self.valid?(val)
-      val.length == 1 &&
-        (val.include("uri") || val.include("cf_subdomin"))
+      val.is_a? Integer
     end
   end
 
-  # Check tracker platform is valid
+  # Check for valid tracker platform
   class Platform
     @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
 
