@@ -23,8 +23,8 @@ module Snowplow
   class Collector
 
     attr_accessor :name
-    attr_reader   :endpoint_uri # writer implemented manually
-    attr_reader   :http_method  # writer implemented manually
+    attr_reader   :endpoint_uri, # writer implemented manually
+                  :http_method   # writer implemented manually
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)
@@ -36,8 +36,8 @@ module Snowplow
     #          decide which Collector to send events to
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
-    Contract String, CollectorEndpoint => Collector
-    def initialize(name, http_method=:get, endpoint)
+    Contract String, CollectorEndpoint, CollectorHttpMethod => Collector
+    def initialize(name, endpoint, http_method=:get)
       @name = name
       @http_method = http_method
 
