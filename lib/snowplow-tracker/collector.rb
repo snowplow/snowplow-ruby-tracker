@@ -22,26 +22,73 @@ module Snowplow
   # events to
   class Collector
 
-    attr_reader :endpoint_uri
+    attr_accessor :name
+    attr_reader   :endpoint_uri # writer implemented manually
 
-    # Constructor for a new Snowplow Collector.
+    # Constructor for a new Snowplow Collector. Supports
+    # 1) Snowplow Collectors on any domain (:host => x)
+    # 2) Snowplow CloudFront Collectors on any CloudFront
+    #    subdomain (:cf => x)
     #
     # Parameters:
-    # +name+:: name of this collector. Can be used to
-    #          decide which collector to send events to
+    # +name+:: name of this Collector. Can be used to
+    #          decide which Collector to send events to
     # +endpoint+:: hash defining the endpoint, containing
-    #              either :host => or :cf_subdomain =>
+    #              either :host => or :cf =>
     Contract String, CollectorEndpoint => Collector
     def initialize(name, endpoint)
-      
-      host = args["host"] || to_host(args["cf_subdomain"])
+      host = args["host"] || to_host(args["cf"])
       @endpoint_uri = to_collector_uri(host)
-    
-      @platform = @@default_platform
-      @encode_base64 = @@default_encode_base64
     end
 
-    # TODO: add setters for endpoint using CloudFront or URI
+    # Manually set the Collector's endpoint to CloudFront
+    #
+    # Parameters:
+    # +cf_subdomain+:: the CloudFront sub-domain for
+    #                  the collector
+    Contract String => nil
+    def set_cf_endpoint(cf_subdomain)
+      @endpoint_uri = to_endpoint_uri(to_host(cf_subdomain))
+    end
+
+    # Manually set the Collector's endpoint to any host
+    #
+    # Parameters:
+    # +host+:: the hostname on which this Collector is running
+    Contract String => nil
+    def set_host_endpoint(host)
+      @endpoint_uri = to_endpoint_uri(host)
+    end
+
+    private
+
+    # Helper to generate the collector URI from
+    # a collector hostname
+    # Example:
+    # as_collector_uri("snplow.myshop.com") => "http://snplow.myshop.com/i"
+    #
+    # Parameters:
+    # +host+:: the host name of the collector
+    #
+    # Returns the collector URI
+    Contract String => String
+    def Collector.to_endpoint_uri(host)
+      "http://#{host}/i"
+    end
+
+    # Helper to convert a CloudFront subdomain
+    # to a collector hostname
+    # Example:
+    # to_host("f3f77d9def5") => "f3f77d9def5.cloudfront.net"
+    #
+    # Parameters:
+    # +cf_subdomain+:: the CloudFront subdomain
+    #
+    # Returns the collector host
+    Contract String => String
+    def Collector.to_host
+      "#{cf_subdomain}.cloudfront.net"
+    end
 
   end
 
