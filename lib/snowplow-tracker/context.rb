@@ -24,6 +24,7 @@ module Snowplow
 
     attr_reader :width,
                 :height
+    # We'll add the setters manually with contracts
 
     # Constructor for a pair of view dimensions
     #
@@ -66,6 +67,8 @@ module Snowplow
 
   end
 
+  # Stores the Context which encapsulates a Snowplow
+  # event.
   class Context
 
     @@default_platform = "pc"
@@ -74,6 +77,7 @@ module Snowplow
     attr_reader :platform,          # Manual writer
                 :screen_resolution, # Manual writer
                 :viewport,          # Manual writer
+    # We'll add the setters manually with contracts
 
     # Constructor for a new event Context
     #
@@ -158,11 +162,6 @@ module Snowplow
       @app_id = app_id
     end
 
-  end
-
-  # Internal helpers defining Ruby Contracts
-  module Internal
-
     # Type synonyms
     OptionPlatform = Or[Platform, nil]
 
@@ -174,6 +173,5 @@ module Snowplow
         @@valid_platforms.include?(val)
       end
     end
-  end
 
 end

@@ -25,6 +25,7 @@ module Snowplow
     attr_accessor :tag
     attr_reader   :endpoint_uri, # writer implemented manually
                   :http_method   # writer implemented manually
+    # We'll add the setters manually with contracts
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)

@@ -22,7 +22,8 @@ module Snowplow
 
     attr_reader :collector_uri,
                 :encode_base64,
-
+                :pinned_subject,
+                :pinned_context
     # We'll add the setters manually with contracts
 
     # Constants
@@ -45,6 +46,28 @@ module Snowplow
       @encode_base64 = @@default_encode_base64
     end
 
+    # Pin a given Context to all events fired subsequently.
+    # Can still be overridden on a per-event basis.
+    #
+    # Parameters:
+    # +ctx+:: the Context to pin to all subsequent events
+    Contract Context => nil
+    def pin_context(ctx)
+      @pinned_context = ctx
+    end
+
+    # Pin a given Subject to all events fired subsequently.
+    # Can still be overridden on a per-event basis.
+    #
+    # Parameters:
+    # +subj+:: the Subject to pin to all subsequent events
+    Contract Subject => nil
+    def pin_subject(sub)
+      @pinned_subject = sub
+    end
+
+
+
     # Setter for encode_base64 property i.e.
     # whether or not to base64 encode JSON
     # payloads
@@ -57,7 +80,6 @@ module Snowplow
       @base64_encode = base64_encode
       nil
     end
-
 
   end
 end
