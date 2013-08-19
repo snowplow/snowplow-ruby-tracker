@@ -22,8 +22,8 @@ module Snowplow
   # screen resolution, app viewport etc
   class ViewDimensions
 
-    attr_reader :width, # Manual writer
-                :height # Manual writer
+    attr_reader :width,
+                :height
 
     # Constructor for a pair of view dimensions
     #

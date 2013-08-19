@@ -1,0 +1,76 @@
+# Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+#
+# This program is licensed to you under the Apache License Version 2.0,
+# and you may not use this file except in compliance with the Apache License Version 2.0.
+# You may obtain a copy of the Apache License Version 2.0 at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the Apache License Version 2.0 is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
+
+# Author::    Alex Dean (mailto:snowplow-user@googlegroups.com)
+# Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
+# License::   Apache License Version 2.0
+
+require 'contracts'
+include Contracts
+
+module Snowplow
+
+  # Parent class for any entity which is the Subject or Object (direct,
+  # indirect, prepositional) of a Snowplow event
+  class Entity
+
+  end
+
+  # The Subject of a Snowplow event.
+  # Inherits from Entity
+  class Subject < Entity
+
+    attr_reader :ip_adderss,
+                :business_user_id,
+                :domain_user_id,
+                :network_user_id
+
+    # Sets the Subject's IP address
+    #
+    # Parameters:
+    # +ip_address+:: the Subject's IP address
+    Contract String => nil
+    def ip_address=(ip_address)
+      @ip_address = ip_address
+    end
+
+    # Sets the Subject's business user ID
+    #
+    # Parameters:
+    # +user_id+:: the Subject's business user ID
+    Contract String => nil
+    def business_user_id=(user_id)
+      @business_user_id = user_id
+    end
+
+    # Sets the Subject's domain user ID
+    #
+    # Parameters:
+    # +user_id+:: the Subject's domain user ID
+    Contract String => nil
+    def domain_user_id=(user_id)
+      @domain_user_id = user_id
+    end
+
+    # Sets the Subject's network user ID.
+    #
+    # Note: it may be hard to acquire this
+    # on the server-side.
+    #
+    # Parameters:
+    # +user_id+:: the Subject's network user ID
+    def network_user_id=(user_id)
+      @network_user_id = user_id
+    end
+    
+  end
+
+end
