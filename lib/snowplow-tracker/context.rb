@@ -165,7 +165,7 @@ module Snowplow
       @app_id = app_id
     end
 
-    # Type synonyms
+    # Contract synonyms
     OptionPlatform = Or[Platform, nil]
 
     # Check for valid tracker platform
