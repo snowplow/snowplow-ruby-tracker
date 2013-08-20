@@ -20,6 +20,7 @@ module Snowplow
 
   class Tracker
 
+    # Readers
     attr_reader :collectors,
                 :encode_base64,
                 :pinned_subject,
