@@ -20,7 +20,7 @@ module Snowplow
 
   class Tracker
 
-    attr_reader :collector_uri,
+    attr_reader :collectors,
                 :encode_base64,
                 :pinned_subject,
                 :pinned_context
@@ -29,14 +29,13 @@ module Snowplow
     # Constants
     @@default_encode_base64 = true
 
-    # Constructor for a new Snowplow Tracker,
-    # talking to a URI-based collector on the
-    # given host.
+    # Constructor for a new Snowplow Tracker.
+    # Initialize it with one or more Collectors.
     #
     # Parameters:
-    # +args+:: hash containing either :host =>
-    #          or :cf_subdomain =>
-    Contract NewTrackerHash => Tracker
+    # +collectors+:: either a Collector, or an Array
+    #                of Collectors =>
+    Contract Or[Collector, Array[Collector]] => Tracker
     def initialize(args)
       
       host = args["host"] || to_host(args["cf_subdomain"])
@@ -65,8 +64,6 @@ module Snowplow
     def pin_subject(sub)
       @pinned_subject = sub
     end
-
-
 
     # Setter for encode_base64 property i.e.
     # whether or not to base64 encode JSON

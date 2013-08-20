@@ -79,7 +79,10 @@ module Snowplow
                 :viewport,          # Manual writer
     # We'll add the setters manually with contracts
 
-    # Constructor for a new event Context
+    # Constructor for a new event Context.
+    # platform must be set in this constructor
+    # because all Snowplow events must have a
+    # Context.
     #
     # Parameters:
     # +name+:: a name for this Context. Could
@@ -87,7 +90,7 @@ module Snowplow
     #          point in time
     # +platform+:: the device platform which
     #              grounds this Context 
-    Contract String, Internal::OptionPlatform => Context
+    Contract String, OptionPlatform => Context
     def initialize(name, platform=@@default_platform)
       @name = name
       @platform = platform
