@@ -38,16 +38,10 @@ module Snowplow
     Contract CollectorOrCollectors => Tracker
     def initialize(collectors)
 
-      if collectors.is_a? Array
-        @collectors = collectors
-      else
-        @collectors = [ collectors ]
-      end
-
-      # Build the easy access hash
-      @@collector_hash = to_hash(@collectors)
-
+      @collectors = Array(collectors) # Turn to array if single Collector
+      @collector_hash = build_hash_of(@collectors)
       @encode_base64 = @@default_encode_base64
+      
       nil
     end
 
@@ -55,10 +49,10 @@ module Snowplow
     # Can still be overridden on a per-event basis.
     #
     # Parameters:
-    # +ctx+:: the Context to pin to all subsequent events
+    # +context+:: the Context to pin to all subsequent events
     Contract Context => nil
-    def pin_context(ctx)
-      @pinned_context = ctx
+    def pin_context(context)
+      @pinned_context = context
       nil
     end
 
@@ -66,10 +60,10 @@ module Snowplow
     # Can still be overridden on a per-event basis.
     #
     # Parameters:
-    # +subj+:: the Subject to pin to all subsequent events
+    # +subject+:: the Subject to pin to all subsequent events
     Contract Subject => nil
-    def pin_subject(sub)
-      @pinned_subject = sub
+    def pin_subject(subject)
+      @pinned_subject = subject
       nil
     end
 
@@ -79,9 +73,9 @@ module Snowplow
     # Parameters:
     # +collectors+:: either a Collector, or an Array
     #                of Collectors =>
-    Contract Collectors => nil
+    Contract CollectorOrCollectors => nil
     def collectors=(collectors)
-      @collectors = to_array(collectors)
+      @collectors = Array(collectors)
       nil
     end
 
@@ -104,21 +98,6 @@ module Snowplow
     CollectorOrCollectors = Or[Collector, Array[Collector]]
     OptionCollectorTagOrTags = Or[String, Array[String], nil]
 
-    # Helper to convert one or more Collectors
-    # to an Array of Collectors
-    #
-    # Parameters:
-    # +collectors+:: either a Collector, or an Array
-    #                of Collectors =>
-    Contract CollectorOrCollectors => Array[Collector]
-    def Tracker.to_array(collectors)
-      if collectors.is_a? Array
-        collectors
-      else
-        [ collectors ]
-      end
-    end
-
     # Helper to generate a hash of tag -> Collectors.
     # This is used when the user wants to send
     # events to a specific Collector or Collectors.
@@ -127,12 +106,10 @@ module Snowplow
     # +collectors+:: the Array of Collectors to
     #                build a hash from
     Contract Array[Collector] => Hash[String, Collector] # TODO: does this work?
-    def Tracker.to_hash(collectors)
-      hash = {}
+    def Tracker.build_hash_of(collectors)
       collectors.map( |c| {
-        hash[c.tag] = c
+        { c.tag => = c }
       }
-      hash
     end
 
   end
