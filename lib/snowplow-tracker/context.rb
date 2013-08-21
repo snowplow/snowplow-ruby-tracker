@@ -29,6 +29,7 @@ module Snowplow
 
   # Contract synonyms
   OptionPlatform = Or[Platform, nil]
+  Epoch = Int
 
   # Stores a width x height tuple. Used to express
   # screen resolution, app viewport etc
@@ -89,9 +90,12 @@ module Snowplow
 
     attr_reader :tag,
                 :platform,
+                :app_id,
                 :screen_resolution,
                 :viewport,
+                :color_depth
     # We'll add the setters manually with contracts
+    # :time is got manually too
 
     # Constructor for a new event Context.
     # platform must be set in this constructor
@@ -115,11 +119,33 @@ module Snowplow
     #
     # Parameters:
     # +timestamp+:: the time to set this Context to
-    Contract Time => Contract
+    Contract Epoch => Contract
     def at(timestamp)
       self.dup.tap do |ctx| 
-      ctx.when = timestamp
+        ctx.frozen_time = timestamp
       end
+    end
+
+    # Gets the current time in this Context.
+    #
+    # Returns either now, or the frozen time,
+    # if this Context's time was frozen
+    Contract => Epoch
+    def time
+      @frozen_time || Time.now
+    end
+
+    # Sets a point in time when this Context
+    # was frozen. All events subsequently tagged
+    # with this Context are timestamped with
+    # this "frozen time".
+    #
+    # Parameters:
+    # +time+:: TODO
+    Contract Int => nil
+    def frozen_time=(time)
+      @frozen_time = time
+      nil
     end
 
     # Sets the tag to identify this Context
@@ -151,6 +177,7 @@ module Snowplow
     Contract String => nil
     def app_id=(app_id)
       @app_id = app_id
+      nil
     end
 
     # Setter for the user's screen resolution
