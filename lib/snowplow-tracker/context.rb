@@ -122,7 +122,7 @@ module Snowplow
     Contract Epoch => Contract
     def at(timestamp)
       self.dup.tap do |ctx| 
-        ctx.frozen_time = timestamp
+        ctx.frozen_timestamp = timestamp
       end
     end
 
@@ -131,8 +131,8 @@ module Snowplow
     # Returns either now, or the frozen time,
     # if this Context's time was frozen
     Contract => Epoch
-    def time
-      @frozen_time || Time.now
+    def timestamp
+      @frozen_timestamp || Time.now
     end
 
     # Sets a point in time when this Context
@@ -141,10 +141,10 @@ module Snowplow
     # this "frozen time".
     #
     # Parameters:
-    # +time+:: TODO
+    # +timestamp+:: the time to set this Context to
     Contract Int => nil
-    def frozen_time=(time)
-      @frozen_time = time
+    def frozen_timestamp=(timestamp)
+      @frozen_timestamp = timestamp
       nil
     end
 
