@@ -98,6 +98,43 @@ module Snowplow
       nil
     end
 
+    # Track a Google Analytics-style custom structured event.
+    #
+    # +category+:: the name you supply for the group of
+    #              objects you want to track
+    # +action+:: a string that is uniquely paired with each
+    #            category, and commonly used to define the
+    #            type of user interaction for the object
+    # +label+:: an optional string to provide additional
+    #           dimensions to the event data
+    # +property+:: an optional string describing the object
+    #              or the action performed on it. This might
+    #              be the quantity of an item added to basket
+    # +value+:: an optional value that you can use to provide
+    #           numerical data about the user event
+    # +subject+:: an optional Subject performing this event.
+    #             Overrides any pinned Subject
+    # +context+:: an optional Context in which this event
+    #             takes place. Overrides any pinned Context
+    #
+    # Returns ??
+    Contract String, String, OptionString, OptionString, OptionNum, Subject, Context => nil # TODO: fix return
+    def track_struct_event(category,
+                           action,
+                           label=nil,
+                           property=nil,
+                           value=nil,
+                           subject=@pinned_subject,
+                           context=@pinned_context)
+
+      nil # TODO: fix return
+    end
+
+    # Track a MixPanel or KISSmetrics-style custom
+    # unstructured event.
+    #
+    # TODO
+
     private
 
     # Contract synonyms
