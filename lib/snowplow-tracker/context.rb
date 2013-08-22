@@ -18,6 +18,19 @@ include Contracts
 
 module Snowplow
 
+  # Check for valid tracker platform
+  class Platform
+    @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
+
+    def self.valid?(val)
+      @@valid_platforms.include?(val)
+    end
+  end
+
+  # Contract synonyms
+  OptionPlatform = Or[Platform, nil]
+  Epoch = Int
+
   # Stores a width x height tuple. Used to express
   # screen resolution, app viewport etc
   class ViewDimensions
@@ -54,6 +67,7 @@ module Snowplow
     Contract PosInt => nil
     def width=(width)
       @width = width
+      nil
     end
 
     # Sets the view height
@@ -63,6 +77,7 @@ module Snowplow
     Contract PosInt => nil
     def height=(height)
       @height = height
+      nil
     end
 
   end
@@ -73,44 +88,74 @@ module Snowplow
 
     @@default_platform = "pc"
 
-    attr_accessor :name
-    attr_reader :platform,          # Manual writer
-                :screen_resolution, # Manual writer
-                :viewport,          # Manual writer
+    attr_reader :tag,
+                :platform,
+                :app_id,
+                :screen_resolution,
+                :viewport,
+                :color_depth
     # We'll add the setters manually with contracts
+    # :time is got manually too
 
     # Constructor for a new event Context.
     # platform must be set in this constructor
     # because all Snowplow events must have a
-    # Context.
+    # platform.
     #
     # Parameters:
-    # +name+:: a name for this Context. Could
+    # +name+:: a tag for this Context. Could
     #          be used to indicate scope or a
     #          point in time
-    # +platform+:: the device platform which
-    #              grounds this Context 
+    # +platform+:: the device platform in which
+    #              this Context is taking place 
     Contract String, OptionPlatform => Context
-    def initialize(name, platform=@@default_platform)
-      @name = name
+    def initialize(tag, platform=@@default_platform)
+      @tag = tag
       @platform = platform
     end
-
-    # Setter
-    # TODO
-    #
-    # TODO
 
     # Creates a copy of this Context with the
     # time modified as supplied
     #
     # Parameters:
     # +timestamp+:: the time to set this Context to
-    Contract Time => Contract
+    Contract Epoch => Contract
     def at(timestamp)
       self.dup.tap do |ctx| 
-      ctx.when = timestamp
+        ctx.frozen_timestamp = timestamp
       end
+    end
+
+    # Gets the current time in this Context.
+    #
+    # Returns either now, or the frozen time,
+    # if this Context's time was frozen
+    Contract => Epoch
+    def timestamp
+      @frozen_timestamp || Time.now
+    end
+
+    # Sets a point in time when this Context
+    # was frozen. All events subsequently tagged
+    # with this Context are timestamped with
+    # this "frozen time".
+    #
+    # Parameters:
+    # +timestamp+:: the time to set this Context to
+    Contract Int => nil
+    def frozen_timestamp=(timestamp)
+      @frozen_timestamp = timestamp
+      nil
+    end
+
+    # Sets the tag to identify this Context
+    #
+    # Parameters:
+    # +tag+:: the tag to set for this Context
+    Contract String => nil
+    def tag=(tag)
+      @tag = tag
+      nil
     end
 
     # Setter for platform property i.e. the
@@ -122,6 +167,16 @@ module Snowplow
     Contract Internal::Platform => nil
     def platform=(platform)
       @platform = platform
+      nil
+    end
+
+    # Setter for application ID
+    #
+    # Parameters:
+    # +app_id+:: application ID
+    Contract String => nil
+    def app_id=(app_id)
+      @app_id = app_id
       nil
     end
 
@@ -155,26 +210,6 @@ module Snowplow
       @color_depth = color_depth
       nil
     end
-
-    # Setter for application ID
-    #
-    # Parameters:
-    # +app_id+:: application ID
-    Contract String => nil
-    def app_id=(app_id)
-      @app_id = app_id
-    end
-
-    # Contract synonyms
-    OptionPlatform = Or[Platform, nil]
-
-    # Check for valid tracker platform
-    class Platform
-      @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
-
-      def self.valid?(val)
-        @@valid_platforms.include?(val)
-      end
-    end
+  end
 
 end
