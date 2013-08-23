@@ -128,7 +128,25 @@ module Snowplow
     # Track a MixPanel or KISSmetrics-style custom
     # unstructured event.
     #
-    # TODO
+    # +name+:: the name of the event
+    # +properties+:: the properties of the event
+    #
+    # Returns ??
+    Contract String, Hash, Subject, Context => nil # TODO: fix return
+    def track_unstruct_event(name,
+                             properties,
+                             subject=@pinned_subject,
+                             context=@pinned_context)
+
+      nil # TODO: fix return
+    end
+
+    # Track a page view event.
+    # WARNING: all the Web's tiers of caching mean
+    # that relying on your web server to track
+    # page views is almost always a BAD IDEA. Use
+    # the Snowplow JavaScript Tracker instead.
+    Contract OptionString 
 
     private
 

@@ -24,14 +24,75 @@ module Snowplow
 
   end
 
+  # A web page. Used variously as a
+  # Direct Object (page view),
+  # Prepositional Object (page ping)
+  # or as Context (ecommerce events).
+  # Inherits from Entity
+  class WebPage < Entity
+
+    attr_reader :uri,
+                :title
+
+    # Constructor for a new WebPage.
+    # The URI of the WebPage must be set.
+    #
+    # Parameters:
+    # +uri+:: URI of this WebPage
+    # +title+:: title of this WebPage (i.e. <TITLE>
+    #           or customized version of same)
+    Contract XXX, OptionString => WebPage
+    def initialize(uri, title=nil)
+
+      @uri = uri
+      @title = title
+
+      nil
+    end
+
+    # Sets the WebPage's URI
+    #
+    # Parameters:
+    # +uri+:: URI of this WebPage
+    Contract XXX => nil
+    def 
+
+    end
+
+    # TODO
+
+  end
+
   # The Subject of a Snowplow event.
   # Inherits from Entity
   class Subject < Entity
 
-    attr_reader :ip_adderss,
+    attr_reader :ip_address,
                 :business_user_id,
                 :domain_user_id,
                 :network_user_id
+
+    # Constructor for a new Subject.
+    # All fields are optional
+    #
+    # Parameters:
+    # +ip_address+:: user's IP address
+    # +business_user_id+:: user's business-defined
+    #                      ID
+    # +domain_user_id+:: user's ID stored by Snowplow
+    #                    on a first-party cookie
+    # +network_user_id+:: user's ID stored by Snowplow
+    #                    on a third-party cookie
+    Contract OptionString, OptionString, OptionString, OptionString => Subject
+    def initialize(ip_address=nil, business_user_id=nil, domain_user_id=nil, network_user_id=nil)
+
+      @ip_address = ip_address
+      @business_user_id = business_user_id
+      @domain_user_id = domain_user_id
+      @network_user_id = network_user_id
+
+      nil
+    end
 
     # Sets the Subject's IP address
     #

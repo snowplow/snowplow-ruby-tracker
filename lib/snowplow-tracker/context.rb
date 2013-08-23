@@ -93,9 +93,11 @@ module Snowplow
                 :app_id,
                 :screen_resolution,
                 :viewport,
-                :color_depth
+                :color_depth,
+                :page_url,
+                :frozen_timestamp
     # We'll add the setters manually with contracts
-    # :time is got manually too
+    # :timestamp is got manually too
 
     # Constructor for a new event Context.
     # platform must be set in this constructor
@@ -120,11 +122,16 @@ module Snowplow
     # Parameters:
     # +timestamp+:: the time to set this Context to
     Contract Epoch => Contract
-    def at(timestamp)
+    def at_time(timestamp)
       self.dup.tap do |ctx| 
         ctx.frozen_timestamp = timestamp
       end
     end
+
+    # Creates a copy of this Context with the
+    # underlying page_url modified as supplied
+    #
+    # TODO
 
     # Gets the current time in this Context.
     #
@@ -147,6 +154,9 @@ module Snowplow
       @frozen_timestamp = timestamp
       nil
     end
+
+    # Sets the Page on which this event is
+    # occurring
 
     # Sets the tag to identify this Context
     #

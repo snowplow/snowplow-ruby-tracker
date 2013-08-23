@@ -20,6 +20,9 @@ include Contracts
 # Custom Contracts used across our Tracker
 module Snowplow
 
+  # Type synonyms
+  Contract OptionString = Or[String, nil]
+
   # Validate a number is an integer
   PosInt = And[Pos, Int]
 
