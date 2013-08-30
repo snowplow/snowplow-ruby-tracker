@@ -101,30 +101,15 @@ module Snowplow
 
     # Track a Google Analytics-style custom structured event.
     #
-    # +category+:: the name you supply for the group of
-    #              objects you want to track
-    # +action+:: a string that is uniquely paired with each
-    #            category, and commonly used to define the
-    #            type of user interaction for the object
-    # +label+:: an optional string to provide additional
-    #           dimensions to the event data
-    # +property+:: an optional string describing the object
-    #              or the action performed on it. This might
-    #              be the quantity of an item added to basket
-    # +value+:: an optional value that you can use to provide
-    #           numerical data about the user event
+    # +struct_event+:: the custom structured event
     # +subject+:: the optional Subject performing this event.
     #             Overrides any pinned Subject
     # +context+:: the optional Context in which this event
     #             takes place. Overrides any pinned Context
     #
     # Returns ??
-    Contract String, String, OptionString, OptionString, OptionNum, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_struct_event(category,
-                           action,
-                           label=nil,
-                           property=nil,
-                           value=nil,
+    Contract StructEvent, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_struct_event(struct_event,
                            subject=@pinned_subject,
                            context=@pinned_context)
 
@@ -134,17 +119,15 @@ module Snowplow
     # Track a MixPanel- or KISSmetrics-style custom
     # unstructured event.
     #
-    # +name+:: the name of the event
-    # +properties+:: the properties of the event
+    # +unstruct_event+:: the custom unstructured event
     # +subject+:: the optional Subject performing this event.
     #             Overrides any pinned Subject
     # +context+:: the optional Context in which this event
     #             takes place. Overrides any pinned Context
     #
     # Returns ??
-    Contract String, Hash, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_unstruct_event(name,
-                             properties,
+    Contract UnstructEvent, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_unstruct_event(usntruct_event,
                              subject=@pinned_subject,
                              context=@pinned_context)
 
@@ -174,18 +157,20 @@ module Snowplow
       nil # TODO: fix return
     end
 
-    # Track an ecommerce transaction.
+    # Track a sales order - referred to as an
+    # ecommerce transaction in other Snowplow
+    # trackers.
     #
-    # +transaction+:: the ecommerce transaction to track,
-    #                 including transaction items
+    # +sales_order+:: the sales order to track,
+    #                 including order line items
     # +subject+:: the optional Subject performing this event.
     #             Overrides any pinned Subject
     # +context+:: the optional Context in which this event
     #             takes place. Overrides any pinned Context
-    Contract EcommerceTransaction, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_ecommerce_transaction(transaction,
-                                    subject=@pinned_subject,
-                                    context=@pinned_context)                    
+    Contract SalesOrder, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_sales_order(sales_order,
+                          subject=@pinned_subject,
+                          context=@pinned_context)                    
 
       nil # TODO: fix return
     end

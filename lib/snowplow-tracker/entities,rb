@@ -25,6 +25,11 @@ module Snowplow
 
   end
 
+  # A sales order, aka an ecommerce transaction.
+  # Is the Direct Object of a track_sales_order event.
+  # Inherits from Entity
+  class SalesOrder < Entity
+
 Log ecommerce transaction metadata
    *
    * @param string orderId 
@@ -36,6 +41,15 @@ Log ecommerce transaction metadata
    * @param string state 
    * @param string country 
 
+   items
+
+  end
+
+  # A line item within a sales order. Can contain multiple
+  # units of the same SKU.
+  # Inherits from Entity
+  class SalesOrderItem < Entity
+
 Log ecommerce transaction item
    *
    * @param string orderId
@@ -44,6 +58,47 @@ Log ecommerce transaction item
    * @param string category
    * @param string price
    * @param string quantity
+
+
+  end 
+
+  # A Google Analytics-style custom structured event.
+
+  # +category+:: the name you supply for the group of
+  #              objects you want to track
+  # +action+:: a string that is uniquely paired with each
+  #            category, and commonly used to define the
+  #            type of user interaction for the object
+  # +label+:: an optional string to provide additional
+  #           dimensions to the event data
+  # +property+:: an optional string describing the object
+  #              or the action performed on it. This might
+  #              be the quantity of an item added to basket
+  # +value+:: an optional value that you can use to provide
+  #           numerical data about the user event
+
+    Contract String, String, OptionString, OptionString, OptionNum, OptionSubject, OptionContext => nil # TODO: fix return
+
+struct_event(category,
+                           action,
+                           label=nil,
+                           property=nil,
+                           value=nil,
+
+
+    # A MixPanel- or KISSmetrics-style custom
+    # unstructured event, consisting of a name
+    # and envelope of arbitrary name:value pairs
+    # (represented as a Ruby hash).
+    
+    Contract String, Hash, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_unstruct_event(name,
+                             properties,
+
+
+    # +name+:: the name of the event
+    # +properties+:: the properties of the event
+
 
   # A web page. Used variously as a
   # Direct Object (page view),
