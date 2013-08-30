@@ -13,13 +13,14 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
+require 'uri'
 require 'contracts'
 include Contracts
 
 module Snowplow
 
-  # Parent class for any entity which is the Subject or Object (direct,
-  # indirect, prepositional) of a Snowplow event
+  # Parent class for any entity which is the Subject or Object (Direct,
+  # Indirect, Prepositional) of a Snowplow event
   class Entity
 
   end
@@ -41,7 +42,7 @@ module Snowplow
     # +uri+:: URI of this WebPage
     # +title+:: title of this WebPage (i.e. <TITLE>
     #           or customized version of same)
-    Contract XXX, OptionString => WebPage
+    Contract URI, OptionString => WebPage
     def initialize(uri, title=nil)
 
       @uri = uri
@@ -54,12 +55,16 @@ module Snowplow
     #
     # Parameters:
     # +uri+:: URI of this WebPage
-    Contract XXX => nil
-    def 
-
+    Contract URI => nil
+    def uri=(uri)
+      @uri = uri
     end
 
-    # TODO
+    # Sets the WebPage's title
+    Contract String => nil
+    def title=(title)
+      @title = title
+    end
 
   end
 

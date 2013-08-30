@@ -94,7 +94,7 @@ module Snowplow
                 :screen_resolution,
                 :viewport,
                 :color_depth,
-                :page_url,
+                :web_page,
                 :frozen_timestamp
     # We'll add the setters manually with contracts
     # :timestamp is got manually too
@@ -121,7 +121,7 @@ module Snowplow
     #
     # Parameters:
     # +timestamp+:: the time to set this Context to
-    Contract Epoch => Contract
+    Contract Epoch => Context
     def at_time(timestamp)
       self.dup.tap do |ctx| 
         ctx.frozen_timestamp = timestamp
@@ -129,9 +129,16 @@ module Snowplow
     end
 
     # Creates a copy of this Context with the
-    # underlying page_url modified as supplied
+    # underlying web page given as supplied
     #
-    # TODO
+    # Parameters:
+    # +web_page+:: the web page this Context occurred on
+    Contract Page => Context
+    def on_web_page(page)
+      self.dup.tap do |ctx|
+        ctx.web_page = web_page
+      end
+    end
 
     # Gets the current time in this Context.
     #
