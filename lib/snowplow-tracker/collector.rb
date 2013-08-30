@@ -57,7 +57,8 @@ module Snowplow
     #         decide which Collector to send events to
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
-    Contract String, CollectorEndpoint, CollectorHttpMethod => Collector
+    # TODO
+    Contract CollectorTag, CollectorEndpoint, CollectorHttpMethod => Collector
     def initialize(tag, endpoint, http_method=:get)
       @tag = tag
       @http_method = http_method

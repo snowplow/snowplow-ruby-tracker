@@ -20,10 +20,10 @@ include Contracts
 module Snowplow
 
   # Type synonyms
-  Contract OptionString = Or[String, nil]
-
-  # Validate a number is an integer
-  PosInt = And[Pos, Int]
+  OptionString = Or[String, nil]
+  Collectors = Array[Collector]
+  CollectorTag = String
+  
 
   # Validate a number is an integer
   class Int
@@ -31,5 +31,8 @@ module Snowplow
       val.is_a? Integer
     end
   end
+
+  # Validate a number is an integer
+  PosInt = And[Pos, Int]
 
 end

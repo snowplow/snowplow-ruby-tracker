@@ -88,8 +88,7 @@ module Snowplow
 
     @@default_platform = "pc"
 
-    attr_reader :tag,
-                :platform,
+    attr_reader :platform,
                 :app_id,
                 :screen_resolution,
                 :viewport,
@@ -105,14 +104,10 @@ module Snowplow
     # platform.
     #
     # Parameters:
-    # +name+:: a tag for this Context. Could
-    #          be used to indicate scope or a
-    #          point in time
     # +platform+:: the device platform in which
     #              this Context is taking place 
     Contract String, OptionPlatform => Context
-    def initialize(tag, platform=@@default_platform)
-      @tag = tag
+    def initialize(platform=@@default_platform)
       @platform = platform
     end
 
@@ -164,16 +159,8 @@ module Snowplow
 
     # Sets the Page on which this event is
     # occurring
-
-    # Sets the tag to identify this Context
     #
-    # Parameters:
-    # +tag+:: the tag to set for this Context
-    Contract String => nil
-    def tag=(tag)
-      @tag = tag
-      nil
-    end
+    # TODO
 
     # Setter for platform property i.e. the
     # platform on which this tracker is running

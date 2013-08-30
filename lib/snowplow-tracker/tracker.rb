@@ -30,17 +30,13 @@ module Snowplow
     # Constants
     @@default_encode_base64 = true
 
-    # Contract synonyms
-    CollectorOrCollectors = Or[Collector, Array[Collector]]
-    OptionCollectorTagOrTags = Or[String, Array[String], nil]
-
     # Constructor for a new Snowplow Tracker.
     # Initialize it with one or more Collectors.
     #
     # Parameters:
     # +collectors+:: either a Collector, or an Array
     #                of Collectors =>
-    Contract CollectorOrCollectors => Tracker
+    Contract Or[Collector, Collectors] => Tracker
     def initialize(collectors)
 
       @collectors = Array(collectors) # Turn to array if single Collector
@@ -50,35 +46,13 @@ module Snowplow
       nil
     end
 
-    # Pin a given Context to all events fired subsequently.
-    # Can still be overridden on a per-event basis.
-    #
-    # Parameters:
-    # +context+:: the Context to pin to all subsequent events
-    Contract Context => nil
-    def pin_context(context)
-      @pinned_context = context
-      nil
-    end
-
-    # Pin a given Subject to all events fired subsequently.
-    # Can still be overridden on a per-event basis.
-    #
-    # Parameters:
-    # +subject+:: the Subject to pin to all subsequent events
-    Contract Subject => nil
-    def pin_subject(subject)
-      @pinned_subject = subject
-      nil
-    end
-
     # Setter for the Array of Collectors available to
     # this Tracker.
     #
     # Parameters:
     # +collectors+:: either a Collector, or an Array
     #                of Collectors =>
-    Contract CollectorOrCollectors => nil
+    Contract Or[Collector, Collectors] => nil
     def collectors=(collectors)
       @collectors = Array(collectors)
       nil
@@ -97,6 +71,9 @@ module Snowplow
       nil
     end
 
+    # Spawn a new Subject attached to this Tracker.
+    # 
+
     private
 
     # Helper to generate a hash of tag -> Collectors.
@@ -106,8 +83,8 @@ module Snowplow
     # Parameters:
     # +collectors+:: the Array of Collectors to
     #                build a hash from
-    Contract Array[Collector] => Hash[String, Collector] # TODO: does this work?
-    def Tracker.build_hash_of(collectors)
+    Contract Collectors => Hash[CollectorTag, Collector] # TODO: does this work?
+    def self.build_hash_of(collectors)
       collectors.map( |c| {
         { c.tag => = c }
       }
