@@ -227,6 +227,13 @@ module Snowplow
       @color_depth = color_depth
       nil
     end
+
+    # Converts the current Context into a
+    # payload compatible with the Snowplow
+    # Tracker Protocol:
+    # XXX
+    #
+    # NOTE: unlike with the other trackers
   end
 
 end

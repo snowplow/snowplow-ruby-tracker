@@ -30,6 +30,12 @@ module Snowplow
     # Constants
     @@default_encode_base64 = true
 
+    # Contract synonyms
+    CollectorOrCollectors = Or[Collector, Array[Collector]]
+    OptionCollectorTagOrTags = Or[String, Array[String], nil]
+    OptionSubject = Or[Subject, nil]
+    OptionContext = Or[Context, nil]
+
     # Constructor for a new Snowplow Tracker.
     # Initialize it with one or more Collectors.
     #
@@ -107,13 +113,13 @@ module Snowplow
     #              be the quantity of an item added to basket
     # +value+:: an optional value that you can use to provide
     #           numerical data about the user event
-    # +subject+:: an optional Subject performing this event.
+    # +subject+:: the optional Subject performing this event.
     #             Overrides any pinned Subject
-    # +context+:: an optional Context in which this event
+    # +context+:: the optional Context in which this event
     #             takes place. Overrides any pinned Context
     #
     # Returns ??
-    Contract String, String, OptionString, OptionString, OptionNum, Subject, Context => nil # TODO: fix return
+    Contract String, String, OptionString, OptionString, OptionNum, OptionSubject, OptionContext => nil # TODO: fix return
     def track_struct_event(category,
                            action,
                            label=nil,
@@ -125,14 +131,18 @@ module Snowplow
       nil # TODO: fix return
     end
 
-    # Track a MixPanel or KISSmetrics-style custom
+    # Track a MixPanel- or KISSmetrics-style custom
     # unstructured event.
     #
     # +name+:: the name of the event
     # +properties+:: the properties of the event
+    # +subject+:: the optional Subject performing this event.
+    #             Overrides any pinned Subject
+    # +context+:: the optional Context in which this event
+    #             takes place. Overrides any pinned Context
     #
     # Returns ??
-    Contract String, Hash, Subject, Context => nil # TODO: fix return
+    Contract String, Hash, OptionSubject, OptionContext => nil # TODO: fix return
     def track_unstruct_event(name,
                              properties,
                              subject=@pinned_subject,
@@ -142,17 +152,45 @@ module Snowplow
     end
 
     # Track a page view event.
+    #
     # WARNING: all the Web's tiers of caching mean
     # that relying on your web server to track
-    # page views is almost always a BAD IDEA. Use
-    # the Snowplow JavaScript Tracker instead.
-    Contract OptionString 
+    # page views is almost always a BAD IDEA.
+    # Use the Snowplow JavaScript Tracker instead:
+    # https://github.com/snowplow/snowplow-javascript-tracker
+    #
+    # +web_page+:: the WebPage the user is viewing
+    # +subject+:: the optional Subject performing this event.
+    #             Overrides any pinned Subject
+    # +context+:: the optional Context in which this event
+    #             takes place. Overrides any pinned Context
+    #
+    # Returns ??
+    Contract WebPage, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_page_view(web_page,
+                        subject=@pinned_subject,
+                        context=@pinned_context)                    
+
+      nil # TODO: fix return
+    end
+
+    # Track an ecommerce transaction.
+    #
+    # +transaction+:: the ecommerce transaction to track,
+    #                 including transaction items
+    # +subject+:: the optional Subject performing this event.
+    #             Overrides any pinned Subject
+    # +context+:: the optional Context in which this event
+    #             takes place. Overrides any pinned Context
+    Contract EcommerceTransaction, OptionSubject, OptionContext => nil # TODO: fix return
+    def track_ecommerce_transaction(transaction,
+                                    subject=@pinned_subject,
+                                    context=@pinned_context)                    
+
+      nil # TODO: fix return
+    end
 
     private
-
-    # Contract synonyms
-    CollectorOrCollectors = Or[Collector, Array[Collector]]
-    OptionCollectorTagOrTags = Or[String, Array[String], nil]
 
     # Helper to generate a hash of tag -> Collectors.
     # This is used when the user wants to send
