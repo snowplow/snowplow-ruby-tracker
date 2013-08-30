@@ -181,7 +181,7 @@ module Snowplow
     # Parameters:
     # +platform+:: a valid platform code (enforced
     #              by contracts)
-    Contract Internal::Platform => nil
+    Contract Platform => nil
     def platform=(platform)
       @platform = platform
       nil

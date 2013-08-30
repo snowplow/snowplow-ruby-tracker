@@ -17,7 +17,6 @@ require 'set'
 require 'contracts'
 include Contracts
 
-# Custom Contracts used across our Tracker
 module Snowplow
 
   # Type synonyms
@@ -32,5 +31,5 @@ module Snowplow
       val.is_a? Integer
     end
   end
-  
+
 end

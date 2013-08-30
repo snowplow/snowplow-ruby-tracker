@@ -33,8 +33,6 @@ module Snowplow
     # Contract synonyms
     CollectorOrCollectors = Or[Collector, Array[Collector]]
     OptionCollectorTagOrTags = Or[String, Array[String], nil]
-    OptionSubject = Or[Subject, nil]
-    OptionContext = Or[Context, nil]
 
     # Constructor for a new Snowplow Tracker.
     # Initialize it with one or more Collectors.
@@ -97,82 +95,6 @@ module Snowplow
     def base64_encode=(base64_encode)
       @base64_encode = base64_encode
       nil
-    end
-
-    # Track a Google Analytics-style custom structured event.
-    #
-    # +struct_event+:: the custom structured event
-    # +subject+:: the optional Subject performing this event.
-    #             Overrides any pinned Subject
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    #
-    # Returns ??
-    Contract StructEvent, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_struct_event(struct_event,
-                           subject=@pinned_subject,
-                           context=@pinned_context)
-
-      nil # TODO: fix return
-    end
-
-    # Track a MixPanel- or KISSmetrics-style custom
-    # unstructured event.
-    #
-    # +unstruct_event+:: the custom unstructured event
-    # +subject+:: the optional Subject performing this event.
-    #             Overrides any pinned Subject
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    #
-    # Returns ??
-    Contract UnstructEvent, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_unstruct_event(usntruct_event,
-                             subject=@pinned_subject,
-                             context=@pinned_context)
-
-      nil # TODO: fix return
-    end
-
-    # Track a page view event.
-    #
-    # WARNING: all the Web's tiers of caching mean
-    # that relying on your web server to track
-    # page views is almost always a BAD IDEA.
-    # Use the Snowplow JavaScript Tracker instead:
-    # https://github.com/snowplow/snowplow-javascript-tracker
-    #
-    # +web_page+:: the WebPage the user is viewing
-    # +subject+:: the optional Subject performing this event.
-    #             Overrides any pinned Subject
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    #
-    # Returns ??
-    Contract WebPage, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_page_view(web_page,
-                        subject=@pinned_subject,
-                        context=@pinned_context)                    
-
-      nil # TODO: fix return
-    end
-
-    # Track a sales order - referred to as an
-    # ecommerce transaction in other Snowplow
-    # trackers.
-    #
-    # +sales_order+:: the sales order to track,
-    #                 including order line items
-    # +subject+:: the optional Subject performing this event.
-    #             Overrides any pinned Subject
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    Contract SalesOrder, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_sales_order(sales_order,
-                          subject=@pinned_subject,
-                          context=@pinned_context)                    
-
-      nil # TODO: fix return
     end
 
     private

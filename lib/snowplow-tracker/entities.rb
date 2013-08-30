@@ -90,7 +90,7 @@ struct_event(category,
     # unstructured event, consisting of a name
     # and envelope of arbitrary name:value pairs
     # (represented as a Ruby hash).
-    
+
     Contract String, Hash, OptionSubject, OptionContext => nil # TODO: fix return
     def track_unstruct_event(name,
                              properties,
@@ -143,77 +143,6 @@ struct_event(category,
       nil
     end
 
-  end
-
-  # The Subject of a Snowplow event.
-  # Inherits from Entity
-  class Subject < Entity
-
-    attr_reader :ip_address,
-                :business_user_id,
-                :domain_user_id,
-                :network_user_id
-
-    # Constructor for a new Subject.
-    # All fields are optional
-    #
-    # Parameters:
-    # +ip_address+:: user's IP address
-    # +business_user_id+:: user's business-defined
-    #                      ID
-    # +domain_user_id+:: user's ID stored by Snowplow
-    #                    on a first-party cookie
-    # +network_user_id+:: user's ID stored by Snowplow
-    #                    on a third-party cookie
-    Contract OptionString, OptionString, OptionString, OptionString => Subject
-    def initialize(ip_address=nil, business_user_id=nil, domain_user_id=nil, network_user_id=nil)
-
-      @ip_address = ip_address
-      @business_user_id = business_user_id
-      @domain_user_id = domain_user_id
-      @network_user_id = network_user_id
-
-      nil
-    end
-
-    # Sets the Subject's IP address
-    #
-    # Parameters:
-    # +ip_address+:: the Subject's IP address
-    Contract String => nil
-    def ip_address=(ip_address)
-      @ip_address = ip_address
-    end
-
-    # Sets the Subject's business user ID
-    #
-    # Parameters:
-    # +user_id+:: the Subject's business user ID
-    Contract String => nil
-    def business_user_id=(user_id)
-      @business_user_id = user_id
-    end
-
-    # Sets the Subject's domain user ID
-    #
-    # Parameters:
-    # +user_id+:: the Subject's domain user ID
-    Contract String => nil
-    def domain_user_id=(user_id)
-      @domain_user_id = user_id
-    end
-
-    # Sets the Subject's network user ID.
-    #
-    # Note: it may be hard to acquire this
-    # on the server-side.
-    #
-    # Parameters:
-    # +user_id+:: the Subject's network user ID
-    def network_user_id=(user_id)
-      @network_user_id = user_id
-    end
-    
   end
 
 end

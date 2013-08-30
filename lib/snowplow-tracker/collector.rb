@@ -18,6 +18,26 @@ include Contracts
 
 module Snowplow
 
+  # Validates the hash passed to the constructor
+  # of a new Collector
+  class CollectorEndpoint
+    def self.valid?(val)
+      val.is_a? Hash &&
+        val.length == 1 &&
+        (val.has_key? "uri" || val.has_key? "cf_subdomin")
+    end
+  end
+
+  # Validates the HTTP method used to send to
+  # the Collector
+  class CollectorHttpMethod
+    @@valid_methods = Set.new(:get)
+
+    def self.valid?(val)
+      @@valid_methods.include?(val)
+    end
+  end
+
   # Defines a Snowplow collector to send
   # events to
   class Collector
@@ -95,30 +115,6 @@ module Snowplow
       "#{cf_subdomain}.cloudfront.net"
     end
 
-  end
-
-  # For private classes
-  module Internal
-
-    # Validates the hash passed to the constructor
-    # of a new Collector
-    class CollectorEndpoint
-      def self.valid?(val)
-        val.is_a? Hash &&
-          val.length == 1 &&
-          (val.has_key? "uri" || val.has_key? "cf_subdomin")
-      end
-    end
-
-    # Validates the HTTP method used to send to
-    # the Collector
-    class CollectorHttpMethod
-      @@valid_methods = Set.new(:get)
-
-      def self.valid?(val)
-        @@valid_methods.include?(val)
-      end
-    end
   end
 
 end
