@@ -3,18 +3,18 @@
 collector = Snowplow::Collector(:main, cf: 'd1vjp94kduqgnd')
 tracker = Snowplow::Tracker.new(collector)
 
-# Create a couple of Subjects
+# Subjects of our events
 end_user = Snowplow::Subject.new(ip_address='x.x.x.x', business_user_id='runkelfinker')
 api_user = Snowplow::Subject.new(business_user_id=Socket.gethostname)
 
-# Setup a couple of Contexts
+# Contexts in which our events take place
 end_ctx = Snowplow::Context.new('web', app_id='shop')
 api_ctx = Snowplow::Context.new('pc', app_id='api')
 
 # We can pin a Context to our Tracker
 tracker.pin end_ctx
 
-# Create our events' Objects
+# Create the Objects of our events
 web_page = Snowplow::WebPage.new(...) # We will use this for Context too
 sales_order = Snowplow::SalesOrder.new(...)
 struct_event = Snowplow::StructEvent.new(...)
