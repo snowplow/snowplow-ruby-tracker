@@ -21,9 +21,7 @@ module Snowplow
 
   # Type synonyms
   OptionString = Or[String, nil]
-  Collectors = Array[Collector]
-  CollectorTag = String
-  
+  CollectorTag = Or[String, Symbol]
 
   # Validate a number is an integer
   class Int
@@ -32,7 +30,7 @@ module Snowplow
     end
   end
 
-  # Validate a number is an integer
+  # Validate a number is a positive integer
   PosInt = And[Pos, Int]
 
 end
