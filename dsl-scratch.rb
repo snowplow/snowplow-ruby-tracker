@@ -1,4 +1,4 @@
-collector = Snowplow::Collector('main', cf: 'd1vjp94kduqgnd')
+collector = Snowplow::Collector(:main, cf: 'd1vjp94kduqgnd')
 
 tracker = Snowplow::Tracker.new(collector)
 
