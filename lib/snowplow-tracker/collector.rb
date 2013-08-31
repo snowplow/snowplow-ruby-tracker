@@ -58,8 +58,8 @@ module Snowplow
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
     # TODO
-    Contract CollectorTag, CollectorEndpoint, CollectorHttpMethod => Collector
-    def initialize(tag, endpoint, http_method=:get)
+    Contract CollectorTag, CollectorEndpoint => Collector
+    def initialize(tag, endpoint)
       @tag = tag
       @http_method = http_method
 
