@@ -9,11 +9,8 @@ api_user = Snowplow::Subject.new(business_user_id='gpfeed')
 # Setup Context
 ctx = Snowplow::Context.new('web', app_id='shop')
 
-# Attach the Context to the Subject
-end_user pin ctx
-
 # Track some events
-tracker.track do
+tracker.track ctx, do
   end_user views web_page
   end_user places sales_order, ~: ctx.on(web_page)
   end_user performs struct_event, ~: ctx.on(web_page).at(event_tstamp)
