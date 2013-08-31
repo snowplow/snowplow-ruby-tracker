@@ -20,7 +20,7 @@ module Snowplow
 
   # Check for valid tracker platform
   class Platform
-    @@valid_platforms = Set.new(%w(pc tv mob cnsl iot))
+    @@valid_platforms = Set.new(%w(web pc tv mob cnsl iot))
 
     def self.valid?(val)
       @@valid_platforms.include?(val)
@@ -106,7 +106,7 @@ module Snowplow
     # Parameters:
     # +platform+:: the device platform in which
     #              this Context is taking place 
-    Contract String, OptionPlatform => Context
+    Contract OptionPlatform => Context
     def initialize(platform=@@default_platform)
       @platform = platform
     end
@@ -117,7 +117,7 @@ module Snowplow
     # Parameters:
     # +timestamp+:: the time to set this Context to
     Contract Epoch => Context
-    def at_time(timestamp)
+    def at(timestamp)
       self.dup.tap do |ctx| 
         ctx.frozen_timestamp = timestamp
       end
@@ -128,8 +128,8 @@ module Snowplow
     #
     # Parameters:
     # +web_page+:: the web page this Context occurred on
-    Contract Page => Context
-    def on_web_page(page)
+    Contract WebPage => Context
+    def on(web_page)
       self.dup.tap do |ctx|
         ctx.web_page = web_page
       end
