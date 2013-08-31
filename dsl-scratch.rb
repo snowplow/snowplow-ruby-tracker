@@ -15,10 +15,10 @@ api_ctx = Snowplow::Context.new('pc', app_id='api')
 tracker.pin end_ctx
 
 # Create our events' Objects
-web_page = WebPage.new(...) # We will use this for Context too
-sales_order = SalesOrder.new(...)
-struct_event = StructEvent.new(...)
-unstruct_event = UnstructEvent.new(...)
+web_page = Snowplow::WebPage.new(...) # We will use this for Context too
+sales_order = Snowplow::SalesOrder.new(...)
+struct_event = Snowplow::StructEvent.new(...)
+unstruct_event = Snowplow::UnstructEvent.new(...)
 
 # Track some events
 tracker.track do
