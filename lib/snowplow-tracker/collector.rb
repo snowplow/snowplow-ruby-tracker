@@ -13,6 +13,7 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
+require 'uri'
 require 'contracts'
 include Contracts
 
@@ -21,20 +22,22 @@ module Snowplow
   # Validates the hash passed to the constructor
   # of a new Collector
   class EndpointHash
+    
     def self.valid?(val)
       val.is_a? Hash &&
         val.length == 1 &&
         (val.has_key? "host" || val.has_key? "cf")
     end
+
   end
 
   # Defines a Snowplow collector to send
   # events to
   class Collector
 
-    attr_reader   :tag,
-                  :endpoint_uri,
-                  :http_method
+    attr_reader :tag,
+                :endpoint_uri,
+                :http_method
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)
@@ -49,7 +52,6 @@ module Snowplow
     Contract Symbol, EndpointHash => Collector
     def initialize(tag, endpoint)
       @tag = tag
-
       host = endpoint["host"] || to_host(endpoint["cf"])
       set_host_endpoint(host)
     end
@@ -87,7 +89,7 @@ module Snowplow
     # Returns the collector URI
     Contract String => String
     def Collector.to_endpoint_uri(host)
-      "http://#{host}/i"
+      URI("http://#{host}/i")
     end
 
     # Helper to convert a CloudFront subdomain

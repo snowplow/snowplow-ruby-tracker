@@ -18,8 +18,9 @@ include Contracts
 
 module Snowplow
 
-  # Common synonyms
+  # Common contract synonyms
   OptionString = Or[String, nil]
+  OptionNum = Or[Num, nil]
   Epoch = Int
 
   # Validate is an integer

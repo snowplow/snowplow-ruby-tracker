@@ -93,8 +93,8 @@ module Snowplow
   # Contract synonyms
   OptionViewDimensions = Or[ViewDimensions, nil]
 
-  # Stores the Context which encapsulates a Snowplow
-  # event.
+  # Stores the Context which encapsulates an individual
+  # Snowplow event.
   class Context < Payload
 
     @@default_platform = "pc"
@@ -275,5 +275,8 @@ module Snowplow
     end
 
   end
+
+  # Contract synonyms
+  OptionContext = Or[Context, nil]
 
 end

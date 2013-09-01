@@ -43,7 +43,10 @@ module Snowplow
     # +network_user_id+:: user's ID stored by Snowplow
     #                     on a third-party cookie
     Contract OptionString, OptionString, OptionString, OptionString => Subject
-    def initialize(ip_address=nil, business_user_id=nil, domain_user_id=nil, network_user_id=nil)
+    def initialize(ip_address=nil,
+                   business_user_id=nil,
+                   domain_user_id=nil,
+                   network_user_id=nil)
 
       @ip_address = ip_address
       @business_user_id = business_user_id
@@ -60,6 +63,7 @@ module Snowplow
     Contract String => nil
     def ip_address=(ip_address)
       @ip_address = ip_address
+      nil
     end
 
     # Sets the Subject's business user ID
@@ -69,6 +73,7 @@ module Snowplow
     Contract String => nil
     def business_user_id=(user_id)
       @business_user_id = user_id
+      nil
     end
 
     # Sets the Subject's domain user ID
@@ -78,6 +83,7 @@ module Snowplow
     Contract String => nil
     def domain_user_id=(user_id)
       @domain_user_id = user_id
+      nil
     end
 
     # Sets the Subject's network user ID.
@@ -89,6 +95,7 @@ module Snowplow
     # +user_id+:: the Subject's network user ID
     def network_user_id=(user_id)
       @network_user_id = user_id
+      nil
     end
     
     # Pin the given Context to this Subject.
@@ -112,10 +119,17 @@ module Snowplow
     #
     # Returns ??
     Contract Event, OptionContext => nil # TODO: fix return
-    def performs_event(event,
-                       context=@pinned_context)
+    def performs(event,
+                 context=@pinned_context)
 
-      nil # TODO: fix return
+      # Switch based on type of event
+      if event.is_a? StructEvent
+        performs_struct_event(event, context)
+      elsif event.is_a? UnstructEvent
+        performs_unstruct_event(event, context)
+      else # Should never happen
+        raise "performs must be passed either a StructEvent or UnstructEvent"
+      end
     end
 
     # Track a page view event.
@@ -132,8 +146,8 @@ module Snowplow
     #
     # Returns ??
     Contract WebPage, OptionContext => nil # TODO: fix return
-    def views_web_page(web_page,
-                       context=@pinned_context)
+    def views(web_page,
+              context=@pinned_context)
 
       nil # TODO: fix return
     end
@@ -147,8 +161,42 @@ module Snowplow
     # +context+:: the optional Context in which this event
     #             takes place. Overrides any pinned Context
     Contract SalesOrder, OptionContext => nil # TODO: fix return
-    def places_order(sales_order,
-                     context=@pinned_context)                    
+    def places(sales_order,
+               context=@pinned_context)                    
+
+      nil # TODO: fix return
+    end
+
+    private
+
+    # Subject performs a Google Analytics-style custom structured event.
+    # Procedure is private so public API can stick to using the cleaner
+    # performs() procedure
+    #
+    # +event+:: the custom structured event
+    # +context+:: the optional Context in which this event
+    #             takes place. Overrides any pinned Context
+    #
+    # Returns ??
+    Contract StructEvent, OptionContext => nil # TODO: fix return
+    def performs_struct_event(event,
+                 context=@pinned_context)
+
+      nil # TODO: fix return
+    end
+
+    # Subject performs a MixPanel- or KISSmetrics-style custom unstructured event.
+    # Procedure is private so public API can stick to using the cleaner
+    # performs() procedure
+    #
+    # +event+:: the custom unstructured event
+    # +context+:: the optional Context in which this event
+    #             takes place. Overrides any pinned Context
+    #
+    # Returns ??
+    Contract UnstructEvent, OptionContext => nil # TODO: fix return
+    def performs_unstruct_event(event,
+                 context=@pinned_context)
 
       nil # TODO: fix return
     end

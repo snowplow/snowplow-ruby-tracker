@@ -19,80 +19,166 @@ include Contracts
 
 module Snowplow
 
-  # A sales order, aka an ecommerce transaction.
-  # Is the Direct Object of a track_sales_order event.
-  # Inherits from Entity
-  class SalesOrder < Entity
-
-Log ecommerce transaction metadata
-   *
-   * @param string orderId 
-   * @param string affiliation 
-   * @param string total 
-   * @param string tax 
-   * @param string shipping 
-   * @param string city 
-   * @param string state 
-   * @param string country 
-
-   items
-
-  end
-
-  # A line item within a sales order. Can contain multiple
-  # units of the same SKU.
+  # A line item within a sales order: one or more units
+  # of a single SKU.
+  # Fields follow Google Analytics closely.  
   # Inherits from Entity
   class SalesOrderItem < Entity
 
-Log ecommerce transaction item
-   *
-   * @param string orderId
-   * @param string sku
-   * @param string name
-   * @param string category
-   * @param string price
-   * @param string quantity
+    attr_reader :order_id,
+                :sku,
+                :name,
+                :category,
+                :price,
+                :quantity
 
+    # Constructor for a SalesOrderItem, i.e. a line
+    # item within a SalesOrder
+    #
+    # TODO
+    Contract String, OptionString, OptionString, OptionString, Num, Int => SalesOrderItem
+    def initialize(order_id,
+                   sku=nil,
+                   name=nil,
+                   category=nil,
+                   price,
+                   quantity)
+
+      # TODO: check at least one of sku and name is set
+
+      @order_id = order_id
+      @sku = sku
+      @name = name
+      @category = category
+      @price = price
+      @quantity = quantity
+
+    end
+
+    # TODO: implement
+    def to_payload()
+
+    end
 
   end 
 
-  # A Google Analytics-style custom structured event.
+  # Contract synonyms
+  SalesOrderItems = Array[SalesOrderItem]
 
-  # +category+:: the name you supply for the group of
-  #              objects you want to track
-  # +action+:: a string that is uniquely paired with each
-  #            category, and commonly used to define the
-  #            type of user interaction for the object
-  # +label+:: an optional string to provide additional
-  #           dimensions to the event data
-  # +property+:: an optional string describing the object
-  #              or the action performed on it. This might
-  #              be the quantity of an item added to basket
-  # +value+:: an optional value that you can use to provide
-  #           numerical data about the user event
+  # A sales order, aka an ecommerce transaction.
+  # Fields follow Google Analytics closely.
+  # Is the Direct Object of a place SalesOrder event.
+  # Inherits from Entity.
+  class SalesOrder < Entity
 
-    Contract String, String, OptionString, OptionString, OptionNum, OptionSubject, OptionContext => nil # TODO: fix return
+    attr_reader :order_id, 
+                :affiliation,
+                :total,
+                :tax,
+                :shipping,
+                :city,
+                :state,
+                :country,
+                :items
 
-struct_event(category,
-                           action,
-                           label=nil,
-                           property=nil,
-                           value=nil,
+    # Constructor for a SalesOrder, i.e. an ecommmerce
+    # transaction
+    #
+    # TODO
+    Contract String, OptionString, Num, Num, Num, OptionString, OptionString, OptionString, Or[SalesOrderItem, SalesOrderItems] => SalesOrder
+    def initialize(order_id, 
+                   affiliation=nil,
+                   total,
+                   tax,
+                   shipping,
+                   city=nil,
+                   state=nil,
+                   country=nil,
+                   items)
+
+      @order_id = order_id
+      @affiliation = affiliation
+      @total = total
+      @tax = tax
+      @shipping = shipping
+      @city = city
+      @state = state
+      @country = country
+      @items = Array(items) # To array if not already
+    end
 
 
-    # A MixPanel- or KISSmetrics-style custom
-    # unstructured event, consisting of a name
-    # and envelope of arbitrary name:value pairs
-    # (represented as a Ruby hash).
+    # TODO: implement
+    def to_payload()
 
-    Contract String, Hash, OptionSubject, OptionContext => nil # TODO: fix return
-    def track_unstruct_event(name,
-                             properties,
+    end
 
+  end
 
+  # A custom structured event.
+  # Fields follow Google Analytics closely.  
+  # Inherits from Entity
+  class StructEvent < Entity
+
+    attr_reader :category,
+                :action,
+                :label,
+                :property,
+                :value
+
+    # Constructor for a new custom structured event
+    #
+    # +category+:: the name you supply for the group of
+    #              objects you want to track
+    # +action+:: a string that is uniquely paired with each
+    #            category, and commonly used to define the
+    #            type of user interaction for the object
+    # +label+:: an optional string to provide additional
+    #           dimensions to the event data
+    # +property+:: an optional string describing the object
+    #              or the action performed on it. This might
+    #              be the quantity of an item added to basket
+    # +value+:: an optional value that you can use to provide
+    #           numerical data about the user event
+    Contract String, String, OptionString, OptionString, OptionNum => StructEvent
+    def initialize(category,
+                   action,
+                   label=nil,
+                   property=nil,
+                   value=nil)
+
+      @category = category
+      @action = action
+      @label = label
+      @property = property
+      @value = value
+    end
+
+  end
+
+  # A MixPanel- or KISSmetrics-style custom
+  # unstructured event, consisting of a name
+  # and envelope of arbitrary name:value pairs
+  # (represented as a Ruby hash).
+  # Inherits from Entity  
+  class UnstructEvent < Entity
+
+    attr_reader :name,
+                :properties
+
+    # Constructor for a new custom unstructured event
+    #
     # +name+:: the name of the event
     # +properties+:: the properties of the event
+    Contract String, Hash => UnstructEvent
+    def initialize(name,
+                   properties)
 
+      @name = name
+      @properties = properties
+    end
+
+  end
 
   # A web page. Used variously as a
   # Direct Object (page view),
@@ -113,26 +199,7 @@ struct_event(category,
     #           or customized version of same)
     Contract URI, OptionString => WebPage
     def initialize(uri, title=nil)
-
       @uri = uri
-      @title = title
-
-      nil
-    end
-
-    # Sets the WebPage's URI
-    #
-    # Parameters:
-    # +uri+:: URI of this WebPage
-    Contract URI => nil
-    def uri=(uri)
-      @uri = uri
-      nil
-    end
-
-    # Sets the WebPage's title
-    Contract String => nil
-    def title=(title)
       @title = title
       nil
     end
@@ -140,6 +207,7 @@ struct_event(category,
   end
 
   # Contract synonyms
+  Event = Or[StructEvent, UnstructEvent]
   OptionWebPage = Or[WebPage, nil]
 
 end

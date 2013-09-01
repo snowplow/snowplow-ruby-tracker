@@ -39,7 +39,7 @@ module Snowplow
     Contract Or[Collector, Collectors] => Tracker
     def initialize(collectors)
 
-      @collectors = Array(collectors) # Turn to array if single Collector
+      @collectors = Array(collectors) # To array if not already
       @collector_hash = build_hash_of(@collectors)
       @encode_base64 = @@default_encode_base64
       
@@ -70,9 +70,6 @@ module Snowplow
       @base64_encode = base64_encode
       nil
     end
-
-    # Spawn a new Subject attached to this Tracker.
-    # 
 
     private
 
