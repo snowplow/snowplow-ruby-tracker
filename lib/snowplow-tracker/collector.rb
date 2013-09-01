@@ -36,8 +36,7 @@ module Snowplow
   class Collector
 
     attr_reader :tag,
-                :endpoint_uri,
-                :http_method
+                :endpoint_uri
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)
@@ -87,7 +86,7 @@ module Snowplow
     # +host+:: the host name of the collector
     #
     # Returns the collector URI
-    Contract String => String
+    Contract String => URI
     def Collector.to_endpoint_uri(host)
       URI("http://#{host}/i")
     end
