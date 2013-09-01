@@ -19,12 +19,6 @@ include Contracts
 
 module Snowplow
 
-  # Parent class for any entity which is the Subject or Object (Direct,
-  # Indirect, Prepositional) of a Snowplow event
-  class Entity
-
-  end
-
   # A sales order, aka an ecommerce transaction.
   # Is the Direct Object of a track_sales_order event.
   # Inherits from Entity
@@ -144,5 +138,8 @@ struct_event(category,
     end
 
   end
+
+  # Contract synonyms
+  OptionWebPage = Or[WebPage, nil]
 
 end

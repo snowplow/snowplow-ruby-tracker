@@ -20,21 +20,11 @@ module Snowplow
 
   # Validates the hash passed to the constructor
   # of a new Collector
-  class CollectorEndpoint
+  class EndpointHash
     def self.valid?(val)
       val.is_a? Hash &&
         val.length == 1 &&
-        (val.has_key? "uri" || val.has_key? "cf_subdomin")
-    end
-  end
-
-  # Validates the HTTP method used to send to
-  # the Collector
-  class CollectorHttpMethod
-    @@valid_methods = Set.new(:get)
-
-    def self.valid?(val)
-      @@valid_methods.include?(val)
+        (val.has_key? "host" || val.has_key? "cf")
     end
   end
 
@@ -42,10 +32,9 @@ module Snowplow
   # events to
   class Collector
 
-    attr_accessor :tag
-    attr_reader   :endpoint_uri, # writer implemented manually
-                  :http_method   # writer implemented manually
-    # We'll add the setters manually with contracts
+    attr_reader   :tag,
+                  :endpoint_uri,
+                  :http_method
 
     # Constructor for a new Snowplow Collector. Supports
     # 1) Snowplow Collectors on any domain (:host => x)
@@ -57,11 +46,9 @@ module Snowplow
     #         decide which Collector to send events to
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
-    # TODO
-    Contract CollectorTag, CollectorEndpoint => Collector
+    Contract Symbol, EndpointHash => Collector
     def initialize(tag, endpoint)
       @tag = tag
-      @http_method = http_method
 
       host = endpoint["host"] || to_host(endpoint["cf"])
       set_host_endpoint(host)
@@ -75,6 +62,7 @@ module Snowplow
     Contract String => nil
     def set_cf_endpoint(cf_subdomain)
       @endpoint_uri = to_endpoint_uri(to_host(cf_subdomain))
+      nil
     end
 
     # Manually set the Collector's endpoint to any host

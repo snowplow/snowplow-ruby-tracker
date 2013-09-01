@@ -13,24 +13,52 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
-require 'set'
 require 'contracts'
 include Contracts
 
 module Snowplow
 
-  # Type synonyms
+  # Common synonyms
   OptionString = Or[String, nil]
-  CollectorTag = Or[String, Symbol]
+  Epoch = Int
 
-  # Validate a number is an integer
+  # Validate is an integer
   class Int
     def self.valid?(val)
       val.is_a? Integer
     end
   end
 
-  # Validate a number is a positive integer
+  # Validate is a positive integer
   PosInt = And[Pos, Int]
+  OptionPosInt = Or[PosInt, nil]
+
+  # Payloadable contains helper
+  # methods for escaping values
+  # as part of a Snowplow payload
+  class Payload
+
+    # Skeleton for 
+    # Must be overridden in a child class
+    def to_payload()
+      raise "to_payload() must be implemented in any Payload subclass"
+    end
+
+    # TODO
+
+    # TODO
+
+    # TODO
+  end
+
+  # Parent class for any entity which is the Subject
+  # or Object (Direct, Indirect, Prepositional) of a
+  # Snowplow event.
+  #
+  # Inherits from Payload, as all entities must be
+  # convertable to payload.
+  class Entity < Payload
+
+  end
 
 end

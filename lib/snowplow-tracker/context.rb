@@ -27,9 +27,18 @@ module Snowplow
     end
   end
 
+  # Check we have a valid Context hash.
+  # Must contain a platform - all other
+  # elements are optional
+  class ContextHash
+    def self.valid?(val)
+      val.is_a? Hash &&
+        val.has_key?("p")
+    end
+  end
+
   # Contract synonyms
   OptionPlatform = Or[Platform, nil]
-  Epoch = Int
 
   # Stores a width x height tuple. Used to express
   # screen resolution, app viewport etc
@@ -37,7 +46,6 @@ module Snowplow
 
     attr_reader :width,
                 :height
-    # We'll add the setters manually with contracts
 
     # Constructor for a pair of view dimensions
     #
@@ -82,9 +90,12 @@ module Snowplow
 
   end
 
+  # Contract synonyms
+  OptionViewDimensions = Or[ViewDimensions, nil]
+
   # Stores the Context which encapsulates a Snowplow
   # event.
-  class Context
+  class Context < Payload
 
     @@default_platform = "pc"
 
@@ -93,10 +104,7 @@ module Snowplow
                 :screen_resolution,
                 :viewport,
                 :color_depth,
-                :web_page,
-                :frozen_timestamp
-    # We'll add the setters manually with contracts
-    # :timestamp is got manually too
+                :web_page
 
     # Constructor for a new event Context.
     # platform must be set in this constructor
@@ -104,22 +112,41 @@ module Snowplow
     # platform.
     #
     # Parameters:
-    # +platform+:: the device platform in which
-    #              this Context is taking place 
-    Contract OptionPlatform => Context
-    def initialize(platform=@@default_platform)
+    # +platform+:: the device platform in which this
+    #              Context is taking place. Defaults to pc
+    # +app_id+:: the application ID
+    # +screen_resolution+:: the user's screen resolution
+    # +viewport+:: the screen space taken up by this app
+    # +color_depth+:: screen's color depth
+    # +web_page+:: the web page this Context occurred on
+    # +time+:: the time to set this Context to
+    Contract OptionPlatform, OptionString, OptionViewDimensions, OptionViewDimensions, OptionPosInt, OptionWebPage, OptionEpoch => Context
+    def initialize(platform=@@default_platform,
+                   app_id=nil,
+                   screen_resolution=nil,
+                   viewport=nil,
+                   color_depth=nil,
+                   web_page=nil,
+                   freeze_time_at=nil
+                   )
       @platform = platform
+      @app_id = app_id
+      @screen_resolution = screen_resolution
+      @viewport = viewport
+      @color_depth = color_depth
+      @web_page = web_page
+      @frozen_time = freeze_time_at
     end
 
     # Creates a copy of this Context with the
     # time modified as supplied
     #
     # Parameters:
-    # +timestamp+:: the time to set this Context to
+    # +time+:: the time to set this Context to
     Contract Epoch => Context
-    def at(timestamp)
+    def at(time)
       self.dup.tap do |ctx| 
-        ctx.frozen_timestamp = timestamp
+        ctx.frozen_time = time
       end
     end
 
@@ -140,27 +167,43 @@ module Snowplow
     # Returns either now, or the frozen time,
     # if this Context's time was frozen
     Contract => Epoch
-    def timestamp
-      @frozen_timestamp || Time.now
+    def time
+      @frozen_time || Time.now
+    end
+
+    # Has the time of this Context been
+    # frozen?
+    #
+    Contract => Boolean
+    def time_frozen?
+      !frozen_time.nil?
     end
 
     # Sets a point in time when this Context
     # was frozen. All events subsequently tagged
-    # with this Context are timestamped with
-    # this "frozen time".
+    # with this Context are timeed with
+    # this "frozen time", rather than the time at
+    # which this event was created in Ruby.
     #
     # Parameters:
-    # +timestamp+:: the time to set this Context to
+    # +time+:: the time to set this Context to
     Contract Int => nil
-    def frozen_timestamp=(timestamp)
-      @frozen_timestamp = timestamp
+    def freeze_time_at(time)
+      @frozen_time = time
       nil
     end
 
-    # Sets the Page on which this event is
+    # Sets the WebPage on which this event is
     # occurring
     #
-    # TODO
+    # Parameters:
+    # +web_page+:: the web page on which this
+    #              event is occurring
+    Contract WebPage => nil
+    def web_page=(web_page)
+      @web_page = web_page
+      nil
+    end
 
     # Setter for platform property i.e. the
     # platform on which this tracker is running
@@ -174,10 +217,10 @@ module Snowplow
       nil
     end
 
-    # Setter for application ID
+    # Setter for the application ID
     #
     # Parameters:
-    # +app_id+:: application ID
+    # +app_id+:: the application ID
     Contract String => nil
     def app_id=(app_id)
       @app_id = app_id
@@ -205,10 +248,10 @@ module Snowplow
       nil
     end
 
-    # Setter for color depth
+    # Setter for screen's color depth
     #
     # Parameters:
-    # +color_depth+:: color depth
+    # +color_depth+:: screen's color depth
     Contract PosInt => nil
     def color_depth=(color_depth)
       @color_depth = color_depth
@@ -220,7 +263,17 @@ module Snowplow
     # Tracker Protocol:
     # XXX
     #
-    # NOTE: unlike with the other trackers
+    # Returns a Hash containing all the
+    # name:value pairs. Individual values are
+    # escaped as required by the Snowplow
+    # Tracker Protocol
+    Contract => ContextHash
+    def to_payload()
+      Hash.new.tap do |p|
+        p.
+      end
+    end
+
   end
 
 end
