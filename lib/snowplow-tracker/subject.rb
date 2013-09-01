@@ -132,7 +132,7 @@ module Snowplow
       end
     end
 
-    # Track a page view event.
+    # Subject views a web page.
     #
     # WARNING: all the Web's tiers of caching mean
     # that relying on your web server to track
@@ -152,9 +152,8 @@ module Snowplow
       nil # TODO: fix return
     end
 
-    # Track a sales order - referred to as an
-    # ecommerce transaction in other Snowplow
-    # trackers.
+    # Subject places a sales order - referred to as an
+    # ecommerce transaction in other Snowplow trackers.
     #
     # +sales_order+:: the sales order to track,
     #                 including order line items
