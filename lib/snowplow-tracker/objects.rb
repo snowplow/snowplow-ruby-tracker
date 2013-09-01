@@ -116,7 +116,6 @@ module Snowplow
       @items = Array(items) # To array if not already
     end
 
-
     # TODO: implement
     def to_payload()
 
@@ -168,6 +167,11 @@ module Snowplow
       @value = value
     end
 
+    # TODO: implement
+    def to_payload()
+
+    end
+
   end
 
   # A MixPanel- or KISSmetrics-style custom
@@ -191,12 +195,16 @@ module Snowplow
       @properties = properties
     end
 
+    # TODO: implement
+    def to_payload()
+
+    end
+
   end
 
-  # A web page. Used variously as a
-  # Direct Object (page view),
-  # Prepositional Object (page ping)
-  # or as Context (ecommerce events).
+  # A web page. Used as an Object
+  # (page view) but also as Context
+  # (page pings, ecommerce events etc).
   # Inherits from Entity
   class WebPage < Entity
 
@@ -215,6 +223,11 @@ module Snowplow
       @uri = uri
       @title = title
       nil
+    end
+
+    # TODO: implement
+    def to_payload()
+
     end
 
   end
