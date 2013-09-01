@@ -85,7 +85,16 @@ module Snowplow
     # transaction
     #
     # TODO
-    Contract String, OptionString, Num, Num, Num, OptionString, OptionString, OptionString, Or[SalesOrderItem, SalesOrderItems] => SalesOrder
+    Contract String,
+             OptionString,
+             Num,
+             Num,
+             Num,
+             OptionString,
+             OptionString,
+             OptionString,
+             Or[SalesOrderItem, SalesOrderItems]
+             => SalesOrder
     def initialize(order_id, 
                    affiliation=nil,
                    total,
@@ -140,7 +149,12 @@ module Snowplow
     #              be the quantity of an item added to basket
     # +value+:: an optional value that you can use to provide
     #           numerical data about the user event
-    Contract String, String, OptionString, OptionString, OptionNum => StructEvent
+    Contract String,
+             String,
+             OptionString,
+             OptionString,
+             OptionNum
+             => StructEvent
     def initialize(category,
                    action,
                    label=nil,
@@ -171,8 +185,7 @@ module Snowplow
     # +name+:: the name of the event
     # +properties+:: the properties of the event
     Contract String, Hash => UnstructEvent
-    def initialize(name,
-                   properties)
+    def initialize(name, properties)
 
       @name = name
       @properties = properties
