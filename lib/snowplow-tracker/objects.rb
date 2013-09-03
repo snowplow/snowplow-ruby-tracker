@@ -133,7 +133,7 @@ module Snowplow
         add('tr_ci', @city),
         add('tr_st', @state),
         add('tr_co', @country)
-        )
+      )
     end
 
   end
@@ -190,7 +190,7 @@ module Snowplow
         add('se_la', @label),
         add('se_pr', @property),
         add('se_va', @value)
-        )
+      )
     end
 
   end
@@ -222,7 +222,7 @@ module Snowplow
         add('ue_na', @name),
         add('ue_pr', @properties), # We add both versions - the Tracker can decide which to use
         addBase64('ue_px', @properties)
-        )
+      )
     end
 
   end
