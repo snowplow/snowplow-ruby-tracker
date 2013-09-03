@@ -211,7 +211,6 @@ module Snowplow
     # +properties+:: the properties of the event
     Contract String, Hash => UnstructEvent
     def initialize(name, properties)
-
       @name = name
       @properties = properties
     end
@@ -247,7 +246,6 @@ module Snowplow
     def initialize(uri, title=nil)
       @uri = uri
       @title = title
-      nil
     end
 
     # TODO: implement
