@@ -52,7 +52,6 @@ module Snowplow
       @category = category
       @price = price
       @quantity = quantity
-
     end
 
     # TODO: implement
@@ -135,7 +134,6 @@ module Snowplow
         add('tr_st', @state),
         add('tr_co', @country)
         )
-
     end
 
   end
