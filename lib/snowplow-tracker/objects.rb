@@ -56,8 +56,15 @@ module Snowplow
     end
 
     # TODO: implement
-    def to_payload()
-
+    def to_payload_hash()
+      super(
+        add('ti_id', @order_id),
+        add('ti_sk', @sku),
+        add('ti_na', @name),
+        add('ti_ca', @category),
+        add('ti_pr', @price),
+        add('ti_qu', @quantity)
+      )
     end
 
   end 
@@ -117,7 +124,17 @@ module Snowplow
     end
 
     # TODO: implement
-    def to_payload()
+    def to_payload_hash()
+      super(
+        add('tr_id', @order_id),
+        add('tr_af', @affiliation),
+        add('tr_tt', @total),
+        add('tr_tx', @tax),
+        add('tr_sh', @shipping),
+        add('tr_ci', @city),
+        add('tr_st', @state),
+        add('tr_co', @country)
+        )
 
     end
 
@@ -168,8 +185,14 @@ module Snowplow
     end
 
     # TODO: implement
-    def to_payload()
-
+    def to_payload_hash()
+      super(
+        add('se_ca', @category),
+        add('se_ac', @action),
+        add('se_la', @label),
+        add('se_pr', @property),
+        add('se_va', @value)
+        )
     end
 
   end
@@ -196,8 +219,12 @@ module Snowplow
     end
 
     # TODO: implement
-    def to_payload()
-
+    def to_payload_hash()
+      super(
+        add('ue_na', @name),
+        add('ue_pr', @properties), # We add both versions - the Tracker can decide which to use
+        addBase64('ue_px', @properties)
+        )
     end
 
   end
@@ -226,8 +253,11 @@ module Snowplow
     end
 
     # TODO: implement
-    def to_payload()
-
+    def to_payload_hash()
+      super(
+        add('url', @uri), # Note url not uri
+        add('page', @title)
+      )
     end
 
   end

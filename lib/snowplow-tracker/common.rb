@@ -41,8 +41,8 @@ module Snowplow
 
     # Skeleton for 
     # Must be overridden in a child class
-    def to_payload()
-      raise "to_payload() must be implemented in any Payload subclass"
+    def to_payload_hash(*pairs)
+      {}.merge(pairs)
     end
 
     # TODO
