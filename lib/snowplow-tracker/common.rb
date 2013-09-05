@@ -21,9 +21,10 @@ module Snowplow
   # Common contract synonyms
   OptionString = Or[String, nil]
   OptionNum = Or[Num, nil]
+  OptionHash = Or[Hash, {}] # Note not nil
   Epoch = Int
 
-  # Validate is an integer
+  # Validate is an Integer
   class Int
     def self.valid?(val)
       val.is_a? Integer
@@ -34,22 +35,98 @@ module Snowplow
   PosInt = And[Pos, Int]
   OptionPosInt = Or[PosInt, nil]
 
+  # Validate is a Hash with single-element
+  class UnaryHash
+    def self.valid?(val)
+      val.is_a? Hash &&
+        val.length == 1
+    end
+  end
+
+  # More aliases
+  OptionUnaryHash = Or[UnaryHash, {}]
+
   # Payloadable contains helper
   # methods for escaping values
   # as part of a Snowplow payload
   class Payload
 
-    # Skeleton for 
-    # Must be overridden in a child class
+    # Converts a set of key => value
+    # pairs to a Hash, ready for
+    # inserting in our payload. Called
+    # by Payload's sub-classes to generate
+    # their payload Hash
+    #
+    # Parameters:
+    # +pairs+:: an Array of key => value
+    #           pairs and {}s
+    #
+    # Returns a single Hash of all key => value
+    # pairs. Could still be empty, {}
+    Contract Array[OptionUnaryHash] => OptionHash
     def to_payload_hash(*pairs)
       {}.merge(pairs)
     end
 
-    # TODO
+    # Creates a Hash consisting of a single
+    # key => value pair if the value is not
+    # nil. The value is URL-encoded.
+    #
+    # Parameters:
+    # +key+:: the key for this pair
+    # +value+:: the value for this pair
+    #
+    # Returns a Hash of a single key => value
+    # pair, or {}
+    Contract OptionKey, String => OptionUnaryHash
+    def add(key, value)
+      if value.nil?
+        {}
+      else
+        { key => encode(value) }
+      end
+    end
 
-    # TODO
+    # Creates a Hash consisting of a single
+    # key => value pair if the value is not
+    # nil. addRaw because the value is not
+    # URL-encoded.
+    #
+    # Parameters:
+    # +key+:: the key for this pair
+    # +value+:: the value for this pair
+    #
+    # Returns a Hash of a single key => value
+    # pair, or {}
+    Contract OptionKey, String => OptionUnaryHash
+    def addRaw(key, value)
+      if value.nil?
+        {}
+      else
+        { key => value }
+      end
+    end
 
-    # TODO
+    # Creates a Hash consisting of a single
+    # key => value pair if the value is not
+    # nil. addBase64 because the value is
+    # URL-safe-Base64-encoded.
+    #
+    # Parameters:
+    # +key+:: the key for this pair
+    # +value+:: the value for this pair
+    #
+    # Returns a Hash of a single key => value
+    # pair, or {}
+    Contract OptionKey, String => OptionUnaryHash
+    def addBase64(key, value)
+      if value.nil?
+        {}
+      else
+        { key => value }
+      end
+    end
+
   end
 
   # Parent class for any entity which is the Subject

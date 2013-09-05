@@ -268,10 +268,10 @@ module Snowplow
     # escaped as required by the Snowplow
     # Tracker Protocol
     Contract => ContextHash
-    def to_payload()
-      Hash.new.tap do |p|
-        p.
-      end
+    def to_payload_hash()
+      super(
+        
+      )
     end
 
   end
