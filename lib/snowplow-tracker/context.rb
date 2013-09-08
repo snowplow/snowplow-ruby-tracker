@@ -27,6 +27,9 @@ module Snowplow
     end
   end
 
+  # Contract synonyms
+  OptionPlatform = Or[Platform, nil]
+
   # Check we have a valid Context hash.
   # Must contain a platform - all other
   # elements are optional
@@ -37,62 +40,6 @@ module Snowplow
     end
   end
 
-  # Contract synonyms
-  OptionPlatform = Or[Platform, nil]
-
-  # Stores a width x height tuple. Used to express
-  # screen resolution, app viewport etc
-  class ViewDimensions
-
-    attr_reader :width,
-                :height
-
-    # Constructor for a pair of view dimensions
-    #
-    # Parameters:
-    # +width+:: width of user's screen in pixels
-    # +height+:: height of user's screen in pixels
-    Contract PosInt, PosInt => ViewDimensions
-    def initialize(width, height)
-      @width = width
-      @height = height
-    end
-
-    # String representation of these
-    # view dimensions, in the format of the
-    # Snowplow Tracker Protocol
-    #
-    # Returns "heightxwidth"
-    Contract => String
-    def to_s
-      "#{@width}x#{@height}"  
-    end
-
-    # Sets the view width
-    #
-    # Parameters:
-    # +width+:: view width, a positive integer
-    Contract PosInt => nil
-    def width=(width)
-      @width = width
-      nil
-    end
-
-    # Sets the view height
-    #
-    # Parameters:
-    # +height+:: view height, a positive integer
-    Contract PosInt => nil
-    def height=(height)
-      @height = height
-      nil
-    end
-
-  end
-
-  # Contract synonyms
-  OptionViewDimensions = Or[ViewDimensions, nil]
-
   # Stores the Context which encapsulates an individual
   # Snowplow event.
   class Context < Payload
@@ -101,9 +48,11 @@ module Snowplow
 
     attr_reader :platform,
                 :app_id,
-                :screen_resolution,
+                :resolution,
                 :viewport,
                 :color_depth,
+                :timezone,
+                :language,
                 :web_page
 
     # Constructor for a new event Context.
@@ -115,15 +64,15 @@ module Snowplow
     # +platform+:: the device platform in which this
     #              Context is taking place. Defaults to pc
     # +app_id+:: the application ID
-    # +screen_resolution+:: the user's screen resolution
+    # +resolution+:: the user's screen resolution
     # +viewport+:: the screen space taken up by this app
     # +color_depth+:: screen's color depth
     # +web_page+:: the web page this Context occurred on
     # +time+:: the time to set this Context to
-    Contract OptionPlatform, OptionString, OptionViewDimensions, OptionViewDimensions, OptionPosInt, OptionWebPage, OptionEpoch => Context
+    Contract OptionPlatform, OptionString, OptionViewDimensions, OptionPosInt, OptionString, OptionWebPage, OptionEpoch => Context
     def initialize(platform=@@default_platform,
                    app_id=nil,
-                   screen_resolution=nil,
+                   resolution=nil,
                    viewport=nil,
                    color_depth=nil,
                    web_page=nil,
@@ -131,7 +80,7 @@ module Snowplow
                    )
       @platform = platform
       @app_id = app_id
-      @screen_resolution = screen_resolution
+      @resolution = resolution
       @viewport = viewport
       @color_depth = color_depth
       @web_page = web_page
@@ -232,8 +181,8 @@ module Snowplow
     # Parameters:
     # +view_dimensions+:: a ViewDimensions object
     Contract ViewDimensions => nil
-    def screen_resolution=(view_dimensions)
-      @screen_resolution = view_dimensions
+    def resolution=(view_dimensions)
+      @resolution = view_dimensions
       nil
     end
 
@@ -245,6 +194,17 @@ module Snowplow
     Contract ViewDimensions => nil    
     def viewport=(view_dimensions)
       @viewport = view_dimensions
+      nil
+    end
+
+    # Setter for document size, i.e. the total
+    # size of the document
+    #
+    # Parameters:
+    # +view_dimensions+:: a ViewDimensions object
+    Contract ViewDimensions => nil    
+    def doc_size=(view_dimensions)
+      @doc_size = view_dimensions
       nil
     end
 
@@ -270,7 +230,17 @@ module Snowplow
     Contract => ContextHash
     def to_payload_hash()
       super(
-        
+        addRaw('dtm', time),
+        addRaw('vp', viewport),
+        addRaw('ds', doc_size),
+        addRaw('res', ),
+        addRaw('cd', color_depth),
+        add('cs', doc_charset), # TODO: implement
+        add('p', platform),
+        add('aid', app_id),
+        add('lang', language),
+        add('', )
+
       )
     end
 

@@ -233,7 +233,9 @@ module Snowplow
   class WebPage < Entity
 
     attr_reader :uri,
-                :title
+                :title,
+                :size,
+                :charset
 
     # Constructor for a new WebPage.
     # The URI of the WebPage must be set.
@@ -242,17 +244,20 @@ module Snowplow
     # +uri+:: URI of this WebPage
     # +title+:: title of this WebPage (i.e. <TITLE>
     #           or customized version of same)
-    Contract URI, OptionString => WebPage
-    def initialize(uri, title=nil)
+    Contract URI, OptionString, OptionViewDimensions, OptionString => WebPage
+    def initialize(uri, title=nil, size=nil, charset=nil)
       @uri = uri
       @title = title
+      @size = size
+      @charset = charset
     end
 
     # TODO: implement
     def to_payload_hash()
       super(
         add('url', @uri), # Note url not uri
-        add('page', @title)
+        add('page', @title),
+        
       )
     end
 

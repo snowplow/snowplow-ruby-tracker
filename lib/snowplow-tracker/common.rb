@@ -46,6 +46,59 @@ module Snowplow
   # More aliases
   OptionUnaryHash = Or[UnaryHash, {}]
 
+  # Stores a width x height tuple. Used to express
+  # screen resolution, app viewport etc
+  class ViewDimensions
+
+    attr_reader :width,
+                :height
+
+    # Constructor for a pair of view dimensions
+    #
+    # Parameters:
+    # +width+:: width of user's screen in pixels
+    # +height+:: height of user's screen in pixels
+    Contract PosInt, PosInt => ViewDimensions
+    def initialize(width, height)
+      @width = width
+      @height = height
+    end
+
+    # String representation of these
+    # view dimensions, in the format of the
+    # Snowplow Tracker Protocol
+    #
+    # Returns "heightxwidth"
+    Contract => String
+    def to_s
+      "#{@width}x#{@height}"  
+    end
+
+    # Sets the view width
+    #
+    # Parameters:
+    # +width+:: view width, a positive integer
+    Contract PosInt => nil
+    def width=(width)
+      @width = width
+      nil
+    end
+
+    # Sets the view height
+    #
+    # Parameters:
+    # +height+:: view height, a positive integer
+    Contract PosInt => nil
+    def height=(height)
+      @height = height
+      nil
+    end
+
+  end
+
+  # Contract synonyms
+  OptionViewDimensions = Or[ViewDimensions, nil]
+
   # Payloadable contains helper
   # methods for escaping values
   # as part of a Snowplow payload
