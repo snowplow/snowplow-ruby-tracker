@@ -13,16 +13,19 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
+require 'uri'
+require 'base64'
+
 require 'contracts'
 include Contracts
 
 module Snowplow
 
   # Common contract synonyms
+  Epoch = Int
   OptionString = Or[String, nil]
   OptionNum = Or[Num, nil]
   OptionHash = Or[Hash, {}] # Note not nil
-  Epoch = Int
 
   # Validate is an Integer
   class Int
@@ -136,7 +139,7 @@ module Snowplow
       if value.nil?
         {}
       else
-        { key => encode(value) }
+        { key => escape(value) }
       end
     end
 
@@ -176,8 +179,34 @@ module Snowplow
       if value.nil?
         {}
       else
-        { key => value }
+        { key => base64(value) }
       end
+    end
+
+    private
+
+    # Wrapper around a URL-safe escape
+    # aka encode.
+    #
+    # Parameters:
+    # +str+:: the string to URL-escape
+    #
+    # Returns the URL-escaped string
+    Contract String => String
+    def escape(str)
+      URI.escape(str, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+    end
+
+    # Wrapper around a URL-safe Base64
+    # encode.
+    #
+    # Parameters:
+    # +str+:: the string to Base64-encode
+    #
+    # Returns the Base64-encoded string
+    Contract String => String
+    def base64(str)
+      Base64.urlsafe_encode64(str)
     end
 
   end

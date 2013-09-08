@@ -14,6 +14,7 @@
 # License::   Apache License Version 2.0
 
 require 'uri'
+
 require 'contracts'
 include Contracts
 
@@ -182,7 +183,13 @@ module Snowplow
       @value = value
     end
 
-    # TODO: implement
+    # Converts this Object into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # xxx
+    #
+    # Returns the Hash of all entity properties
     def to_payload_hash()
       super(
         add('se_ca', @category),
@@ -218,8 +225,8 @@ module Snowplow
     # TODO: implement
     def to_payload_hash()
       super(
-        add('ue_na', @name),
-        add('ue_pr', @properties), # We add both versions - the Tracker can decide which to use
+        add('ue_na',       @name),
+        add('ue_pr',       @properties), # We add both versions - the Tracker can decide which to use
         addBase64('ue_px', @properties)
       )
     end
@@ -255,9 +262,10 @@ module Snowplow
     # TODO: implement
     def to_payload_hash()
       super(
-        add('url', @uri), # Note url not uri
+        add('url',  @uri), # Note url not uri
         add('page', @title),
-        
+        add('ds',   @size),
+        add('cs',   @charset)
       )
     end
 
