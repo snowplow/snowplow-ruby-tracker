@@ -128,7 +128,7 @@ module Snowplow
       elsif event.is_a? UnstructEvent
         performs_unstruct_event(event, context)
       else # Should never happen
-        raise "performs must be passed either a StructEvent or UnstructEvent"
+        raise Snowplow::Exceptions::UnrecognizedEventType.new
       end
     end
 

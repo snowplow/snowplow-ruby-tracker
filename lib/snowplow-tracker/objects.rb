@@ -55,15 +55,21 @@ module Snowplow
       @quantity = quantity
     end
 
-    # TODO: implement
-    def to_payload_hash()
+    # Converts this Object into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    def to_protocol()
       super(
-        add('ti_id', @order_id),
-        add('ti_sk', @sku),
-        add('ti_na', @name),
-        add('ti_ca', @category),
-        add('ti_pr', @price),
-        add('ti_qu', @quantity)
+        [ 'ti_id', @order_id ],
+        [ 'ti_sk', @sku      ],
+        [ 'ti_na', @name     ],
+        [ 'ti_ca', @category ],
+        [ 'ti_pr', @price    ],
+        [ 'ti_qu', @quantity ]
       )
     end
 
@@ -123,17 +129,23 @@ module Snowplow
       @items = Array(items) # To array if not already
     end
 
-    # TODO: implement
-    def to_payload_hash()
+    # Converts this Object into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    def to_protocol()
       super(
-        add('tr_id', @order_id),
-        add('tr_af', @affiliation),
-        add('tr_tt', @total),
-        add('tr_tx', @tax),
-        add('tr_sh', @shipping),
-        add('tr_ci', @city),
-        add('tr_st', @state),
-        add('tr_co', @country)
+        [ 'tr_id', @order_id    ],
+        [ 'tr_af', @affiliation ],
+        [ 'tr_tt', @total       ],
+        [ 'tr_tx', @tax         ],
+        [ 'tr_sh', @shipping    ],
+        [ 'tr_ci', @city        ],
+        [ 'tr_st', @state       ],
+        [ 'tr_co', @country     ]
       )
     end
 
@@ -187,16 +199,16 @@ module Snowplow
     # properties, ready for adding to the payload.
     # Follows the Snowplow Tracker Protocol:
     #
-    # xxx
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
-    # Returns the Hash of all entity properties
-    def to_payload_hash()
+    # Returns the Hash of all this entity's properties
+    def to_protocol()
       super(
-        add('se_ca', @category),
-        add('se_ac', @action),
-        add('se_la', @label),
-        add('se_pr', @property),
-        add('se_va', @value)
+        [ 'se_ca', @category ],
+        [ 'se_ac', @action   ],
+        [ 'se_la', @label    ],
+        [ 'se_pr', @property ],
+        [ 'se_va', @value    ]
       )
     end
 
@@ -222,16 +234,25 @@ module Snowplow
       @properties = properties
     end
 
-    # TODO: implement
-    def to_payload_hash()
+    # Converts this Object into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    def to_protocol()
       super(
-        add('ue_na',       @name),
-        add('ue_pr',       @properties), # We add both versions - the Tracker can decide which to use
-        addBase64('ue_px', @properties)
+        [ 'ue_na', @name       ],
+        [ 'ue_pr', @properties ], # We add both versions - the Tracker can decide which to use
+        [ 'ue_px', @properties, :base64 ]
       )
     end
 
   end
+
+  # Contract synonyms
+  Event = Or[StructEvent, UnstructEvent]
 
   # A web page. Used as an Object
   # (page view) but also as Context
@@ -259,20 +280,25 @@ module Snowplow
       @charset = charset
     end
 
-    # TODO: implement
-    def to_payload_hash()
+    # Converts this Object into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    def to_protocol()
       super(
-        add('url',  @uri), # Note url not uri
-        add('page', @title),
-        add('ds',   @size),
-        add('cs',   @charset)
+        [ 'url',  @uri     ], # Note url not uri
+        [ 'page', @title   ],
+        [ 'ds',   @size    ],
+        [ 'cs',   @charset ]
       )
     end
 
   end
 
   # Contract synonyms
-  Event = Or[StructEvent, UnstructEvent]
   OptionWebPage = Or[WebPage, nil]
 
 end

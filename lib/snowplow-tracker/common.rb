@@ -102,7 +102,7 @@ module Snowplow
   # Contract synonyms
   OptionViewDimensions = Or[ViewDimensions, nil]
 
-  # Payloadable contains helper
+  # Payload contains helper
   # methods for escaping values
   # as part of a Snowplow payload
   class Payload
@@ -120,9 +120,11 @@ module Snowplow
     # Returns a single Hash of all key => value
     # pairs. Could still be empty, {}
     Contract Array[OptionUnaryHash] => OptionHash
-    def to_payload_hash(*pairs)
+    def to_protocol(*pairs)
       {}.merge(pairs)
     end
+
+    private
 
     # Creates a Hash consisting of a single
     # key => value pair if the value is not
@@ -182,8 +184,6 @@ module Snowplow
         { key => base64(value) }
       end
     end
-
-    private
 
     # Wrapper around a URL-safe escape
     # aka encode.
