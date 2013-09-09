@@ -15,14 +15,11 @@
 
 module Snowplow
 
-  # Parent class for any entity which is the Subject
-  # or Object (Direct, Indirect, Prepositional) of a
-  # Snowplow event, or potentially (in the case of
-  # WebPage) part of the Context.
+  # Parent class for any Verb.
   #
-  # Inherits from GrammarElement, as all entities must be
+  # Inherits from GrammarElement, as all verbs must be
   # convertable to Snowplow Tracker Protocol.
-  class Entity < GrammarElement
+  class Verb < GrammarElement
 
   end
 

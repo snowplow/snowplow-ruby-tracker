@@ -13,17 +13,9 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
+require 'contracts'
+include Contracts
+
 module Snowplow
 
-  # Parent class for any entity which is the Subject
-  # or Object (Direct, Indirect, Prepositional) of a
-  # Snowplow event, or potentially (in the case of
-  # WebPage) part of the Context.
-  #
-  # Inherits from GrammarElement, as all entities must be
-  # convertable to Snowplow Tracker Protocol.
-  class Entity < GrammarElement
-
-  end
-
-end
+  
