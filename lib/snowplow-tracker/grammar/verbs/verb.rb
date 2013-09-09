@@ -15,11 +15,19 @@
 
 module Snowplow
 
-  # Parent class for any Verb.
+  # Check we have a valid Verb Hash.
   #
-  # Inherits from GrammarElement, as all verbs must be
-  # convertable to Snowplow Tracker Protocol.
-  class Verb < GrammarElement
+  # Must contain:
+  # 1. platform ("p")
+  # 2. time ("dtm")
+  #
+  # All other elements are optional
+  VerbHash = And[UnaryHash, ({:e => String})]
+
+  # All of our available Verbs
+  module Verbs
+
+  	include Views
 
   end
 

@@ -49,40 +49,6 @@ module Snowplow
       end
     end
 
-    # Subject views a web page.
-    #
-    # WARNING: all the Web's tiers of caching mean
-    # that relying on your web server to track
-    # page views is almost always a BAD IDEA.
-    # Use the Snowplow JavaScript Tracker instead:
-    # https://github.com/snowplow/snowplow-javascript-tracker
-    #
-    # +web_page+:: the WebPage the user is viewing
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    #
-    # Returns ??
-    Contract WebPage, OptionContext => nil # TODO: fix return
-    def views(web_page,
-              context)
-
-      nil # TODO: fix return
-    end
-
-    # Subject places a sales order - referred to as an
-    # ecommerce transaction in other Snowplow trackers.
-    #
-    # +sales_order+:: the sales order to track,
-    #                 including order line items
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    Contract SalesOrder, OptionContext => nil # TODO: fix return
-    def places(sales_order,
-               context)                    
-
-      nil # TODO: fix return
-    end
-
     private
 
     # Subject performs a Google Analytics-style custom structured event.

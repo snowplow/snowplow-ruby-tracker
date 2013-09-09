@@ -51,7 +51,7 @@ module Snowplow
   #
   # Includes methods to URL-escape and Base64-encode
   # the individual fields.
-  class GrammarElement
+  module GrammarElement
 
     # Converts an Array of ProtocolTuples to a Hash,
     # ready for inserting in our payload. Called
@@ -67,6 +67,7 @@ module Snowplow
       hashes = tuples.map( |t| to_unary_hash(t) )
       {}.merge(hashes)
     end
+    module_function :to_protocol
 
     private
 

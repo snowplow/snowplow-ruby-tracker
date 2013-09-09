@@ -50,7 +50,7 @@ module Snowplow
   # tracker to be running on
   class Platform
 
-    @@valid_platforms = Set.new(:web, :pc, :tv, :mob, :cnsl, :iot))
+    @@valid_platforms = Set::[](:web, :pc, :tv, :mob, :cnsl, :iot)
     @@default = :pc
 
     def self.valid?(val)

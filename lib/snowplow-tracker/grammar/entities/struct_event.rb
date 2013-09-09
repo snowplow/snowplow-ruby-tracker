@@ -31,6 +31,7 @@ module Snowplow
 
     # Constructor for a new custom structured event
     #
+    # Parameters:
     # +category+:: the name you supply for the group of
     #              objects you want to track
     # +action+:: a string that is uniquely paired with each

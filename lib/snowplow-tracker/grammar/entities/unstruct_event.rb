@@ -30,6 +30,7 @@ module Snowplow
 
     # Constructor for a new custom unstructured event
     #
+    # Parameters:
     # +name+:: the name of the event
     # +properties+:: the properties of the event
     Contract String, Hash => UnstructEvent

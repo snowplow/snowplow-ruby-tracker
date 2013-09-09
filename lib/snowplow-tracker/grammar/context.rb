@@ -18,20 +18,14 @@ include Contracts
 
 module Snowplow
 
-  # Check we have a valid Context hash.
+  # Check we have a valid Context Hash.
   #
   # Must contain:
   # 1. platform ("p")
   # 2. time ("dtm")
   #
   # All other elements are optional
-  class ContextProtocol
-    def self.valid?(val)
-      val.is_a? Hash &&
-        val.has_key?("p") &&
-        val.has_key?("dtm")
-    end
-  end
+  ContextHash = ({ :p => String, :dtm => String })
 
   # Stores the Context which encapsulates an individual
   # Snowplow event.
