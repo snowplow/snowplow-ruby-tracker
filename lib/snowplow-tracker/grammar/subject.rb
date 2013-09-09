@@ -25,7 +25,10 @@ module Snowplow
   # Verbs module brought in via include.
   class Subject < User
 
-    include Verbs
+  	# Supported verbs
+  	include Views
+    include Places
+    include Performs
 
   end
 

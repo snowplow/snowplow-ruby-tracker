@@ -55,8 +55,8 @@ module Snowplow
     #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
-    def to_protocol()
-      super(
+    def as_hash()
+      to_protocol(
         [ 'url',  @uri     ], # Note url not uri
         [ 'page', @title   ],
         [ 'ds',   @size    ],

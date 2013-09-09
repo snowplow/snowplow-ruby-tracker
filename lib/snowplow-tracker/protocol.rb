@@ -51,7 +51,7 @@ module Snowplow
   #
   # Includes methods to URL-escape and Base64-encode
   # the individual fields.
-  module Grammar
+  module Protocol
 
     # Converts an Array of ProtocolTuples to a Hash,
     # ready for inserting in our payload. Called
@@ -63,11 +63,11 @@ module Snowplow
     # Returns a single Hash of all key => value
     # pairs. Could still be empty, {}
     Contract Array[ProtocolTuple] => OptionHash
-    def to_protocol(*tuples)
+    def as_hash(*tuples)
       hashes = tuples.map( |t| to_unary_hash(t) )
       {}.merge(hashes)
     end
-    module_function :to_protocol
+    module_function :as_hash
 
     private
 

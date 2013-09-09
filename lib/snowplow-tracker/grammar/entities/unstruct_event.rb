@@ -48,8 +48,8 @@ module Snowplow
     #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
-    def to_protocol()
-      super(
+    def as_hash()
+      to_protocol(
         [ 'ue_na', @name       ],
         [ 'ue_pr', @properties ], # We add both versions - the Tracker can decide which to use
         [ 'ue_px', @properties, :base64 ]

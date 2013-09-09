@@ -34,7 +34,7 @@ module Snowplow
   # slowly mutates as events happen.
   class Context
 
-    include Grammar
+    include Protocol
 
     attr_reader :platform,
                 :app_id,
@@ -198,27 +198,26 @@ module Snowplow
     end
 
     # Converts the current Context into a
-    # payload compatible with the Snowplow
-    # Tracker Protocol:
-    # XXX
+    # Hash representing the context.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns a Hash containing all the
-    # name:value pairs. Individual values are
-    # escaped as required by the Snowplow
-    # Tracker Protocol
+    # context's name => value pairs.
     Contract => ContextHash
-    def to_protocol()
-      super(
-        [ 'p', platform ], # Must be set
-        [ 'dtm', time(), :raw ], # Must be set
-        [ 'vp', viewport, :raw ],
-        [ 'res', resolution, :raw ],
-        [ 'cd', color_depth, :raw ],
-        [ 'p', platform ],
-        [ 'aid', app_id ],
-        [ 'lang', language ]
-
-        # TODO: how do we get webpage in here too?
+    def as_hash()
+      to_protocol(
+        [ 'p',    @platform          ], # Must be set
+        [ 'dtm',  time(),       :raw ], # Must be set
+        [ 'vp',   @viewport,    :raw ],
+        [ 'res',  @resolution,  :raw ],
+        [ 'cd',   @color_depth, :raw ],
+        [ 'p',    @platform          ],
+        [ 'aid',  @app_id            ],
+        [ 'lang', @language          ]
+      ).merge(
+        @web_page.as_hash()         # Add in WebPage
       )
     end
 

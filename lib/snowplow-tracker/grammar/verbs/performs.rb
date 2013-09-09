@@ -20,7 +20,7 @@ module Snowplow
 
   module Performs
 
-    include Grammar
+    include Protocol
 
     # Defines the valid Event Symbols
     class EventSymbol
@@ -45,10 +45,10 @@ module Snowplow
     #
     # Returns a VerbHash 
     EventSymbol => VerbHash
-    def to_protocol(ev_symbol)
-      super([ 'e', ev_symbol.to_s, :raw ])
+    def as_hash(ev_symbol)
+      to_protocol([ 'e', ev_symbol.to_s, :raw ])
     end
-    module_function :to_protocol
+    module_function :as_hash
 
     # Subject performs a custom event. Could be either:
     # 1. A Google Analytics-style custom structured event, or:
@@ -71,6 +71,7 @@ module Snowplow
       else # Should never happen thanks to Contracts
         raise Snowplow::Exceptions::ContractFailure.new
       end
+
     end
     module_function :performs
 

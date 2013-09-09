@@ -63,8 +63,8 @@ module Snowplow
     #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
-    def to_protocol()
-      super(
+    def as_hash()
+      to_protocol(
         [ 'TODO',  @todo    ]
       )
     end

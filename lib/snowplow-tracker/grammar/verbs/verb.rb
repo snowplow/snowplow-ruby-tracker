@@ -21,15 +21,4 @@ module Snowplow
   # "e" => String for event type.
   VerbHash = And[UnaryHash, ({:e => String})]
 
-  # All of our available Verbs
-  module Verbs
-
-  	include Views
-
-    include Places
-
-    include Performs
-
-  end
-
 end

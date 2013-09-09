@@ -61,8 +61,8 @@ module Snowplow
     #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
-    def to_protocol()
-      super(
+    def as_hash()
+      to_protocol(
         [ 'ti_id', @order_id ],
         [ 'ti_sk', @sku      ],
         [ 'ti_na', @name     ],
