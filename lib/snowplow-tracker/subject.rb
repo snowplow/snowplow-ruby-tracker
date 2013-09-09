@@ -23,79 +23,9 @@ module Snowplow
   OptionContext = Or[Context, nil]
 
   # The Subject of a Snowplow event.
-  # Inherits from Entity
-  class Subject < Entity
-
-    attr_reader :ip_address,
-                :business_user_id,
-                :domain_user_id,
-                :network_user_id
-
-    # Constructor for a new Subject.
-    # All fields are optional
-    #
-    # Parameters:
-    # +ip_address+:: user's IP address
-    # +business_user_id+:: user's business-defined ID
-    # +domain_user_id+:: user's ID stored by Snowplow
-    #                    on a first-party cookie
-    # +network_user_id+:: user's ID stored by Snowplow
-    #                     on a third-party cookie
-    Contract OptionString, OptionString, OptionString, OptionString => Subject
-    def initialize(ip_address=nil,
-                   business_user_id=nil,
-                   domain_user_id=nil,
-                   network_user_id=nil)
-
-      @ip_address = ip_address
-      @business_user_id = business_user_id
-      @domain_user_id = domain_user_id
-      @network_user_id = network_user_id
-
-      nil
-    end
-
-    # Sets the Subject's IP address
-    #
-    # Parameters:
-    # +ip_address+:: the Subject's IP address
-    Contract String => nil
-    def ip_address=(ip_address)
-      @ip_address = ip_address
-      nil
-    end
-
-    # Sets the Subject's business user ID
-    #
-    # Parameters:
-    # +user_id+:: the Subject's business user ID
-    Contract String => nil
-    def business_user_id=(user_id)
-      @business_user_id = user_id
-      nil
-    end
-
-    # Sets the Subject's domain user ID
-    #
-    # Parameters:
-    # +user_id+:: the Subject's domain user ID
-    Contract String => nil
-    def domain_user_id=(user_id)
-      @domain_user_id = user_id
-      nil
-    end
-
-    # Sets the Subject's network user ID.
-    #
-    # Note: it may be hard to acquire this
-    # on the server-side.
-    #
-    # Parameters:
-    # +user_id+:: the Subject's network user ID
-    def network_user_id=(user_id)
-      @network_user_id = user_id
-      nil
-    end
+  # Note that Snowplow currently has a limitation where the Subject
+  # of an event must be an Entity of type User.
+  class Subject < User
 
     # Subject performs a custom event. Could be either:
     # 1. A Google Analytics-style custom structured event, or:
@@ -186,23 +116,6 @@ module Snowplow
                  context=@pinned_context)
 
       nil # TODO: fix return
-    end
-
-    # Converts this Subject into a Hash of all its
-    # properties, ready for adding to the payload.
-    # Follows the Snowplow Tracker Protocol:
-    #
-    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
-    #
-    # Returns the Hash of all this entity's properties
-    Contract => OptionHash
-    def to_protocol()
-      super(
-        [ 'url',  @uri     ], # Note url not uri
-        [ 'page', @title   ],
-        [ 'ds',   @size    ],
-        [ 'cs',   @charset ]
-      )
     end
 
   end

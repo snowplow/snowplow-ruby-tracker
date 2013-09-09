@@ -23,7 +23,7 @@ module Snowplow
 
 	# ProtocolTuples take two forms - either:
   # 1. [ key, value ] - or:
-  # 2. [ key, value, encoding_modifier ]
+  # 2. [ key, value, encoding ]
   #
   # Supported encoding_modifiers are :raw and
   # :base64
@@ -32,9 +32,14 @@ module Snowplow
   # Ruby Contracts
   class ProtocolTuple
 
-    # TODO
-    # TODO
-    # TODO
+    @@encodings = Set.new(:raw, :escape, :base64)
+
+    # Validate this is a ProtocolTuple
+    def self.valid?(val)
+      val.is_a? Array &&
+        (val.length == 2 ||
+        (val.length == 3 && @@encodings.include?(val[2])))
+    end
 
   end
 
@@ -193,16 +198,6 @@ module Snowplow
     def base64(str)
       Base64.urlsafe_encode64(str)
     end
-
-  end
-
-  # Parent class for any entity which is the Subject
-  # or Object (Direct, Indirect, Prepositional) of a
-  # Snowplow event.
-  #
-  # Inherits from Protocol, as all entities must be
-  # convertable to Snowplow Tracker Protocol.
-  class Entity < Protocol
 
   end
 

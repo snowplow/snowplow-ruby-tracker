@@ -20,6 +20,69 @@ include Contracts
 
 module Snowplow
 
+  # Parent class for any entity which is the Subject
+  # or Object (Direct, Indirect, Prepositional) of a
+  # Snowplow event.
+  #
+  # Inherits from Protocol, as all entities must be
+  # convertable to Snowplow Tracker Protocol.
+  class Entity < Protocol
+
+  end
+
+  # A user. Typically used as the Subject of events;
+  # sometimes as the Object.
+  # Inherits from Entity
+  class User < Entity
+
+    attr_reader :ip_address,
+                :business_user_id,
+                :domain_user_id,
+                :network_user_id
+
+    # Constructor for a new User.
+    # All fields are individually optional
+    # but at least one must be set
+    #
+    # Parameters:
+    # +ip_address+:: user's IP address
+    # +business_user_id+:: user's business-defined ID
+    # +domain_user_id+:: user's ID stored by Snowplow
+    #                    on a first-party cookie
+    # +network_user_id+:: user's ID stored by Snowplow
+    #                     on a third-party cookie
+    Contract OptionString, OptionString, OptionString, OptionString => Subject
+    def initialize(ip_address=nil,
+                   business_user_id=nil,
+                   domain_user_id=nil,
+                   network_user_id=nil)
+
+      # TODO: add validation that at least one arg set
+
+      @ip_address = ip_address
+      @business_user_id = business_user_id
+      @domain_user_id = domain_user_id
+      @network_user_id = network_user_id
+
+      nil
+    end
+
+    # Converts this Subject into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    Contract => OptionHash
+    def to_protocol()
+      super(
+        [ 'TODO',  @todo    ]
+      )
+    end
+
+  end
+
   # A line item within a sales order: one or more units
   # of a single SKU.
   # Fields follow Google Analytics closely.  
