@@ -18,44 +18,42 @@ include Contracts
 
 module Snowplow
 
-  # A user. Typically used as the Subject of events;
-  # sometimes as the Object.
+  # A line item within a sales order: one or more units
+  # of a single SKU.
+  # Fields follow Google Analytics closely.  
   # Inherits from Entity.
-  class User < Entity
+  class TransactionItem < Entity
 
-    attr_reader :ip_address,
-                :business_user_id,
-                :domain_user_id,
-                :network_user_id
+    attr_reader :order_id,
+                :sku,
+                :name,
+                :category,
+                :price,
+                :quantity
 
-    # Constructor for a new User.
-    # All fields are individually optional
-    # but at least one must be set
+    # Constructor for a TransactionItem, i.e. a line
+    # item within a Transaction
     #
-    # Parameters:
-    # +ip_address+:: user's IP address
-    # +business_user_id+:: user's business-defined ID
-    # +domain_user_id+:: user's ID stored by Snowplow
-    #                    on a first-party cookie
-    # +network_user_id+:: user's ID stored by Snowplow
-    #                     on a third-party cookie
-    Contract OptionString, OptionString, OptionString, OptionString => Subject
-    def initialize(ip_address=nil,
-                   business_user_id=nil,
-                   domain_user_id=nil,
-                   network_user_id=nil)
+    # TODO
+    Contract String, OptionString, OptionString, OptionString, Num, Int => TransactionItem
+    def initialize(order_id,
+                   sku=nil,
+                   name=nil,
+                   category=nil,
+                   price,
+                   quantity)
 
-      # TODO: add validation that at least one arg set
+      # TODO: check at least one of sku and name is set
 
-      @ip_address = ip_address
-      @business_user_id = business_user_id
-      @domain_user_id = domain_user_id
-      @network_user_id = network_user_id
-
-      nil
+      @order_id = order_id
+      @sku      = sku
+      @name     = name
+      @category = category
+      @price    = price
+      @quantity = quantity
     end
 
-    # Converts this Subject into a Hash of all its
+    # Converts this Object into a Hash of all its
     # properties, ready for adding to the payload.
     # Follows the Snowplow Tracker Protocol:
     #
@@ -65,10 +63,18 @@ module Snowplow
     Contract => OptionHash
     def to_protocol()
       super(
-        [ 'TODO',  @todo    ]
+        [ 'ti_id', @order_id ],
+        [ 'ti_sk', @sku      ],
+        [ 'ti_na', @name     ],
+        [ 'ti_ca', @category ],
+        [ 'ti_pr', @price    ],
+        [ 'ti_qu', @quantity ]
       )
     end
 
-  end
+  end 
+
+  # Contract synonyms
+  TransactionItems = Array[TransactionItem]
 
 end

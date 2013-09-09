@@ -21,7 +21,7 @@ module Snowplow
   # A web page. Used as an Object
   # (page view) but also as Context
   # (page pings, ecommerce events etc).
-  # Inherits from Entity
+  # Inherits from Entity.
   class WebPage < Entity
 
     attr_reader :uri,

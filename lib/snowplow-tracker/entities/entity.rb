@@ -17,7 +17,8 @@ module Snowplow
 
   # Parent class for any entity which is the Subject
   # or Object (Direct, Indirect, Prepositional) of a
-  # Snowplow event.
+  # Snowplow event, or potentially (in the case of
+  # WebPage) part of the Context.
   #
   # Inherits from Protocol, as all entities must be
   # convertable to Snowplow Tracker Protocol.

@@ -13,82 +13,16 @@
 # Copyright:: Copyright (c) 2013 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
-require 'uri'
-
 require 'contracts'
 include Contracts
 
 module Snowplow
 
-  # A custom structured event.
-  # Fields follow Google Analytics closely.  
-  # Inherits from Entity
-  class StructEvent < Entity
-
-    attr_reader :category,
-                :action,
-                :label,
-                :property,
-                :value
-
-    # Constructor for a new custom structured event
-    #
-    # +category+:: the name you supply for the group of
-    #              objects you want to track
-    # +action+:: a string that is uniquely paired with each
-    #            category, and commonly used to define the
-    #            type of user interaction for the object
-    # +label+:: an optional string to provide additional
-    #           dimensions to the event data
-    # +property+:: an optional string describing the object
-    #              or the action performed on it. This might
-    #              be the quantity of an item added to basket
-    # +value+:: an optional value that you can use to provide
-    #           numerical data about the user event
-    Contract String,
-             String,
-             OptionString,
-             OptionString,
-             OptionNum
-             => StructEvent
-    def initialize(category,
-                   action,
-                   label=nil,
-                   property=nil,
-                   value=nil)
-
-      @category = category
-      @action   = action
-      @label    = label
-      @property = property
-      @value    = value
-    end
-
-    # Converts this Object into a Hash of all its
-    # properties, ready for adding to the payload.
-    # Follows the Snowplow Tracker Protocol:
-    #
-    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
-    #
-    # Returns the Hash of all this entity's properties
-    Contract => OptionHash
-    def to_protocol()
-      super(
-        [ 'se_ca', @category ],
-        [ 'se_ac', @action   ],
-        [ 'se_la', @label    ],
-        [ 'se_pr', @property ],
-        [ 'se_va', @value    ]
-      )
-    end
-
-  end
-
   # A MixPanel- or KISSmetrics-style custom
   # unstructured event, consisting of a name
   # and envelope of arbitrary name:value pairs
   # (represented as a Ruby hash).
-  # Inherits from Entity  
+  # Inherits from Entity.
   class UnstructEvent < Entity
 
     attr_reader :name,
