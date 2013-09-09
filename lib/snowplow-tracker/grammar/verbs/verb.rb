@@ -17,17 +17,18 @@ module Snowplow
 
   # Check we have a valid Verb Hash.
   #
-  # Must contain:
-  # 1. platform ("p")
-  # 2. time ("dtm")
-  #
-  # All other elements are optional
+  # Must contain a single element:
+  # "e" => String for event type.
   VerbHash = And[UnaryHash, ({:e => String})]
 
   # All of our available Verbs
   module Verbs
 
   	include Views
+
+    include Places
+
+    include Performs
 
   end
 

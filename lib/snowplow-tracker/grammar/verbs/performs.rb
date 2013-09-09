@@ -21,10 +21,35 @@ module Snowplow
   # The Subject of a Snowplow event.
   # Note that Snowplow currently has a limitation where the Subject
   # of an event must be an Entity of type User.
-  module Verbs
+  module Performs
 
-    # Contract synonyms
-    Event = Or[StructEvent, UnstructEvent]
+    # Defines the valid Event Symbols
+    class EventSymbol
+
+      @@valid_events = Set::[](:se, :ue)
+
+      def self.valid?(val)
+        val.is_a? Symbol &&
+          @@valid_events.include?(val)
+      end
+    end
+
+    # Converts this Verb into a Hash representing its
+    # event type, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Parameters:
+    # +ev_symbol+:: whether the Verb is referring to performing
+    #               a structured or unstructured event.
+    #
+    # Returns a VerbHash 
+    EventSymbol => VerbHash
+    def to_protocol(ev_symbol)
+      super([ 'e', ev_symbol.to_s, :raw ])
+    end
+    module_function :to_protocol
 
     # Subject performs a custom event. Could be either:
     # 1. A Google Analytics-style custom structured event, or:
@@ -35,9 +60,9 @@ module Snowplow
     #             takes place. Overrides any pinned Context
     #
     # Returns ??
-    Contract Event, OptionContext => nil # TODO: fix return
+    Contract Or[StructEvent, UnstructEvent], OptionContext => nil # TODO: fix return
     def performs(event,
-                 context)
+                 context=nil)
 
       # Switch based on type of event
       if event.is_a? StructEvent
@@ -48,6 +73,7 @@ module Snowplow
         raise Snowplow::Exceptions::ContractFailure.new
       end
     end
+    module_function :performs
 
     private
 
@@ -62,10 +88,11 @@ module Snowplow
     # Returns ??
     Contract StructEvent, OptionContext => nil # TODO: fix return
     def performs_struct_event(event,
-                 context)
+                              context=nil)
 
       nil # TODO: fix return
     end
+    module_function :performs_struct_event
 
     # Subject performs a MixPanel- or KISSmetrics-style custom unstructured event.
     # Procedure is private so public API can stick to using the cleaner
@@ -78,10 +105,11 @@ module Snowplow
     # Returns ??
     Contract UnstructEvent, OptionContext => nil # TODO: fix return
     def performs_unstruct_event(event,
-                 context)
+                                context=nil)
 
       nil # TODO: fix return
     end
+    module_function :performs_unstruct_event
 
   end
 end

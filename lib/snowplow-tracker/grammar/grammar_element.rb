@@ -43,7 +43,7 @@ module Snowplow
   end
 
 	# Entities (Subjects and Objects), Verbs and
-  # Context all extend GrammarElement.
+  # Context all mix-in Grammar.
   #
   # GrammarElement contains helper methods for
   # constructing a Hash which follows the Snowplow
