@@ -20,7 +20,6 @@ module Snowplow
 
   # Contract synonyms
   Event = Or[StructEvent, UnstructEvent]
-  OptionContext = Or[Context, nil]
 
   # The Subject of a Snowplow event.
   # Note that Snowplow currently has a limitation where the Subject
