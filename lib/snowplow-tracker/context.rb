@@ -18,33 +18,27 @@ include Contracts
 
 module Snowplow
 
-  # Check for valid tracker platform
-  class Platform
-    @@valid_platforms = Set.new(%w(web pc tv mob cnsl iot))
-
-    def self.valid?(val)
-      @@valid_platforms.include?(val)
-    end
-  end
-
-  # Contract synonyms
-  OptionPlatform = Or[Platform, nil]
-
   # Check we have a valid Context hash.
-  # Must contain a platform - all other
-  # elements are optional
-  class ContextHash
+  #
+  # Must contain:
+  # 1. platform ("p")
+  # 2. time ("dtm")
+  #
+  # All other elements are optional
+  class ContextProtocol
     def self.valid?(val)
       val.is_a? Hash &&
-        val.has_key?("p")
+        val.has_key?("p") &&
+        val.has_key?("dtm")
     end
   end
 
   # Stores the Context which encapsulates an individual
   # Snowplow event.
-  class Context < Payload
-
-    @@default_platform = "pc"
+  # We let Context be much more mutable than our Entities,
+  # because this fits the real-world better: context
+  # slowly mutates as events happen.
+  class Context < Protocol
 
     attr_reader :platform,
                 :app_id,
@@ -70,7 +64,7 @@ module Snowplow
     # +web_page+:: the web page this Context occurred on
     # +time+:: the time to set this Context to
     Contract OptionPlatform, OptionString, OptionViewDimensions, OptionPosInt, OptionString, OptionWebPage, OptionEpoch => Context
-    def initialize(platform=@@default_platform,
+    def initialize(platform=Platform.default,
                    app_id=nil,
                    resolution=nil,
                    viewport=nil,
@@ -197,17 +191,6 @@ module Snowplow
       nil
     end
 
-    # Setter for document size, i.e. the total
-    # size of the document
-    #
-    # Parameters:
-    # +view_dimensions+:: a ViewDimensions object
-    Contract ViewDimensions => nil    
-    def doc_size=(view_dimensions)
-      @doc_size = view_dimensions
-      nil
-    end
-
     # Setter for screen's color depth
     #
     # Parameters:
@@ -228,19 +211,18 @@ module Snowplow
     # escaped as required by the Snowplow
     # Tracker Protocol
     Contract => ContextHash
-    def to_payload_hash()
+    def to_protocol()
       super(
-        addRaw('dtm', time),
-        addRaw('vp', viewport),
-        addRaw('ds', doc_size),
-        addRaw('res', ),
-        addRaw('cd', color_depth),
-        add('cs', doc_charset), # TODO: implement
-        add('p', platform),
-        add('aid', app_id),
-        add('lang', language),
-        add('', )
+        [ 'p', platform ], # Must be set
+        [ 'dtm', time(), :raw ], # Must be set
+        [ 'vp', viewport, :raw ],
+        [ 'res', resolution, :raw ],
+        [ 'cd', color_depth, :raw ],
+        [ 'p', platform ],
+        [ 'aid', app_id ],
+        [ 'lang', language ]
 
+        # TODO: how do we get webpage in here too?
       )
     end
 

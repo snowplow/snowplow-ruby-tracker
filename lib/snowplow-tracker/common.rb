@@ -46,6 +46,22 @@ module Snowplow
   # More aliases
   OptionUnaryHash = Or[UnaryHash, {}]
 
+  # Defines a valid Platform for this
+  # tracker to be running on
+  class Platform
+
+    @@valid_platforms = Set.new(:web, :pc, :tv, :mob, :cnsl, :iot))
+    @@default = :pc
+
+    def self.valid?(val)
+      val.is_a? Symbol &&
+        @@valid_platforms.include?(val)
+    end
+  end
+
+  # More aliases
+  OptionPlatform = Or[Platform, nil]
+
   # Stores a width x height tuple. Used to express
   # screen resolution, app viewport etc
   class ViewDimensions
