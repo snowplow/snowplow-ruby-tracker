@@ -18,13 +18,13 @@ include Contracts
 
 module Snowplow
 
-  # Contract synonyms
-  Event = Or[StructEvent, UnstructEvent]
-
   # The Subject of a Snowplow event.
   # Note that Snowplow currently has a limitation where the Subject
   # of an event must be an Entity of type User.
-  class Subject < User
+  module Verbs
+
+    # Contract synonyms
+    Event = Or[StructEvent, UnstructEvent]
 
     # Subject performs a custom event. Could be either:
     # 1. A Google Analytics-style custom structured event, or:
@@ -37,7 +37,7 @@ module Snowplow
     # Returns ??
     Contract Event, OptionContext => nil # TODO: fix return
     def performs(event,
-                 context=@pinned_context)
+                 context)
 
       # Switch based on type of event
       if event.is_a? StructEvent
@@ -64,7 +64,7 @@ module Snowplow
     # Returns ??
     Contract WebPage, OptionContext => nil # TODO: fix return
     def views(web_page,
-              context=@pinned_context)
+              context)
 
       nil # TODO: fix return
     end
@@ -78,7 +78,7 @@ module Snowplow
     #             takes place. Overrides any pinned Context
     Contract SalesOrder, OptionContext => nil # TODO: fix return
     def places(sales_order,
-               context=@pinned_context)                    
+               context)                    
 
       nil # TODO: fix return
     end
@@ -96,7 +96,7 @@ module Snowplow
     # Returns ??
     Contract StructEvent, OptionContext => nil # TODO: fix return
     def performs_struct_event(event,
-                 context=@pinned_context)
+                 context)
 
       nil # TODO: fix return
     end
@@ -112,7 +112,7 @@ module Snowplow
     # Returns ??
     Contract UnstructEvent, OptionContext => nil # TODO: fix return
     def performs_unstruct_event(event,
-                 context=@pinned_context)
+                 context)
 
       nil # TODO: fix return
     end
