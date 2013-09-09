@@ -62,6 +62,7 @@ module Snowplow
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns the Hash of all this entity's properties
+    Contract => OptionHash
     def to_protocol()
       super(
         [ 'ti_id', @order_id ],
@@ -136,6 +137,7 @@ module Snowplow
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns the Hash of all this entity's properties
+    Contract => OptionHash
     def to_protocol()
       super(
         [ 'tr_id', @order_id    ],
@@ -202,6 +204,7 @@ module Snowplow
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns the Hash of all this entity's properties
+    Contract => OptionHash
     def to_protocol()
       super(
         [ 'se_ca', @category ],
@@ -242,6 +245,7 @@ module Snowplow
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns the Hash of all this entity's properties
+    Contract => OptionHash
     def to_protocol()
       super(
         [ 'ue_na', @name       ],
@@ -291,6 +295,7 @@ module Snowplow
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
     # Returns the Hash of all this entity's properties
+    Contract => OptionHash
     def to_protocol()
       super(
         [ 'url',  @uri     ], # Note url not uri

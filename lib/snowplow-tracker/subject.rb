@@ -29,8 +29,7 @@ module Snowplow
     attr_reader :ip_address,
                 :business_user_id,
                 :domain_user_id,
-                :network_user_id,
-                :pinned_context
+                :network_user_id
 
     # Constructor for a new Subject.
     # All fields are optional
@@ -95,17 +94,6 @@ module Snowplow
     # +user_id+:: the Subject's network user ID
     def network_user_id=(user_id)
       @network_user_id = user_id
-      nil
-    end
-    
-    # Pin the given Context to this Subject.
-    # Can still be overridden on a per-event basis.
-    #
-    # Parameters:
-    # +context+:: the Context to pin to all subsequent events
-    Contract Context => nil
-    def pin_context(context)
-      @pinned_context = context
       nil
     end
 
@@ -198,6 +186,23 @@ module Snowplow
                  context=@pinned_context)
 
       nil # TODO: fix return
+    end
+
+    # Converts this Subject into a Hash of all its
+    # properties, ready for adding to the payload.
+    # Follows the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    #
+    # Returns the Hash of all this entity's properties
+    Contract => OptionHash
+    def to_protocol()
+      super(
+        [ 'url',  @uri     ], # Note url not uri
+        [ 'page', @title   ],
+        [ 'ds',   @size    ],
+        [ 'cs',   @charset ]
+      )
     end
 
   end
