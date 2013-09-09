@@ -22,7 +22,7 @@ module Snowplow
   #
   # Inherits from Protocol, as all entities must be
   # convertable to Snowplow Tracker Protocol.
-  class Entity < Protocol
+  class Entity < GrammarElement
 
   end
 

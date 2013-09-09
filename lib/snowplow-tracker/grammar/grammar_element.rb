@@ -21,20 +21,19 @@ include Contracts
 
 module Snowplow
 
-	# ProtocolTuples take two forms - either:
+  # This class validates a ProtocolTuple.
+  #
+	# A ProtocolTuple can take two forms - either:
   # 1. [ key, value ] - or:
   # 2. [ key, value, encoding ]
   #
-  # Supported encoding_modifiers are :raw and
-  # :base64
-  #
-  # This class validates ProtocolTuples for
-  # Ruby Contracts
+  # Supported encoding_modifiers are :escape
+  # (the default if not set), :raw and :base64
   class ProtocolTuple
 
     @@encodings = Set.new(:raw, :escape, :base64)
 
-    # Validate this is a ProtocolTuple
+    # Validate this is an ElementTuple
     def self.valid?(val)
       val.is_a? Array &&
         (val.length == 2 ||
@@ -43,26 +42,23 @@ module Snowplow
 
   end
 
-	# Entities (Subjects and Objects) and Context
-	# all extend Protocol.
+	# Entities (Subjects and Objects), Verbs and
+  # Context all extend GrammarElement.
   #
-  # Protocol contains helper methods for
+  # GrammarElement contains helper methods for
   # constructing a Hash which follows the Snowplow
   # Tracker Protocol.
   #
   # Includes methods to URL-escape and Base64-encode
   # the individual fields.
-  class Protocol
+  class GrammarElement
 
-    # Converts a set of key => value
-    # pairs to a Hash, ready for
-    # inserting in our payload. Called
-    # by Payload's sub-classes to generate
-    # their payload Hash
+    # Converts an Array of ProtocolTuples to a Hash,
+    # ready for inserting in our payload. Called
+    # by GrammarElement's sub-classes.
     #
     # Parameters:
-    # +pairs+:: an Array of key => value
-    #           pairs and {}s
+    # +tuples+:: an Array of ProtocolTuples
     #
     # Returns a single Hash of all key => value
     # pairs. Could still be empty, {}

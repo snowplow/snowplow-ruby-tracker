@@ -38,7 +38,7 @@ module Snowplow
   # We let Context be much more mutable than our Entities,
   # because this fits the real-world better: context
   # slowly mutates as events happen.
-  class Context < Protocol
+  class Context < GrammarElement
 
     attr_reader :platform,
                 :app_id,
