@@ -24,7 +24,7 @@ module Snowplow
   # of a single SKU.
   # Fields follow Google Analytics closely.  
   # Inherits from Entity
-  class SalesOrderItem < Entity
+  class TransactionItem < Entity
 
     attr_reader :order_id,
                 :sku,
@@ -33,11 +33,11 @@ module Snowplow
                 :price,
                 :quantity
 
-    # Constructor for a SalesOrderItem, i.e. a line
-    # item within a SalesOrder
+    # Constructor for a TransactionItem, i.e. a line
+    # item within a Transaction
     #
     # TODO
-    Contract String, OptionString, OptionString, OptionString, Num, Int => SalesOrderItem
+    Contract String, OptionString, OptionString, OptionString, Num, Int => TransactionItem
     def initialize(order_id,
                    sku=nil,
                    name=nil,
@@ -76,13 +76,13 @@ module Snowplow
   end 
 
   # Contract synonyms
-  SalesOrderItems = Array[SalesOrderItem]
+  TransactionItems = Array[TransactionItem]
 
   # A sales order, aka an ecommerce transaction.
   # Fields follow Google Analytics closely.
-  # Is the Direct Object of a place SalesOrder event.
+  # Is the Direct Object of a place Transaction event.
   # Inherits from Entity.
-  class SalesOrder < Entity
+  class Transaction < Entity
 
     attr_reader :order_id, 
                 :affiliation,
@@ -94,7 +94,7 @@ module Snowplow
                 :country,
                 :items
 
-    # Constructor for a SalesOrder, i.e. an ecommmerce
+    # Constructor for a Transaction, i.e. an ecommmerce
     # transaction
     #
     # TODO
@@ -106,8 +106,8 @@ module Snowplow
              OptionString,
              OptionString,
              OptionString,
-             Or[SalesOrderItem, SalesOrderItems]
-             => SalesOrder
+             Or[TransactionItem, TransactionItems]
+             => Transaction
     def initialize(order_id, 
                    affiliation=nil,
                    total,

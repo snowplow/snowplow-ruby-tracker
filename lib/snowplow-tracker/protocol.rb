@@ -30,10 +30,13 @@ module Snowplow
   #
   # This class validates ProtocolTuples for
   # Ruby Contracts
+  class ProtocolTuple
 
-  # TODO
-  # TODO
-  # TODO
+    # TODO
+    # TODO
+    # TODO
+
+  end
 
 	# Entities (Subjects and Objects) and Context
 	# all extend Protocol.
@@ -58,9 +61,10 @@ module Snowplow
     #
     # Returns a single Hash of all key => value
     # pairs. Could still be empty, {}
-    Contract Array[OptionUnaryHash] => OptionHash
-    def to_protocol(*pairs)
-      {}.merge(pairs)
+    Contract Array[ProtocolTuple] => OptionHash
+    def to_protocol(*tuples)
+      hashes = tuples.map( |t| to_unary_hash(t) )
+      {}.merge(hashes)
     end
 
     private
@@ -79,15 +83,32 @@ module Snowplow
     # Returns a single key => value pair
     # in a Hash
     Contract ProtocolTuple => UnaryHash
-    def to_hash(tuple)
-    	case tuple.length
-    	when 2:
-    		{ tuple[0] => tuple[1] }
-    	when 3:
-    		# TODO
-    	when
+    def to_unary_hash(tuple)
 
-    	elsif tuple.length
+      encoding = case tuple.length
+                 when 2
+                   :escape # Default
+                 when 3
+                   tuple[2]
+                 else # Should never happen
+                   raise Snowplow::Exceptions::ContractFailure.new
+                 end
+
+      # Now safe to get these
+      key = tuple[0]
+      value = tuple[1]
+
+      # Return the appropriate { key => value }
+    	case encoding
+      when :escape
+        add(key, value)
+      when :raw
+        addRaw(key, value)
+      when :base64
+        addBase64(key, value)
+      else # Should never happen
+        raise Snowplow::Exceptions::ContractFailure.new
+      end
     end
 
     # Creates a Hash consisting of a single
@@ -100,7 +121,7 @@ module Snowplow
     #
     # Returns a Hash of a single key => value
     # pair, or {}
-    Contract OptionKey, String => OptionUnaryHash
+    Contract String, OptionString => OptionUnaryHash
     def add(key, value)
       if value.nil?
         {}
@@ -120,7 +141,7 @@ module Snowplow
     #
     # Returns a Hash of a single key => value
     # pair, or {}
-    Contract OptionKey, String => OptionUnaryHash
+    Contract String, OptionString => OptionUnaryHash
     def addRaw(key, value)
       if value.nil?
         {}
@@ -140,7 +161,7 @@ module Snowplow
     #
     # Returns a Hash of a single key => value
     # pair, or {}
-    Contract OptionKey, String => OptionUnaryHash
+    Contract String, OptionString => OptionUnaryHash
     def addBase64(key, value)
       if value.nil?
         {}
