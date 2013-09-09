@@ -48,10 +48,10 @@ module Snowplow
       # TODO: check at least one of sku and name is set
 
       @order_id = order_id
-      @sku = sku
-      @name = name
+      @sku      = sku
+      @name     = name
       @category = category
-      @price = price
+      @price    = price
       @quantity = quantity
     end
 
@@ -118,15 +118,15 @@ module Snowplow
                    country=nil,
                    items)
 
-      @order_id = order_id
+      @order_id    = order_id
       @affiliation = affiliation
-      @total = total
-      @tax = tax
-      @shipping = shipping
-      @city = city
-      @state = state
-      @country = country
-      @items = Array(items) # To array if not already
+      @total       = total
+      @tax         = tax
+      @shipping    = shipping
+      @city        = city
+      @state       = state
+      @country     = country
+      @items       = Array(items) # To array if not already
     end
 
     # Converts this Object into a Hash of all its
@@ -189,10 +189,10 @@ module Snowplow
                    value=nil)
 
       @category = category
-      @action = action
-      @label = label
+      @action   = action
+      @label    = label
       @property = property
-      @value = value
+      @value    = value
     end
 
     # Converts this Object into a Hash of all its
@@ -229,8 +229,9 @@ module Snowplow
     # +name+:: the name of the event
     # +properties+:: the properties of the event
     Contract String, Hash => UnstructEvent
-    def initialize(name, properties)
-      @name = name
+    def initialize(name,
+                   properties)
+      @name       = name
       @properties = properties
     end
 
@@ -273,10 +274,13 @@ module Snowplow
     # +title+:: title of this WebPage (i.e. <TITLE>
     #           or customized version of same)
     Contract URI, OptionString, OptionViewDimensions, OptionString => WebPage
-    def initialize(uri, title=nil, size=nil, charset=nil)
-      @uri = uri
-      @title = title
-      @size = size
+    def initialize(uri,
+                   title=nil,
+                   size=nil,
+                   charset=nil)
+      @uri     = uri
+      @title   = title
+      @size    = size
       @charset = charset
     end
 
