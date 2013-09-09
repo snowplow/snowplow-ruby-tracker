@@ -21,6 +21,20 @@ include Contracts
 
 module Snowplow
 
+	# ProtocolTuples take two forms - either:
+  # 1. [ key, value ] - or:
+  # 2. [ key, value, encoding_modifier ]
+  #
+  # Supported encoding_modifiers are :raw and
+  # :base64
+  #
+  # This class validates ProtocolTuples for
+  # Ruby Contracts
+
+  # TODO
+  # TODO
+  # TODO
+
 	# Entities (Subjects and Objects) and Context
 	# all extend Protocol.
   #
@@ -50,6 +64,31 @@ module Snowplow
     end
 
     private
+
+    # Converts a protocol "tuple" to a
+    # key => value pair.
+    #
+    # Protocol tuples take two forms - either:
+    # 1. [ key, value ] - or:
+    # 2. [ key, value, encoding_modifier ]
+    #
+    # Parameters:
+    # +tuple+:: the protocol tuple to convert
+    #           into a key => value pair
+    #
+    # Returns a single key => value pair
+    # in a Hash
+    Contract ProtocolTuple => UnaryHash
+    def to_hash(tuple)
+    	case tuple.length
+    	when 2:
+    		{ tuple[0] => tuple[1] }
+    	when 3:
+    		# TODO
+    	when
+
+    	elsif tuple.length
+    end
 
     # Creates a Hash consisting of a single
     # key => value pair if the value is not

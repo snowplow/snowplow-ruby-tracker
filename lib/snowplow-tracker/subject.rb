@@ -127,8 +127,8 @@ module Snowplow
         performs_struct_event(event, context)
       elsif event.is_a? UnstructEvent
         performs_unstruct_event(event, context)
-      else # Should never happen
-        raise Snowplow::Exceptions::UnrecognizedEventType.new
+      else # Should never happen thanks to Contracts
+        raise Snowplow::Exceptions::ContractFailure.new
       end
     end
 

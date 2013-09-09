@@ -15,6 +15,13 @@
 
 module Snowplow
 	module Exceptions
-		class UnrecognizedEventType < StandardError ; end
+
+		# Throw this if the code encounters an
+		# inconsistency which Ruby Contracts
+		# should be preventing. May indicate:
+		# 1. An edge case missed by the Contract
+		# 2. An out-of-date Contract definition
+		# 3. A bug in the code
+		class ContractFailure < StandardError ; end
 	end
 end
