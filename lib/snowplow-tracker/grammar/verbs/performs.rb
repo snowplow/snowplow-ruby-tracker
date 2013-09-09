@@ -18,10 +18,9 @@ include Contracts
 
 module Snowplow
 
-  # The Subject of a Snowplow event.
-  # Note that Snowplow currently has a limitation where the Subject
-  # of an event must be an Entity of type User.
   module Performs
+
+    include Grammar
 
     # Defines the valid Event Symbols
     class EventSymbol

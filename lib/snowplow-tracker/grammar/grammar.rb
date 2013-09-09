@@ -45,17 +45,17 @@ module Snowplow
 	# Entities (Subjects and Objects), Verbs and
   # Context all mix-in Grammar.
   #
-  # GrammarElement contains helper methods for
+  # Grammar contains helper methods for
   # constructing a Hash which follows the Snowplow
   # Tracker Protocol.
   #
   # Includes methods to URL-escape and Base64-encode
   # the individual fields.
-  module GrammarElement
+  module Grammar
 
     # Converts an Array of ProtocolTuples to a Hash,
     # ready for inserting in our payload. Called
-    # by GrammarElement's sub-classes.
+    # by Grammar's sub-classes.
     #
     # Parameters:
     # +tuples+:: an Array of ProtocolTuples

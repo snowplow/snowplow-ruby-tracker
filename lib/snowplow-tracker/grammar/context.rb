@@ -34,7 +34,7 @@ module Snowplow
   # slowly mutates as events happen.
   class Context
 
-    include GrammarElement
+    include Grammar
 
     attr_reader :platform,
                 :app_id,

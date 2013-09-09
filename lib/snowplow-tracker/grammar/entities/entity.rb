@@ -20,11 +20,11 @@ module Snowplow
   # Snowplow event, or potentially (in the case of
   # WebPage) part of the Context.
   #
-  # Mixes in GrammarElement, as all entities must be
+  # Mixes in Grammar, as all entities must be
   # convertable to Snowplow Tracker Protocol.
   class Entity
 
-  	include GrammarElement
+  	include Grammar
 
   end
 
