@@ -205,7 +205,7 @@ module Snowplow
     #
     # Returns a Hash containing all the
     # context's name => value pairs.
-    Contract => ContextHash
+    Contract OptionBoolean => ContextHash
     def as_hash()
       to_protocol(
         [ 'p',    @platform          ], # Must be set

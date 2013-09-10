@@ -33,11 +33,12 @@ module Snowplow
     # Parameters:
     # +name+:: the name of the event
     # +properties+:: the properties of the event
-    Contract String, Hash => UnstructEvent
+    Contract String, Hash => nil
     def initialize(name,
                    properties)
       @name       = name
       @properties = properties
+      nil
     end
 
     # Converts this Object into a Hash of all its

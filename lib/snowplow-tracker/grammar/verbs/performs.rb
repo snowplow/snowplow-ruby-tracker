@@ -55,13 +55,13 @@ module Snowplow
     # 2. A MixPanel- or KISSmetrics-style custom unstructured event
     #
     # +event+:: the custom structured or unstructured event
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
     #
     # Returns ??
-    Contract Or[StructEvent, UnstructEvent], OptionContext => nil # TODO: fix return
+    Contract Or[StructEvent, UnstructEvent], OptionModifierHash => nil # TODO: fix return
     def performs(event,
-                 context=nil)
+                 modifiers={})
 
       # Switch based on type of event
       if event.is_a? StructEvent
@@ -82,13 +82,13 @@ module Snowplow
     # performs() procedure
     #
     # +event+:: the custom structured event
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
     #
     # Returns ??
-    Contract StructEvent, OptionContext => nil # TODO: fix return
+    Contract StructEvent, OptionModifierHash => nil # TODO: fix return
     def performs_struct_event(event,
-                              context=nil)
+                              modifiers={})
 
       nil # TODO: fix return
     end
@@ -99,13 +99,13 @@ module Snowplow
     # performs() procedure
     #
     # +event+:: the custom unstructured event
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
     #
     # Returns ??
-    Contract UnstructEvent, OptionContext => nil # TODO: fix return
+    Contract UnstructEvent, OptionModifierHash => nil # TODO: fix return
     def performs_unstruct_event(event,
-                                context=nil)
+                                modifiers={})
 
       nil # TODO: fix return
     end

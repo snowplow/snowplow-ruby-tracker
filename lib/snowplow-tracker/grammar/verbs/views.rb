@@ -46,13 +46,14 @@ module Snowplow
     #
     # Parameters:
     # +web_page+:: the WebPage the user is viewing
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
     #
     # Returns ??
-    Contract WebPage, OptionContext => nil # TODO: fix return
+    Contract WebPage, OptionModifierHash => Payload
     def views(web_page,
-              context=nil)
+              modifiers={})
+
 
       nil # TODO: fix return
     end

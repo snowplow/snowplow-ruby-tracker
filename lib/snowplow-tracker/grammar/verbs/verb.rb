@@ -15,10 +15,31 @@
 
 module Snowplow
 
-  # Check we have a valid Verb Hash.
+  # Check we have a valid VerbHash.
   #
   # Must contain a single element:
   # "e" => String for event type.
   VerbHash = And[UnaryHash, ({:e => String})]
 
+  # Check we have a valid ModifierHash.
+  # This is the second argument passed
+  # into all verbs.
+  #
+  # A Hash containing a ~: key and/or
+  # a >>: key
+  class ModifierHash
+
+    @@valid_keys = Set::[](:~, :>>)
+
+    def self.valid?(val)
+      val.is_a? Hash &&
+        val.length <= 2 &&
+        TODO
+    end
+  end 
+
+  # Could be empty too. (Actually this
+  # is covered in the ModifierHash's
+  # valid?() but better to be explicit.)
+  OptionModifierHash = Or[ModifierHash, {}]
 end

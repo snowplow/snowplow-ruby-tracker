@@ -21,6 +21,43 @@ include Contracts
 
 module Snowplow
 
+  # This class defines a ProtocolPayload.
+  #
+  # This is the final representation of
+  # an event in the Snowplow Tracker Protocol
+  # before it is sent to one or more collectors.
+  class Payload
+
+    # By the time the PayloadHash is fully assembled,
+    # it must contain "p", "e" and "dtm" fields, as
+    # per the Snowplow Tracker Protocol:
+    #
+    # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
+    PayloadHash = ({:p => String, :e => String, :dtm => String})
+
+    # Either an empty Array, or an Array of
+    # CollectorTags (which are Symbols)
+    OptionCollectorTags = Or[ArrayOf[CollectorTag], []]
+
+    # Constructor for a ProtocolPayload.
+    # A ProtocolPayload consists of PayloadHash and
+    # optional Array of CollectorTags (Symbols).
+    #
+    # Parameters:
+    # +payload_hash+:: The Hash containing all grammar
+    #                  elements for this event 
+    # +collector_tags+:: Optional Array of CollectorTags
+    #                    indicating which collectors this
+    #                    payload should be sent to
+    Contract PayloadHash, OptionCollectorTags => nil
+    def initialize(payload_hash, collector_tags=[])
+      @payload_hash = payload_hash
+      @collector_tags = collector_tags
+      nil
+    end
+
+  end
+
   # This class validates a ProtocolTuple.
   #
 	# A ProtocolTuple can take two forms - either:
@@ -52,6 +89,26 @@ module Snowplow
   # Includes methods to URL-escape and Base64-encode
   # the individual fields.
   module Protocol
+
+    # Converts the 
+
+    def as_payload(hashes, modifiers)
+
+      # First extract our modifiers
+      context = modifiers[:~]
+      collectors = modifiers[:>>] || []
+
+      # All our hashes
+      all_hashes = if context.nil?
+                     hashes
+                   else
+                     hashes << context.as_hash()
+                   end
+
+      # Assemble our PayloadHash
+      all_hashes.inject(:merge)
+
+    end
 
     # Converts an Array of ProtocolTuples to a Hash,
     # ready for inserting in our payload. Called

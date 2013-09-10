@@ -22,6 +22,7 @@ module Snowplow
   Epoch = Int
   OptionString = Or[String, nil]
   OptionNum = Or[Num, nil]
+  OptionBoolean = Or[Boolean, nil]
   OptionHash = Or[Hash, {}] # Note not nil
 
   # Validate is an Integer

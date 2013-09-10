@@ -34,8 +34,7 @@ module Snowplow
                 :country,
                 :items
 
-    # Constructor for a Transaction, i.e. an ecommmerce
-    # transaction
+    # Constructor for an ecommerce Transaction.
     #
     # TODO
     Contract String,
@@ -47,7 +46,7 @@ module Snowplow
              OptionString,
              OptionString,
              Or[TransactionItem, TransactionItems]
-             => Transaction
+             => nil
     def initialize(order_id, 
                    affiliation=nil,
                    total,
@@ -67,6 +66,7 @@ module Snowplow
       @state       = state
       @country     = country
       @items       = Array(items) # To array if not already
+      nil
     end
 
     # Converts this Object into a Hash of all its

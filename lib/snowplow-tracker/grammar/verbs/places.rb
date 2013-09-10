@@ -58,11 +58,11 @@ module Snowplow
     # Parameters:
     # +sales_order+:: the sales order to track,
     #                 including order line items
-    # +context+:: the optional Context in which this event
-    #             takes place. Overrides any pinned Context
-    Contract SalesOrder, OptionContext => nil # TODO: fix return
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
+    Contract SalesOrder, OptionModifierHash => nil # TODO: fix return
     def places(sales_order,
-               context=nil)                 
+               modifiers={})                 
 
       nil # TODO: fix return
     end

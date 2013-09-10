@@ -35,7 +35,12 @@ module Snowplow
     # item within a Transaction
     #
     # TODO
-    Contract String, OptionString, OptionString, OptionString, Num, Int => TransactionItem
+    Contract String,
+             OptionString,
+             OptionString,
+             OptionString,
+             Num,
+             Int => nil
     def initialize(order_id,
                    sku=nil,
                    name=nil,
@@ -51,6 +56,7 @@ module Snowplow
       @category = category
       @price    = price
       @quantity = quantity
+      nil
     end
 
     # Converts this Object into a Hash of all its

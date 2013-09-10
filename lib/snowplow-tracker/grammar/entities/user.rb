@@ -39,7 +39,10 @@ module Snowplow
     #                    on a first-party cookie
     # +network_user_id+:: user's ID stored by Snowplow
     #                     on a third-party cookie
-    Contract OptionString, OptionString, OptionString, OptionString => Subject
+    Contract OptionString,
+             OptionString,
+             OptionString,
+             OptionString => nil
     def initialize(ip_address=nil,
                    business_user_id=nil,
                    domain_user_id=nil,
@@ -51,7 +54,6 @@ module Snowplow
       @business_user_id = business_user_id
       @domain_user_id = domain_user_id
       @network_user_id = network_user_id
-
       nil
     end
 

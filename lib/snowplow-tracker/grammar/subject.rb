@@ -22,7 +22,7 @@ module Snowplow
   # Note that Snowplow currently has a limitation where the Subject
   # of an event must be an Entity of type User.
   #
-  # Verbs module brought in via include.
+  # Verbs brought in via includes.
   class Subject < User
 
   	# Supported verbs

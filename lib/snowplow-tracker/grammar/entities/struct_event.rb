@@ -49,7 +49,7 @@ module Snowplow
              OptionString,
              OptionString,
              OptionNum
-             => StructEvent
+             => nil
     def initialize(category,
                    action,
                    label=nil,
@@ -61,6 +61,7 @@ module Snowplow
       @label    = label
       @property = property
       @value    = value
+      nil
     end
 
     # Converts this Object into a Hash of all its

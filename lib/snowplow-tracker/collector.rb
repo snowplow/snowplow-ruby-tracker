@@ -31,6 +31,9 @@ module Snowplow
 
   end
 
+  # Synonym for a Collector tag
+  CollectorTag = Symbol
+
   # Defines a Snowplow collector to send
   # events to
   class Collector
@@ -48,7 +51,7 @@ module Snowplow
     #         decide which Collector to send events to
     # +endpoint+:: hash defining the endpoint, containing
     #              either :host => or :cf =>
-    Contract Symbol, EndpointHash => Collector
+    Contract CollectorTag, EndpointHash => Collector
     def initialize(tag, endpoint)
       @tag = tag
       host = endpoint["host"] || to_host(endpoint["cf"])

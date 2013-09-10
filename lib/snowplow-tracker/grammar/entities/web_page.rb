@@ -36,7 +36,10 @@ module Snowplow
     # +uri+:: URI of this WebPage
     # +title+:: title of this WebPage (i.e. <TITLE>
     #           or customized version of same)
-    Contract URI, OptionString, OptionViewDimensions, OptionString => WebPage
+    Contract URI,
+             OptionString,
+             OptionViewDimensions,
+             OptionString => nil
     def initialize(uri,
                    title=nil,
                    size=nil,
@@ -45,6 +48,7 @@ module Snowplow
       @title   = title
       @size    = size
       @charset = charset
+      nil
     end
 
     # Converts this Object into a Hash of all its
