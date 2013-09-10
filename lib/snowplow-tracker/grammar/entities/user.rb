@@ -67,10 +67,10 @@ module Snowplow
     Contract => OptionHash
     def as_hash()
       to_protocol(
-        [ 'ip',  @ip_address, :raw ],
-        [ 'uid',  @business_user_id ],
-        [ 'duid',  @domain_user_id, :raw ],
-        [ 'nuid',  @network_user_id, :raw ]
+        [ 'ip',   @ip_address,      :raw ],
+        [ 'uid',  @business_user_id      ],
+        [ 'duid', @domain_user_id,  :raw ],
+        [ 'nuid', @network_user_id, :raw ]
       )
     end
 
