@@ -24,7 +24,7 @@ module Snowplow
   # convertable to Snowplow Tracker Protocol.
   class Entity
 
-  	include Protocol
+    include Protocol
 
   end
 

@@ -58,6 +58,19 @@ module Snowplow
 
   end
 
+  # Validates this is an Array containing a
+  # single Payload
+  class UnaryPayload
+
+    # Validate this is an Array containing
+    # one Payload
+    def self.valid?(val)
+      val.is_a? Array &&
+        val.length == 1 &&
+        val[0].is_a? Payload
+    end
+  end
+
   # This class validates a ProtocolTuple.
   #
 	# A ProtocolTuple can take two forms - either:
@@ -90,24 +103,32 @@ module Snowplow
   # the individual fields.
   module Protocol
 
-    # Converts the 
-
+    # Converts an Array of Hashes and optional
+    # ModifierHash to a Payload.
+    #
+    # Parameters:
+    # +hashes+:: The Array of Hashes that make up the
+    #            event in this Payload
+    # +modifiers+:: a Hash of modifiers. Can include custom Context
+    #               and specific Collectors to send this event to
+    #
+    # Returns a Payload object
+    Contract ArrayOf[Hash], OptionModifierHash => Payload
     def as_payload(hashes, modifiers)
 
       # First extract our modifiers
       context = modifiers[:~]
       collectors = modifiers[:>>] || []
 
-      # All our hashes
+      # Add Context if we have it
       all_hashes = if context.nil?
                      hashes
                    else
-                     hashes << context.as_hash()
+                     hashes + context.as_hash()
                    end
 
       # Assemble our PayloadHash
-      all_hashes.inject(:merge)
-
+      Payload.new(all_hashes.inject(:merge), collectors)
     end
 
     # Converts an Array of ProtocolTuples to a Hash,

@@ -58,16 +58,16 @@ module Snowplow
     # +modifiers+:: a Hash of modifiers. Can include custom Context
     #               and specific Collectors to send this event to
     #
-    # Returns ??
-    Contract Or[StructEvent, UnstructEvent], OptionModifierHash => nil # TODO: fix return
+    # Returns an Array containing a single complete Payload
+    Contract Or[StructEvent, UnstructEvent], OptionModifierHash => UnaryPayload
     def performs(event,
                  modifiers={})
 
       # Switch based on type of event
       if event.is_a? StructEvent
-        performs_struct_event(event, context)
+        performs_struct_event(event, modifiers)
       elsif event.is_a? UnstructEvent
-        performs_unstruct_event(event, context)
+        performs_unstruct_event(event, modifiers)
       else # Should never happen thanks to Contracts
         raise Snowplow::Exceptions::ContractFailure.new
       end
@@ -85,12 +85,12 @@ module Snowplow
     # +modifiers+:: a Hash of modifiers. Can include custom Context
     #               and specific Collectors to send this event to
     #
-    # Returns ??
-    Contract StructEvent, OptionModifierHash => nil # TODO: fix return
+    # Returns an Array containing a single complete Payload
+    Contract StructEvent, OptionModifierHash => UnaryPayload
     def performs_struct_event(event,
                               modifiers={})
-
-      nil # TODO: fix return
+      [ as_payload([super.as_hash(), as_hash(), event.as_hash()], modifiers) ]
+      #             ^ subject        ^ verb     ^ object
     end
     module_function :performs_struct_event
 
@@ -102,12 +102,12 @@ module Snowplow
     # +modifiers+:: a Hash of modifiers. Can include custom Context
     #               and specific Collectors to send this event to
     #
-    # Returns ??
-    Contract UnstructEvent, OptionModifierHash => nil # TODO: fix return
+    # Returns an Array containing a single complete Payload
+    Contract UnstructEvent, OptionModifierHash => UnaryPayload
     def performs_unstruct_event(event,
                                 modifiers={})
-
-      nil # TODO: fix return
+      [ as_payload([super.as_hash(), as_hash(), event.as_hash()], modifiers) ]
+      #             ^ subject        ^ verb     ^ object
     end
     module_function :performs_unstruct_event
 
