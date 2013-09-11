@@ -49,13 +49,12 @@ module Snowplow
     # +modifiers+:: a Hash of modifiers. Can include custom Context
     #               and specific Collectors to send this event to
     #
-    # Returns ??
-    Contract WebPage, OptionModifierHash => Payload
+    # Returns an Array containing a single complete Payload
+    Contract WebPage, OptionModifierHash => UnaryPayload
     def views(web_page,
               modifiers={})
-
-
-      nil # TODO: fix return
+      [ as_payload([super.as_hash(), as_hash(), web_page.as_hash()], modifiers) ]
+      #             ^ subject        ^ verb     ^ object
     end
     module_function :views
 

@@ -96,7 +96,7 @@ module Snowplow
         [ 'tr_sh', @shipping    ],
         [ 'tr_ci', @city        ],
         [ 'tr_st', @state       ],
-        [ 'tr_co', @country     ]
+        [ 'tr_co', @country     ] # Note the transaction items are not included in the Hash
       )
     end
 

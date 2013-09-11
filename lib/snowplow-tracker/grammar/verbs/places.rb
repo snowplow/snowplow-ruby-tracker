@@ -60,11 +60,25 @@ module Snowplow
     #                 including order line items
     # +modifiers+:: a Hash of modifiers. Can include custom Context
     #               and specific Collectors to send this event to
-    Contract SalesOrder, OptionModifierHash => nil # TODO: fix return
+    #
+    # Returns an Array of Payloads: one for the Transaction itself,
+    # and one for each TransactionItem
+    Contract SalesOrder, OptionModifierHash => ArrayOf[Payload]
     def places(sales_order,
-               modifiers={})                 
+               modifiers={})
 
-      nil # TODO: fix return
+      subject_hash = super.as_hash()
+      verb_hash = as_hash()
+
+      tr_payload = as_payload([subject_hash, verb_hash, sales_order.as_hash()], modifiers)
+      #                        ^ subject     ^ verb     ^ object
+
+      ti_payloads = sales_order.items.map { |ti| 
+        as_payload([subject_hash, verb_hash, ti.as_hash()], modifiers)     
+        #           ^ subject     ^ verb     ^ object
+      }
+
+      (ti_payloads + tr_payloads) # Array of payloads
     end
     module_function :places
 
