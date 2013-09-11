@@ -34,9 +34,19 @@ module Snowplow
                 :country,
                 :items
 
-    # Constructor for an ecommerce Transaction.
+    # Constructor for a new ecommerce transaction.
     #
-    # TODO
+    # Parameters:
+    # +order_id+:: Order ID for this transaction
+    # +affiliation+:: ???
+    # +total+:: Total paid on this transaction
+    # +tax+:: Tax paid on this transaction
+    # +shipping+:: Cost of shipping this transaction
+    # +city+:: Optional city of purchaser
+    # +state+:: Optional state of purchaser
+    # +country+:: Optional country of purchaser
+    # +items+:: one or more line items belonging to
+    #           this order 
     Contract String,
              OptionString,
              Num,

@@ -32,9 +32,17 @@ module Snowplow
                 :quantity
 
     # Constructor for a TransactionItem, i.e. a line
-    # item within a Transaction
+    # item within a Transaction. A line item is
+    # defined as one or more units of a single SKU.
     #
-    # TODO
+    # Parameters:
+    # +order_id+:: Order ID this trsanaction item
+    #              belongs to
+    # +sku+:: The stock keeping unit for this item
+    # +name+:: The name of this item
+    # +category+:: The category this item belongs to
+    # +price+:: 
+    # +quantity+::
     Contract String,
              OptionString,
              OptionString,
