@@ -34,7 +34,24 @@ module Snowplow
     def self.valid?(val)
       val.is_a? Hash &&
         val.length <= 2 &&
-        TODO
+        self.class.all_keys_in(val, @@valid_keys)
+    end
+
+    # Checks that all keys in a Hash are
+    # in the supplied Set of valid keys.
+    #
+    # Parameters:
+    # +hash+:: the Hash to check the keys of
+    # +valid+:: the Set of valid keys
+    #
+    # Returns true if all keys in the Hash are
+    # in the valid Set, false otherwise
+    def self.all_keys_in(hash, valid)
+      hash.keys.map { |key|
+        valid.include?(key)
+      }.inject(true) { |r, e|
+        r && e
+      }
     end
   end 
 
