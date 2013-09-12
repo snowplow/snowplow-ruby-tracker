@@ -18,7 +18,7 @@ include Contracts
 
 module Snowplow
 
-  # A sales order, aka an ecommerce transaction.
+  # An ecommerce transaction aka sales order.
   # Fields follow Google Analytics closely.
   # Is the Direct Object of a place Transaction event.
   # Inherits from Entity.
@@ -29,6 +29,7 @@ module Snowplow
                 :total,
                 :tax,
                 :shipping,
+                :currency,
                 :city,
                 :state,
                 :country,
@@ -42,6 +43,7 @@ module Snowplow
     # +total+:: Total paid on this transaction
     # +tax+:: Tax paid on this transaction
     # +shipping+:: Cost of shipping this transaction
+    # +currency+:: Currency code for this transaction
     # +city+:: Optional city of purchaser
     # +state+:: Optional state of purchaser
     # +country+:: Optional country of purchaser
@@ -55,6 +57,7 @@ module Snowplow
              OptionString,
              OptionString,
              OptionString,
+             OptionString,
              Or[TransactionItem, TransactionItems]
              => nil
     def initialize(order_id, 
@@ -62,6 +65,7 @@ module Snowplow
                    total,
                    tax,
                    shipping,
+                   currency,
                    city=nil,
                    state=nil,
                    country=nil,
@@ -94,6 +98,7 @@ module Snowplow
         [ 'tr_tt', @total       ],
         [ 'tr_tx', @tax         ],
         [ 'tr_sh', @shipping    ],
+        [ 'tr_cu', @currency    ],
         [ 'tr_ci', @city        ],
         [ 'tr_st', @state       ],
         [ 'tr_co', @country     ] # Note the transaction items are not included in the Hash

@@ -24,8 +24,7 @@ module Snowplow
   # Inherits from Entity.
   class TransactionItem < Entity
 
-    attr_reader :order_id,
-                :sku,
+    attr_reader :sku,
                 :name,
                 :category,
                 :price,
@@ -36,21 +35,17 @@ module Snowplow
     # defined as one or more units of a single SKU.
     #
     # Parameters:
-    # +order_id+:: Order ID this trsanaction item
-    #              belongs to
     # +sku+:: The stock keeping unit for this item
     # +name+:: The name of this item
     # +category+:: The category this item belongs to
-    # +price+:: 
-    # +quantity+::
-    Contract String,
-             OptionString,
+    # +price+:: The total price for all units of this item
+    # +quantity+:: The number of units of this item
+    Contract OptionString,
              OptionString,
              OptionString,
              Num,
              Int => nil
-    def initialize(order_id,
-                   sku=nil,
+    def initialize(sku=nil,
                    name=nil,
                    category=nil,
                    price,
@@ -58,7 +53,6 @@ module Snowplow
 
       # TODO: check at least one of sku and name is set
 
-      @order_id = order_id
       @sku      = sku
       @name     = name
       @category = category
@@ -73,11 +67,15 @@ module Snowplow
     #
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
+    # Note: the Snowplow Tracker Protocol for
+    # Transaction Items expects the fields ti_id and
+    # ti_cu - these need to be added manually from the
+    # parent Transaction object (can't be done here).
+    #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
     def as_hash()
       to_protocol(
-        [ 'ti_id', @order_id ],
         [ 'ti_sk', @sku      ],
         [ 'ti_na', @name     ],
         [ 'ti_ca', @category ],
