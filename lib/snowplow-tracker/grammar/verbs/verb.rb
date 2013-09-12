@@ -25,8 +25,8 @@ module Snowplow
   # This is the second argument passed
   # into all verbs.
   #
-  # A Hash containing a ~: key and/or
-  # a >>: key
+  # A Hash containing a ~: key (Context)
+  # and/or a >>: key (Collector targets).
   class ModifierHash
 
     @@valid_keys = Set::[](:~, :>>)
@@ -38,8 +38,8 @@ module Snowplow
     end
   end 
 
-  # Could be empty too. (Actually this
-  # is covered in the ModifierHash's
+  # Could be empty too. (Technically {}
+  # is included in the ModifierHash's
   # valid?() but better to be explicit.)
   OptionModifierHash = Or[ModifierHash, {}]
 end

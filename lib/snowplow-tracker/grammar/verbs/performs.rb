@@ -89,8 +89,8 @@ module Snowplow
     Contract StructEvent, OptionModifierHash => UnaryPayload
     def performs_struct_event(event,
                               modifiers={})
-      [ as_payload([super.as_hash(), as_hash(), event.as_hash()], modifiers) ]
-      #             ^ subject        ^ verb     ^ object
+      [ as_payload([super.as_hash(), as_hash(:se), event.as_hash()], modifiers) ]
+      #             ^ subject        ^ verb        ^ object
     end
     module_function :performs_struct_event
 
@@ -106,8 +106,8 @@ module Snowplow
     Contract UnstructEvent, OptionModifierHash => UnaryPayload
     def performs_unstruct_event(event,
                                 modifiers={})
-      [ as_payload([super.as_hash(), as_hash(), event.as_hash()], modifiers) ]
-      #             ^ subject        ^ verb     ^ object
+      [ as_payload([super.as_hash(), as_hash(:ue), event.as_hash()], modifiers) ]
+      #             ^ subject        ^ verb        ^ object
     end
     module_function :performs_unstruct_event
 

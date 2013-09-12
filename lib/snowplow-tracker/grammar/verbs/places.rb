@@ -68,15 +68,14 @@ module Snowplow
                modifiers={})
 
       subject_hash = super.as_hash()
-      verb_hash = as_hash()
 
-      tr_payload = as_payload([subject_hash, verb_hash, sales_order.as_hash()], modifiers)
-      #                        ^ subject     ^ verb     ^ object
+      tr_payload = as_payload([subject_hash, as_hash(:tr), sales_order.as_hash()], modifiers)
+      #                        ^ subject     ^ verb        ^ object
 
       ti_payloads = sales_order.items.map { |ti|
         ti_hash = ti.as_hash(sales_order.order_id, sales_order.currency)
-        as_payload([subject_hash, verb_hash, ti_hash], modifiers)     
-        #           ^ subject     ^ verb     ^ object
+        as_payload([subject_hash, as_hash(:ti), ti_hash], modifiers)     
+        #           ^ subject     ^ verb        ^ object
       }
 
       (ti_payloads + tr_payloads) # Array of payloads
