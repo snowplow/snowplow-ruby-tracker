@@ -73,8 +73,9 @@ module Snowplow
       tr_payload = as_payload([subject_hash, verb_hash, sales_order.as_hash()], modifiers)
       #                        ^ subject     ^ verb     ^ object
 
-      ti_payloads = sales_order.items.map { |ti| 
-        as_payload([subject_hash, verb_hash, ti.as_hash()], modifiers)     
+      ti_payloads = sales_order.items.map { |ti|
+        ti_hash = ti.as_hash(sales_order.order_id, sales_order.currency)
+        as_payload([subject_hash, verb_hash, ti_hash], modifiers)     
         #           ^ subject     ^ verb     ^ object
       }
 

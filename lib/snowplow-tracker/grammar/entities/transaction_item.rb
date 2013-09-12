@@ -67,19 +67,25 @@ module Snowplow
     #
     # https://github.com/snowplow/snowplow/wiki/snowplow-tracker-protocol
     #
-    # Note: the Snowplow Tracker Protocol for
-    # Transaction Items expects the fields ti_id and
-    # ti_cu - these need to be added manually from the
-    # parent Transaction object (can't be done here).
+    # Note: the Snowplow Tracker Protocol expects
+    # Transaction Items to be transmitted with the
+    # Transaction's Order ID and Currency. We have
+    # to pass these in as parameters:
+    #
+    # Parameters:
+    # +order_id+:: Order ID for this transaction
+    # +currency+:: Currency code for this transaction
     #
     # Returns the Hash of all this entity's properties
     Contract => OptionHash
-    def as_hash()
+    def as_hash(order_id, currency)
       to_protocol(
+        [ 'ti_id', order_id  ],
         [ 'ti_sk', @sku      ],
         [ 'ti_na', @name     ],
         [ 'ti_ca', @category ],
         [ 'ti_pr', @price    ],
+        [ 'ti_cu', currency  ],
         [ 'ti_qu', @quantity ]
       )
     end
