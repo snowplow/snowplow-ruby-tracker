@@ -51,7 +51,7 @@ module Snowplow
                    price,
                    quantity)
 
-      # TODO: check at least one of sku and name is set
+      if sku.nil? && name.nil? raise UnidentifiedTransactionItem end
 
       @sku      = sku
       @name     = name

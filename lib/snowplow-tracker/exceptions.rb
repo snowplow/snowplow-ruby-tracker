@@ -23,5 +23,13 @@ module Snowplow
 		# 2. An out-of-date Contract definition
 		# 3. A bug in the code
 		class ContractFailure < StandardError ; end
+
+		# Throw if neither sku nor name set
+		# for a given TransactionItem
+		class UnidentifiedTransactionItem < StandardError ; end
+
+		# Throw if none of the fields identifying
+		# a user are set
+		class UnidentifiedUser < StandardError ; end
 	end
 end

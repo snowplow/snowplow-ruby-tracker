@@ -48,7 +48,7 @@ module Snowplow
                    domain_user_id=nil,
                    network_user_id=nil)
 
-      # TODO: add validation that at least one arg set
+      if ip_address.nil? && business_user_id.nil? && domain_user_id.nil? && network_user_id.nil? raise UnidentifiedUser end
 
       @ip_address = ip_address
       @business_user_id = business_user_id
