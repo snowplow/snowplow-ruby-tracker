@@ -23,8 +23,7 @@ module Snowplow
     # Readers
     attr_reader :collectors,
                 :encode_base64,
-                :pinned_subject,
-                :pinned_context
+                :context
     # We'll add the setters manually with contracts
 
     # Constants
@@ -55,6 +54,19 @@ module Snowplow
     Contract Or[Collector, Collectors] => nil
     def collectors=(collectors)
       @collectors = Array(collectors)
+      nil
+    end
+
+    # Allows a Context to be "pinned" to this
+    # Tracker - i.e. all further events will
+    # have this Context attached to them
+    #
+    # Parameters:
+    # +context+:: the Context to pin to this
+    #             Tracker
+    Contract Context => nil
+    def pin(context)
+      @context = context
       nil
     end
 

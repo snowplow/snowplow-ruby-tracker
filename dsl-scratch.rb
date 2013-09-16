@@ -23,7 +23,7 @@ unstruct_event = Snowplow::UnstructEvent.new(...)
 # Track some events
 tracker.track(~: end_ctx) do
   end_user views web_page
-  end_user places sales_order, ~: end_ctx.on(web_page) # ~: means override/attach context
+  end_user places sales_order, ~: end_ctx.on(web_page) # ~: means attach context
   end_user performs struct_event, ~: end_ctx.on(web_page).at(event_tstamp)
   api_user performs unstruct_event, ~: api_ctx
 end
