@@ -1,4 +1,3 @@
-
 # Define our Tracker
 tracker {
   collector :main, cf: 'd1vjp94kduqgnd'
@@ -19,7 +18,7 @@ unstruct_event = Snowplow::UnstructEvent.new(...)
 # Track some events
 track {
   end_user views web_page # Uses default_context
-  end_user places sales_order, ~: end_ctx.on(web_page)
+  end_user places sales_order, ~: end_ctx.on(web_page) # Modify end_ctx for this event
   end_user performs struct_event, ~: end_ctx.on(web_page).at(event_tstamp)
   
   api_user performs unstruct_event, ~: api_ctx
