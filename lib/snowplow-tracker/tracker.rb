@@ -23,7 +23,8 @@ module Snowplow
     # Readers
     attr_reader :collectors,
                 :encode_base64,
-                :context
+                :context,
+                :queue
     # We'll add the setters manually with contracts
 
     # Constants
@@ -34,14 +35,17 @@ module Snowplow
     #
     # Parameters:
     # +collectors+:: either a Collector, or an Array
-    #                of Collectors =>
+    #                of Collectors
+    # +encode_base64+:: whether JSONs should be
+    #                   Base64-encoded or not
     Contract Or[Collector, Collectors] => Tracker
-    def initialize(collectors)
+    def initialize(collectors, encode_base64=@@default_encode_base64)
 
       @collectors = Array(collectors) # To array if not already
       @collector_hash = build_hash_of(@collectors)
-      @encode_base64 = @@default_encode_base64
-      
+      @encode_base64 = encode_base64
+      @queue = [] # No events to track yet
+
       nil
     end
 
@@ -57,19 +61,6 @@ module Snowplow
       nil
     end
 
-    # Allows a Context to be "pinned" to this
-    # Tracker - i.e. all further events will
-    # have this Context attached to them
-    #
-    # Parameters:
-    # +context+:: the Context to pin to this
-    #             Tracker
-    Contract Context => nil
-    def pin(context)
-      @context = context
-      nil
-    end
-
     # Setter for encode_base64 property i.e.
     # whether or not to base64 encode JSON
     # payloads
@@ -82,6 +73,21 @@ module Snowplow
       @base64_encode = base64_encode
       nil
     end
+
+    # Allows a Context to be "pinned" to this
+    # Tracker - i.e. all further events will
+    # have this Context attached to them
+    #
+    # Parameters:
+    # +context+:: the Context to pin to this
+    #             Tracker
+    Contract Context => nil
+    def pin_context(context)
+      @context = context
+      nil
+    end
+
+    # 
 
     private
 
