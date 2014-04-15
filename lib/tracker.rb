@@ -30,7 +30,6 @@ module Snowplow
 
     Contract String, Maybe[String], Maybe[String], Bool => Tracker
     def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
-      p namespace
       @collector_uri = as_collector_uri(endpoint)
       @standard_nv_pairs = {
         'tna' => namespace,
@@ -47,6 +46,16 @@ module Snowplow
     Contract String => String
     def as_collector_uri(host)
       "http://#{host}/i"
+    end
+
+    Contract nil => Num
+    def get_transaction_id
+      rand(100000..999999)
+    end
+
+    Contract nil => Num
+    def get_timestamp
+      Time.now.to_i
     end
 
     Contract Payload => [Bool, Num]
@@ -104,61 +113,80 @@ module Snowplow
     end
 
     Contract String, Maybe[String], Maybe[String], Maybe[Hash] => [Bool, Num]
-    def track_page_view(page_url, page_title=nil, referrer=nil, context=nil)
+    def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'pv')
       pb.add('url', page_url)
       pb.add('page', page_title)
       pb.add('refr', referrer)
       pb.add('evn', @@default_vendor)
+      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      tid = self.get_transaction_id
+      pb.add('tid', tid)
+      if tstamp.nil?
+        tstamp = get_timestamp
+      end
+      pb.add('dtm', tstamp)
       self.track(pb)
     end
 
-    def track_ecommerce_transaction_item(order_id, sku, price, quantity,
-                                         name=nil, category=nil, currency=nil,
-                                         context=nil,
-                                         tstamp=nil, tid=nil) # TODO: make this an argmap
+    Contract Hash => [Bool, Num]
+    def track_ecommerce_transaction_item(argmap)
       pb = Snowplow::Payload.new
       pb.add('e', 'ti')
-      pb.add('ti_id', order_id)
-      pb.add('ti_sk', sku)
-      pb.add('ti_nm', name)
-      pb.add('ti_ca', category)
-      pb.add('ti_pr', price)
-      pb.add('ti_qu', quantity)
-      pb.add('ti_cu', currency)
+      pb.add('ti_id', argmap['order_id'])
+      pb.add('ti_sk', argmap['sku'])
+      pb.add('ti_pr', argmap['price'])
+      pb.add('ti_qu', argmap['quantity'])
+      pb.add('ti_nm', argmap['name'])
+      pb.add('ti_ca', argmap['category'])
+      pb.add('ti_cu', argmap['currency'])
       pb.add('evn', @default_vendor)
-      pb.add('tid', tid)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      pb.add_json(argmap['context'], @config['encode_base64'], 'cx', 'co')
+      pb.add('tid', argmap['tid'])
+      pb.add('dtm', argmap['tstamp'])
       self.track(pb)
     end
 
-    def track_ecommerce_transaction(order_id, total_value,
-                          affiliation=nil, tax_value=nil, shipping=nil,
-                          city=nil, state=nil, country=nil,  currency=nil,
-                          items=nil,
-                          context=nil, tstamp=nil)
+    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({"transaction_result" => [Bool, Num], "item_results" => Array[[Bool, Num]]})
+    def track_ecommerce_transaction(transaction, items,
+                                    context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
-      pb.add
       pb.add('e', 'tr')
-      pb.add('tr_id', order_id)
-      pb.add('tr_tt', total_value)
-      pb.add('tr_af', affiliation)
-      pb.add('tr_tx', tax_value)
-      pb.add('tr_sh', shipping)
-      pb.add('tr_ci', city)
-      pb.add('tr_st', state)
-      pb.add('tr_co', country)
-      pb.add('tr_cu', currency)
+      pb.add('tr_id', transaction['order_id'])
+      pb.add('tr_tt', transaction['total_value'])
+      pb.add('tr_af', transaction['affiliation'])
+      pb.add('tr_tx', transaction['tax_value'])
+      pb.add('tr_sh', transaction['shipping'])
+      pb.add('tr_ci', transaction['city'])
+      pb.add('tr_st', transaction['state'])
+      pb.add('tr_co', transaction['country'])
+      pb.add('tr_cu', transaction['currency'])
       pb.add('evn', @@default_vendor)
-      #pb.add('tid', tid)
-      #pb.add('dtm', tstamp) # TODO: set tid and dtm for all events
-      pb.add_json(context, self.config['encode_base64'], 'cx', 'co')
+      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      tid = self.get_transaction_id
+      pb.add('tid', tid)
+      if tstamp.nil?
+        tstamp = get_timestamp
+      end
+      pb.add('dtm', tstamp)
 
+      transaction_result = self.track(pb)
       item_results = []
+
+      for item in items
+        item['tstamp'] = tstamp
+        item['tid'] = tid
+        item['order_id'] = transaction['order_id']
+        item['currency'] = transaction['currency']
+        item_results.push(track_ecommerce_transaction_item(item))
+      end
+
+      {"transaction_result" => transaction_result, "item_results" => item_results}
     end
 
-    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil)
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[Hash], Maybe[Num] => [Bool, Num]
+    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'se')
       pb.add('se_ca', category)
@@ -166,22 +194,39 @@ module Snowplow
       pb.add('se_la', label)
       pb.add('se_pr', property)
       pb.add('se_va', value)
+      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      tid = self.get_transaction_id
+      pb.add('tid', tid)
+      if tstamp.nil?
+        tstamp = get_timestamp
+      end
+      pb.add('dtm', tstamp)
       self.track(pb)
     end
 
-    def track_screen_view(name, id, context=nil)
-      self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context)
+    Contract String, Maybe[String],  Maybe[Hash], Maybe[Num] => [Bool, Num]
+    def track_screen_view(name, id=nil, context=nil, tstamp=nil)
+      self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context, tstamp)
     end
 
-    def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil)
+    Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
+    def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'ue')
       pb.add('ue_na', event_name)
       pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')
       pb.add('evn', event_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      tid = self.get_transaction_id
+      pb.add('tid', tid)
+      if tstamp.nil?
+        tstamp = get_timestamp
+      end
+      pb.add('dtm', tstamp)
       self.track(pb)
     end
+
+    private :track_ecommerce_transaction_item
 
   end
 
