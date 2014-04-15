@@ -27,8 +27,10 @@ module Snowplow
     @@default_platform = 'pc'
     @@default_vendor = 'com.snowplowanalytics'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
-    
+
+    Contract String, Maybe[String], Maybe[String], Bool => Tracker
     def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+      p namespace
       @collector_uri = as_collector_uri(endpoint)
       @standard_nv_pairs = {
         'tna' => namespace,
@@ -39,6 +41,7 @@ module Snowplow
       @config = {
         'encode_base64' => encode_base64
       }
+      self
     end
 
     Contract String => String
@@ -46,19 +49,17 @@ module Snowplow
       "http://#{host}/i"
     end
 
-    Contract Payload => Array[Bool, Num]
+    Contract Payload => [Bool, Num]
     def http_get(payload)
       r = Net::HTTP.get_response(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)))
       if r.code.to_i < 0 or 400 <= r.code.to_i # TODO: add set of http errors
-        return [false, r.code.to_i]
+        return false, r.code.to_i
       else
-        return [true, r.code.to_i]
+        return true, r.code.to_i
       end
     end
 
-    '''
-    Setter methods
-    '''
+    # Setter methods
 
     Contract String => String
     def set_platform(value)
@@ -94,17 +95,15 @@ module Snowplow
       @standard_nv_pairs['tz'] = timezone
     end
 
-    '''
-    Tracking methods
-    '''
+    # Tracking methods
 
-    Contract Payload => Array[Bool, Num]
+    Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
       self.http_get(pb)
     end
 
-    Contract String, Or[String, nil], Or[String, nil], Or[Hash, nil] => Array[Bool, Num]
+    Contract String, Maybe[String], Maybe[String], Maybe[Hash] => [Bool, Num]
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'pv')

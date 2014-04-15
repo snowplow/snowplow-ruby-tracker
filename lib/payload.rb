@@ -25,11 +25,13 @@ module Snowplow
 
     attr_reader :context
 
+    Contract nil => Payload
     def initialize
       @context = {}
+      self
     end
 
-    Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
+    Contract String, Maybe[String, Bool, Num] => Maybe[String, Bool, Num]
     def add(name, value)
       if not value == "" and not value.nil?
         @context[name] = value
@@ -43,12 +45,13 @@ module Snowplow
       end
     end
 
-    Contract Or[Hash, nil], Bool, String, String => Or[String, nil]
+    Contract Maybe[Hash], Bool, String, String => Maybe[String]
     def add_json(dict, encode_base64, type_when_encoded, type_when_not_encoded)
+      
       if dict.nil?
         return
       end
-
+      
       dict_string = JSON.generate(dict)
 
       if encode_base64
@@ -56,7 +59,9 @@ module Snowplow
       else
         self.add(type_when_not_encoded, dict_string)
       end
+
     end
+
   end
 end
 
