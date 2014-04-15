@@ -16,28 +16,34 @@
 require 'base64'
 require 'json'
 require 'net/http'
+require 'contracts'
+include Contracts
 
 module Snowplow
 
   class Payload
+
     attr_reader :context
+
     def initialize
       @context = {}
-      @context['test'] = 9
     end
 
+    Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
     def add(name, value)
       if not value == "" and not value.nil?
         @context[name] = value
       end
     end
 
+    Contract Hash => Hash
     def add_dict(dict)
       for f in dict
         self.add(f[0], f[1])
       end
     end
 
+    Contract Or[Hash, nil], Bool, String, String => Or[String, nil]
     def add_json(dict, encode_base64, type_when_encoded, type_when_not_encoded)
       if dict.nil?
         return

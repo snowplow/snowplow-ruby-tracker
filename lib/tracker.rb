@@ -15,15 +15,19 @@
 
 require 'net/http'
 require './payload'
+require 'contracts'
+include Contracts
 
 module Snowplow
 
   class Tracker
+
     @@version = 'rb-0.1.0' #TODO: get this from version.rb
     @@default_encode_base64 = false
     @@default_platform = 'pc'
     @@default_vendor = 'com.snowplowanalytics'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
+    
     def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
       @collector_uri = as_collector_uri(endpoint)
       @standard_nv_pairs = {
@@ -37,10 +41,12 @@ module Snowplow
       }
     end
 
+    Contract String => String
     def as_collector_uri(host)
       "http://#{host}/i"
     end
 
+    Contract Payload => Array[Bool, Num]
     def http_get(payload)
       r = Net::HTTP.get_response(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)))
       if r.code.to_i < 0 or 400 <= r.code.to_i # TODO: add set of http errors
@@ -54,6 +60,7 @@ module Snowplow
     Setter methods
     '''
 
+    Contract String => String
     def set_platform(value)
       if @@supported_platforms.include?(value)
         @standard_nv_pairs['p'] = value
@@ -62,22 +69,27 @@ module Snowplow
       end
     end
 
+    Contract String => String
     def set_user_id(user_id)
       @standard_nv_pairs['uid'] = user_id
     end
 
+    Contract Num, Num => String
     def set_screen_resolution(width, height)
       @standard_nv_pairs['res'] = "#{width}x#{height}"
     end
 
+    Contract Num, Num => String
     def set_viewport(width, height)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
     end
 
+    Contract Num => Num
     def set_color_depth(depth)
       @standard_nv_pairs['cd'] = depth
     end
 
+    Contract String => String
     def set_timezone(timezone)
       @standard_nv_pairs['tz'] = timezone
     end
@@ -86,11 +98,13 @@ module Snowplow
     Tracking methods
     '''
 
+    Contract Payload => Array[Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
       self.http_get(pb)
     end
 
+    Contract String, Or[String, nil], Or[String, nil], Or[Hash, nil] => Array[Bool, Num]
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'pv')
@@ -145,8 +159,6 @@ module Snowplow
       item_results = []
     end
 
-
-
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil)
       pb = Snowplow::Payload.new
       pb.add('e', 'se')
@@ -158,7 +170,7 @@ module Snowplow
       self.track(pb)
     end
 
-    def track_screen_view(name, id, context)
+    def track_screen_view(name, id, context=nil)
       self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context)
     end
 
