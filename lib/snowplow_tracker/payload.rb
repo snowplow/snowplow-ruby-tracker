@@ -64,4 +64,3 @@ module Snowplow
 
   end
 end
-

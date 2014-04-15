@@ -14,7 +14,6 @@
 # License:: Apache License Version 2.0
 
 require 'net/http'
-require './payload'
 require 'contracts'
 include Contracts
 
