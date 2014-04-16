@@ -55,7 +55,7 @@ module Snowplow
       dict_string = JSON.generate(dict)
 
       if encode_base64
-        self.add(type_when_encoded, Base64.encode64(dict_string))
+        self.add(type_when_encoded, Base64.strict_encode64(dict_string))
       else
         self.add(type_when_not_encoded, dict_string)
       end

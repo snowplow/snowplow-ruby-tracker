@@ -22,7 +22,7 @@ module Snowplow
   class Tracker
 
     @@version = 'rb-0.1.0' #TODO: get this from version.rb
-    @@default_encode_base64 = false
+    @@default_encode_base64 = true
     @@default_platform = 'pc'
     @@default_vendor = 'com.snowplowanalytics'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
@@ -147,7 +147,7 @@ module Snowplow
       self.track(pb)
     end
 
-    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({"transaction_result" => [Bool, Num], "item_results" => Array[[Bool, Num]]})
+    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({"transaction_result" => [Bool, Num], "item_results" => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
