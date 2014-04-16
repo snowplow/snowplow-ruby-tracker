@@ -1,4 +1,7 @@
 # Ruby Analytics for Snowplow [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
+[![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
+
+This project is a work in progress.
 
 ## Overview
 
