@@ -103,6 +103,11 @@ module Snowplow
       @standard_nv_pairs['tz'] = timezone
     end
 
+    Contract String => String
+    def set_lang(lang)
+      @standard_nv_pairs['lang'] = lang
+    end
+
     # Tracking methods
 
     Contract Payload => [Bool, Num]

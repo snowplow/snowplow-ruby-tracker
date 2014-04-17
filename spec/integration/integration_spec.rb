@@ -50,7 +50,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t = Snowplow::Tracker.new('localhost')
     t.track_page_view('http://example.com', 'Two words')
     param_hash = CGI.parse(t.get_last_querystring)
-    expected_fields = {'page' => 'Two words'}
+    expected_fields = {'e' => 'pv', 'page' => 'Two words'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -58,7 +58,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
     
   it 'tracks an ecommerce transaction' do
     t = Snowplow::Tracker.new('localhost')
-    p t.track_ecommerce_transaction({
+    t.track_ecommerce_transaction({
       "order_id" => "12345",
       'total_value' => 35,
       'city' => 'London',
@@ -91,6 +91,10 @@ describe Snowplow::Tracker, 'Querystring construction' do
     expected_fields = {'e' => 'ti', 'ti_id' => '12345', 'ti_sk' => 'pbz0038', 'ti_cu' => 'GBP', 'ti_pr' => '15'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+    ['dtm', 'tid'].each do |field|
+      expect(CGI.parse(t.get_last_querystring(1))[field]).to eq(CGI.parse(t.get_last_querystring(3))[field])
     end
 
   end
@@ -137,6 +141,33 @@ describe Snowplow::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {'e' => 'ue', 'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 'evn' => 'com.snowplowanalytics'}
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+  it 'adds standard name-value pairs to the payload' do
+    t = Snowplow::Tracker.new('localhost', 'cf', 'angry-birds-android')
+    t.set_platform('mob')
+    t.set_user_id('user12345')
+    t.set_screen_resolution(100, 200)
+    t.set_color_depth(24)
+    t.set_timezone('Europe London')
+    t.set_lang('en')
+    t.track_page_view('http://www.example.com', 'title page')
+
+    param_hash = CGI.parse(t.get_last_querystring(1))
+    expected_fields = {
+      'tna' => 'cf', 
+      'evn' => 'com.snowplowanalytics', 
+      'res' => '100x200', 
+      'lang' => 'en', 
+      'aid' => 'angry-birds-android', 
+      'cd' => '24', 
+      'tz' => 'Europe London', 
+      'p' => 'mob', 
+      'tv' => 'rb-0.1.0'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end

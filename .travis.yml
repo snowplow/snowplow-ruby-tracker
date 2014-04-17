@@ -1,0 +1,10 @@
+languag: ruby
+rvm:
+  - 2.0.0
+
+install:
+ - "gem install contracts"
+ - "gem install rspec"
+ - "gem install webmock"
+
+script: rspec
