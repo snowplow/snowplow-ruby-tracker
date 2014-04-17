@@ -36,7 +36,7 @@ module Snowplow
       else
         return true, r.code.to_i
       end
-      
+
     end
 
     # New method to get the n-th from last querystring
@@ -52,9 +52,9 @@ describe Snowplow::Tracker, 'Querystring construction' do
 
   it 'tracks a page view' do
     t = Snowplow::Tracker.new('localhost')
-    t.track_page_view('http://example.com', 'Two words')
+    t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com')
     param_hash = CGI.parse(t.get_last_querystring)
-    expected_fields = {'e' => 'pv', 'page' => 'Two words'}
+    expected_fields = {'e' => 'pv', 'page' => 'Two words', 'refr' => 'http://www.referrer.com'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -172,6 +172,25 @@ describe Snowplow::Tracker, 'Querystring construction' do
       'tz' => 'Europe London', 
       'p' => 'mob', 
       'tv' => Snowplow::TRACKER_VERSION}
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+  it 'adds a custom context to the payload' do
+    t = Snowplow::Tracker.new('localhost', nil, nil, false)
+    t.track_page_view('http://www.example.com', nil, nil, {
+      'page' => {
+        'page_type' => 'test'
+        }, 
+      'user' => {
+        'user_type' => 'tester'
+        }
+      })
+
+    param_hash = CGI.parse(t.get_last_querystring(1))
+    expected_fields = {'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}"}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end

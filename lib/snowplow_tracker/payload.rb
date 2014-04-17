@@ -31,13 +31,17 @@ module Snowplow
       self
     end
 
+    # Add a single name-value pair to @context
+    #
     Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
     def add(name, value)
       if not value == "" and not value.nil?
         @context[name] = value
       end
     end
-
+    
+    # Add each name-value pair in dict to @context
+    #
     Contract Hash => Hash
     def add_dict(dict)
       for f in dict
@@ -45,6 +49,8 @@ module Snowplow
       end
     end
 
+    # Stringify a JSON and add it to @context
+    #
     Contract Maybe[Hash], Bool, String, String => Maybe[String]
     def add_json(dict, encode_base64, type_when_encoded, type_when_not_encoded)
       

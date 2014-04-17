@@ -119,9 +119,11 @@ module Snowplow
     Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
-      self.http_get(pb)
+      http_get(pb)
     end
 
+    # Log a visit to this page
+    #
     Contract String, Maybe[String], Maybe[String], Maybe[Hash] => [Bool, Num]
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
@@ -131,15 +133,18 @@ module Snowplow
       pb.add('refr', referrer)
       pb.add('evn', @@default_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = self.get_transaction_id
+      tid = get_transaction_id
       pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
-      self.track(pb)
+      track(pb)
     end
 
+    # Track a single item within an ecommerce transaction.
+    #   Not part of the public API.
+    #
     Contract Hash => [Bool, Num]
     def track_ecommerce_transaction_item(argmap)
       pb = Snowplow::Payload.new
@@ -155,9 +160,11 @@ module Snowplow
       pb.add_json(argmap['context'], @config['encode_base64'], 'cx', 'co')
       pb.add('tid', argmap['tid'])
       pb.add('dtm', argmap['tstamp'])
-      self.track(pb)
+      track(pb)
     end
 
+    # Track an ecommerce transaction and all the items in it
+    #
     Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({"transaction_result" => [Bool, Num], "item_results" => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
@@ -174,14 +181,14 @@ module Snowplow
       pb.add('tr_cu', transaction['currency'])
       pb.add('evn', @@default_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = self.get_transaction_id
+      tid = get_transaction_id
       pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
 
-      transaction_result = self.track(pb)
+      transaction_result = track(pb)
       item_results = []
 
       for item in items
@@ -195,6 +202,8 @@ module Snowplow
       {"transaction_result" => transaction_result, "item_results" => item_results}
     end
 
+    # Track a structured event
+    #
     Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
@@ -205,20 +214,24 @@ module Snowplow
       pb.add('se_pr', property)
       pb.add('se_va', value)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = self.get_transaction_id
+      tid = get_transaction_id
       pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
-      self.track(pb)
+      track(pb)
     end
 
+    # Track a screen view event
+    #
     Contract String, Maybe[String],  Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_screen_view(name, id=nil, context=nil, tstamp=nil)
       self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context, tstamp)
     end
 
+    # Track an unstructured event
+    #
     Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
@@ -227,16 +240,21 @@ module Snowplow
       pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')
       pb.add('evn', event_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = self.get_transaction_id
+      tid = get_transaction_id
       pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
-      self.track(pb)
+      track(pb)
     end
 
-    private :track_ecommerce_transaction_item
+    private :as_collector_uri,
+            :get_transaction_id,
+            :get_timestamp,
+            :http_get,
+            :track,
+            :track_ecommerce_transaction_item
 
   end
 
