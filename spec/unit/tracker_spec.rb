@@ -18,8 +18,9 @@ require 'spec_helper'
 module Snowplow
   class Tracker
 
-    attr_reader :standard_nv_pairs,
-          :config
+    attr_reader :collector_uri,
+                :standard_nv_pairs,
+                :config
 
   end
 end
