@@ -1,4 +1,5 @@
 # Ruby Analytics for Snowplow 
+[![Gem Version](https://badge.fury.io/rb/snowplow-tracker.svg)](http://badge.fury.io/rb/snowplow-tracker)
 [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
 [![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
 
