@@ -27,12 +27,16 @@ module Snowplow
       # This additional line records event querystrings
       @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)).query)
 
-      r = Net::HTTP.get_response(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)))
-      if r.code.to_i < 0 or 400 <= r.code.to_i # TODO: add set of http errors
+      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
+      r = Net::HTTP.get_response(destination)
+      if @@http_errors.include? r.code
+        return false, "Host [#{r.host}] not found (possible connectivity error)"
+      elsif r.code.to_i < 0 or 400 <= r.code.to_i
         return false, r.code.to_i
       else
         return true, r.code.to_i
       end
+      
     end
 
     # New method to get the n-th from last querystring

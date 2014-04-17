@@ -26,6 +26,9 @@ module Snowplow
     @@default_platform = 'pc'
     @@default_vendor = 'com.snowplowanalytics'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
+    @@http_errors = ['host not found',
+                     'No address associated with name',
+                     'No address associated with hostname']
 
     Contract String, Maybe[String], Maybe[String], Bool => Tracker
     def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
@@ -59,8 +62,11 @@ module Snowplow
 
     Contract Payload => [Bool, Num]
     def http_get(payload)
-      r = Net::HTTP.get_response(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)))
-      if r.code.to_i < 0 or 400 <= r.code.to_i # TODO: add set of http errors
+      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
+      r = Net::HTTP.get_response(destination)
+      if @@http_errors.include? r.code
+        return false, "Host [#{r.host}] not found (possible connectivity error)"
+      elsif r.code.to_i < 0 or 400 <= r.code.to_i
         return false, r.code.to_i
       else
         return true, r.code.to_i
