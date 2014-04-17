@@ -167,7 +167,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
       'cd' => '24', 
       'tz' => 'Europe London', 
       'p' => 'mob', 
-      'tv' => 'rb-0.1.0'}
+      'tv' => Snowplow::TRACKER_VERSION}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end

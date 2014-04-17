@@ -15,5 +15,5 @@
 
 module Snowplow
   VERSION = '0.1.0'
-  TRACKER_VERSION = "ruby-#{VERSION}"
+  TRACKER_VERSION = "rb-#{VERSION}"
 end

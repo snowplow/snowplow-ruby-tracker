@@ -21,7 +21,7 @@ module Snowplow
 
   class Tracker
 
-    @@version = 'rb-0.1.0' #TODO: get this from version.rb
+    @@version = TRACKER_VERSION
     @@default_encode_base64 = true
     @@default_platform = 'pc'
     @@default_vendor = 'com.snowplowanalytics'
