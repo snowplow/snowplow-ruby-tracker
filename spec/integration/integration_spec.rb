@@ -63,7 +63,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   it 'tracks an ecommerce transaction' do
     t = Snowplow::Tracker.new('localhost')
     t.track_ecommerce_transaction({
-      "order_id" => "12345",
+      'order_id' => '12345',
       'total_value' => 35,
       'city' => 'London',
       'currency' => 'GBP'
@@ -117,7 +117,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (no base64)' do
     t = Snowplow::Tracker.new('localhost', nil, nil, false)
-    t.track_unstruct_event("viewed_product", {"product_id" => "ASO01043", "price" => 49.95}, 'com.example')
+    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {'e' => 'ue', 'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 'evn' => 'com.example'}
@@ -129,7 +129,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (base64)' do
     t = Snowplow::Tracker.new('localhost')
-    t.track_unstruct_event("viewed_product", {"product_id" => "ASO01043", "price" => 49.95}, 'com.example')
+    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {'e' => 'ue', 'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 'evn' => 'com.example'}
@@ -155,7 +155,8 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t = Snowplow::Tracker.new('localhost', 'cf', 'angry-birds-android')
     t.set_platform('mob')
     t.set_user_id('user12345')
-    t.set_screen_resolution(100, 200)
+    t.set_screen_resolution(400, 200)
+    t.set_viewport(100, 80)
     t.set_color_depth(24)
     t.set_timezone('Europe London')
     t.set_lang('en')
@@ -165,7 +166,8 @@ describe Snowplow::Tracker, 'Querystring construction' do
     expected_fields = {
       'tna' => 'cf', 
       'evn' => 'com.snowplowanalytics', 
-      'res' => '100x200', 
+      'res' => '400x200',
+      'vp' => '100x80',
       'lang' => 'en', 
       'aid' => 'angry-birds-android', 
       'cd' => '24', 

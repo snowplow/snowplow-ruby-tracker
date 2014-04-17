@@ -45,21 +45,29 @@ module Snowplow
       self
     end
 
+    # Adds the protocol to the fron of the collector URL, and /i to the end
+    #
     Contract String => String
     def as_collector_uri(host)
       "http://#{host}/i"
     end
 
+    # Randomly generates a hopefully unique internal transaction ID for each event
+    #
     Contract nil => Num
     def get_transaction_id
       rand(100000..999999)
     end
 
+    # Generates the timestamp (in milliseconds) to be attached to each event
+    #
     Contract nil => Num
     def get_timestamp
-      Time.now.to_i
+      (Time.now.to_f * 1000).to_i
     end
 
+    # Send request
+    #
     Contract Payload => [Bool, Num]
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
@@ -75,6 +83,8 @@ module Snowplow
 
     # Setter methods
 
+    # Specify the platform
+    # 
     Contract String => String
     def set_platform(value)
       if @@supported_platforms.include?(value)
@@ -84,31 +94,43 @@ module Snowplow
       end
     end
 
+    # Set the business-defined user ID for a user
+    #
     Contract String => String
     def set_user_id(user_id)
       @standard_nv_pairs['uid'] = user_id
     end
 
+    # Set the screen resolution for a device
+    #
     Contract Num, Num => String
     def set_screen_resolution(width, height)
       @standard_nv_pairs['res'] = "#{width}x#{height}"
     end
 
+    # Set the dimensions of the current viewport
+    # 
     Contract Num, Num => String
     def set_viewport(width, height)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
     end
 
+    # Set the color depth of the device in bits per pixel
+    #
     Contract Num => Num
     def set_color_depth(depth)
       @standard_nv_pairs['cd'] = depth
     end
 
+    # Set the timezone field
+    #
     Contract String => String
     def set_timezone(timezone)
       @standard_nv_pairs['tz'] = timezone
     end
 
+    # Set the language field
+    #
     Contract String => String
     def set_lang(lang)
       @standard_nv_pairs['lang'] = lang
@@ -116,6 +138,8 @@ module Snowplow
 
     # Tracking methods
 
+    # Attaches all the fields in @standard_nv_pairs to the request
+    #
     Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
@@ -165,7 +189,7 @@ module Snowplow
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({"transaction_result" => [Bool, Num], "item_results" => ArrayOf[[Bool, Num]]})
+    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
@@ -199,7 +223,7 @@ module Snowplow
         item_results.push(track_ecommerce_transaction_item(item))
       end
 
-      {"transaction_result" => transaction_result, "item_results" => item_results}
+      {'transaction_result' => transaction_result, 'item_results' => item_results}
     end
 
     # Track a structured event
@@ -259,4 +283,3 @@ module Snowplow
   end
 
 end
-
