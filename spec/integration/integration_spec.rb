@@ -116,7 +116,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (no base64)' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, false)
+    t = Snowplow::Tracker.new('localhost', nil, nil, nil, false)
     t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -140,7 +140,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, false)
+    t = Snowplow::Tracker.new('localhost', nil, nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -181,7 +181,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'adds a custom context to the payload' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, false)
+    t = Snowplow::Tracker.new('localhost', nil, nil, 'com.example', false)
     t.track_page_view('http://www.example.com', nil, nil, {
       'page' => {
         'page_type' => 'test'
@@ -192,7 +192,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
       })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}"}
+    expected_fields = {'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}", 'cv' => 'com.example'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end

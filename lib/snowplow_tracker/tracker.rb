@@ -19,6 +19,14 @@ include Contracts
 
 module Snowplow
 
+  RECOGNISED_TRANSACTION_KEYS = ['order_id', 'total_value', 'affiliation', 'tax_value', 'shipping', 'city', 'state', 'country', 'currency']
+
+  RECOGNISED_ITEM_KEYS = ['sku', 'price', 'quantity', 'name', 'category', 'context', 'tstamp', 'tid', 'order_id', 'currency']
+
+  Transaction = lambda { |x| (x.keys - RECOGNISED_TRANSACTION_KEYS).empty? }
+
+  Item = lambda { |x| (x.keys - RECOGNISED_ITEM_KEYS).empty? }
+
   class Tracker
 
     @@version = TRACKER_VERSION
@@ -30,8 +38,8 @@ module Snowplow
                      'No address associated with name',
                      'No address associated with hostname']
 
-    Contract String, Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+    Contract String, Maybe[String], Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(endpoint, namespace=nil, app_id=nil, context_vendor=nil, encode_base64=@@default_encode_base64)
       @collector_uri = as_collector_uri(endpoint)
       @standard_nv_pairs = {
         'tna' => namespace,
@@ -40,6 +48,7 @@ module Snowplow
         'aid' => app_id
       }
       @config = {
+        'context_vendor' => context_vendor,
         'encode_base64' => encode_base64
       }
       self
@@ -139,10 +148,14 @@ module Snowplow
     # Tracking methods
 
     # Attaches all the fields in @standard_nv_pairs to the request
+    #  Only attaches the context vendor if the event has a custom context
     #
     Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
+      if not pb.context['co'].nil? or not pb.context['cx'].nil?
+        pb.add('cv', @config['context_vendor'])
+      end
       http_get(pb)
     end
 
@@ -166,8 +179,8 @@ module Snowplow
       track(pb)
     end
 
-    # Track a single item within an ecommerce transaction.
-    #   Not part of the public API.
+    # Track a single item within an ecommerce transaction
+    #   Not part of the public API
     #
     Contract Hash => [Bool, Num]
     def track_ecommerce_transaction_item(argmap)
@@ -189,7 +202,7 @@ module Snowplow
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract Hash, Array, Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
+    Contract Transaction, ArrayOf[Item], Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
