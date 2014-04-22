@@ -28,7 +28,7 @@ module Snowplow
     @@Transaction = lambda { |x|
       transaction_keys = Set.new(x.keys)
       @@required_transaction_keys.subset? transaction_keys and
-      transaction_keys.subset? @@recognised_transaction_keys
+        transaction_keys.subset? @@recognised_transaction_keys
     }
 
     @@required_item_keys =   Set.new(%w(sku price quantity))
@@ -37,7 +37,16 @@ module Snowplow
     @@Item = lambda { |x|
       item_keys = Set.new(x.keys)
       @@required_item_keys.subset? item_keys and
-      item_keys.subset? @@recognised_item_keys
+        item_keys.subset? @@recognised_item_keys
+    }
+
+    @@required_augmented_item_keys =   Set.new(%w(sku price quantity tstamp tid order_id))
+    @@recognised_augmented_item_keys = Set.new(%w(sku price quantity name category context tstamp tid order_id currency))
+
+    @@AugmentedItem = lambda { |x|
+      augmented_item_keys = Set.new(x.keys)
+      @@required_augmented_item_keys.subset? augmented_item_keys and
+        augmented_item_keys.subset? @@recognised_augmented_item_keys
     }
 
     @@version = TRACKER_VERSION
@@ -164,7 +173,7 @@ module Snowplow
     Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
-      if not pb.context['co'].nil? or not pb.context['cx'].nil?
+      if pb.context.key? 'co' or pb.context.key? 'cx'
         pb.add('cv', @config['context_vendor'])
       end
       http_get(pb)
@@ -193,7 +202,7 @@ module Snowplow
     # Track a single item within an ecommerce transaction
     #   Not part of the public API
     #
-    Contract Hash => [Bool, Num]
+    Contract @@AugmentedItem => [Bool, Num]
     def track_ecommerce_transaction_item(argmap)
       pb = Snowplow::Payload.new
       pb.add('e', 'ti')
