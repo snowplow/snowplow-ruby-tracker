@@ -15,19 +15,30 @@
 
 require 'net/http'
 require 'contracts'
+require 'set'
 include Contracts
 
 module Snowplow
 
-  RECOGNISED_TRANSACTION_KEYS = ['order_id', 'total_value', 'affiliation', 'tax_value', 'shipping', 'city', 'state', 'country', 'currency']
-
-  RECOGNISED_ITEM_KEYS = ['sku', 'price', 'quantity', 'name', 'category', 'context', 'tstamp', 'tid', 'order_id', 'currency']
-
-  Transaction = lambda { |x| (x.keys - RECOGNISED_TRANSACTION_KEYS).empty? }
-
-  Item = lambda { |x| (x.keys - RECOGNISED_ITEM_KEYS).empty? }
-
   class Tracker
+
+    @@required_transaction_keys =   Set.new(%w(order_id total_value))
+    @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
+    
+    @@Transaction = lambda { |x|
+      transaction_keys = Set.new(x.keys)
+      @@required_transaction_keys.subset? transaction_keys and
+      transaction_keys.subset? @@recognised_transaction_keys
+    }
+
+    @@required_item_keys =   Set.new(%w(sku price quantity))
+    @@recognised_item_keys = Set.new(%w(sku price quantity name category context))
+
+    @@Item = lambda { |x|
+      item_keys = Set.new(x.keys)
+      @@required_item_keys.subset? item_keys and
+      item_keys.subset? @@recognised_item_keys
+    }
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
@@ -202,7 +213,7 @@ module Snowplow
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract Transaction, ArrayOf[Item], Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
+    Contract @@Transaction, ArrayOf[@@Item], Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Snowplow::Payload.new
