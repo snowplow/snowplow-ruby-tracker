@@ -26,6 +26,7 @@ module Snowplow
     @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
     
     @@Transaction = lambda { |x|
+      return false unless x.class == Hash
       transaction_keys = Set.new(x.keys)
       @@required_transaction_keys.subset? transaction_keys and
         transaction_keys.subset? @@recognised_transaction_keys
@@ -35,6 +36,7 @@ module Snowplow
     @@recognised_item_keys = Set.new(%w(sku price quantity name category context))
 
     @@Item = lambda { |x|
+      return false unless x.class == Hash
       item_keys = Set.new(x.keys)
       @@required_item_keys.subset? item_keys and
         item_keys.subset? @@recognised_item_keys
@@ -44,6 +46,7 @@ module Snowplow
     @@recognised_augmented_item_keys = Set.new(%w(sku price quantity name category context tstamp tid order_id currency))
 
     @@AugmentedItem = lambda { |x|
+      return false unless x.class == Hash
       augmented_item_keys = Set.new(x.keys)
       @@required_augmented_item_keys.subset? augmented_item_keys and
         augmented_item_keys.subset? @@recognised_augmented_item_keys

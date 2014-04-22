@@ -12,7 +12,8 @@
 # Author::    Alex Dean, Fred Blundun (mailto:snowplow-user@googlegroups.com)
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
+#
+# -*- encoding: utf-8 -*-
 
-require 'snowplow_tracker/version.rb'
-require 'snowplow_tracker/payload.rb'
-require 'snowplow_tracker/tracker.rb'
+source 'https://rubygems.org'
+gemspec

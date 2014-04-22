@@ -35,7 +35,7 @@ module Snowplow
     #
     Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
     def add(name, value)
-      if not value == "" and not value.nil?
+      if value != "" and not value.nil?
         @context[name] = value
       end
     end
