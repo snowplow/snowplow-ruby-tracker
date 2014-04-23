@@ -54,7 +54,10 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t = Snowplow::Tracker.new('localhost')
     t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com')
     param_hash = CGI.parse(t.get_last_querystring)
-    expected_fields = {'e' => 'pv', 'page' => 'Two words', 'refr' => 'http://www.referrer.com'}
+    expected_fields = {
+      'e' => 'pv', 
+      'page' => 'Two words', 
+      'refr' => 'http://www.referrer.com'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -65,7 +68,12 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t.track_ecommerce_transaction({
       'order_id' => '12345',
       'total_value' => 35,
-      'city' => 'London',
+      'affiliation' => 'my_company',
+      'tax_value' => 0,
+      'shipping' => 0,
+      'city' => 'Phoenix',
+      'state' => 'Arizona',
+      'country' => 'USA',
       'currency' => 'GBP'
       },
       [ {
@@ -76,23 +84,50 @@ describe Snowplow::Tracker, 'Querystring construction' do
       {
       'sku' => 'pbz0038',
       'price' => 15,
-      'quantity' => 1
+      'quantity' => 1,
+      'name' => 'crystals',
+      'category' => 'magic'
   }])
 
     param_hash = CGI.parse(t.get_last_querystring(3))
-    expected_fields = {'e' => 'tr', 'tr_id' => '12345', 'tr_tt' => '35', 'tr_ci' => 'London', 'tr_cu' => 'GBP'}
+    expected_fields = {
+      'e' => 'tr', 
+      'tr_id' => '12345', 
+      'tr_tt' => '35', 
+      'tr_af' => 'my_company', 
+      'tr_tx' => '0', 
+      'tr_sh' => '0', 
+      'tr_ci' => 'Phoenix', 
+      'tr_st' => 'Arizona', 
+      'tr_co' => 'USA', 
+      'tr_cu' => 'GBP'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end    
 
     param_hash = CGI.parse(t.get_last_querystring(2))
-    expected_fields = {'e' => 'ti', 'ti_id' => '12345', 'ti_sk' => 'pbz0026', 'ti_cu' => 'GBP', 'ti_pr' => '20'}
+    expected_fields = {
+      'e' => 'ti', 
+      'ti_id' => '12345', 
+      'ti_sk' => 'pbz0026', 
+      'ti_cu' => 'GBP', 
+      'ti_pr' => '20'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end    
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'e' => 'ti', 'ti_id' => '12345', 'ti_sk' => 'pbz0038', 'ti_cu' => 'GBP', 'ti_pr' => '15'}
+    expected_fields = {
+      'e' => 'ti', 
+      'ti_id' => '12345', 
+      'ti_sk' => 'pbz0038', 
+      'ti_nm' => 'crystals', 
+      'ti_ca' => 'magic', 
+      'ti_cu' => 'GBP', 
+      'ti_pr' => '15'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -108,7 +143,13 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99)
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'e' => 'se', 'se_ca' => 'Ecomm', 'se_ac' => 'add-to-basket', 'se_pr' => 'hd', 'se_va' => '13.99'}
+    expected_fields = {
+      'e' => 'se', 
+      'se_ca' => 'Ecomm', 
+      'se_ac' => 'add-to-basket', 
+      'se_pr' => 'hd', 
+      'se_va' => '13.99'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end    
@@ -120,7 +161,11 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'e' => 'ue', 'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 'evn' => 'com.example'}
+    expected_fields = {
+      'e' => 'ue', 
+      'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 
+      'evn' => 'com.example'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -132,7 +177,11 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'e' => 'ue', 'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 'evn' => 'com.example'}
+    expected_fields = {
+      'e' => 'ue', 
+      'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 
+      'evn' => 'com.example'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -144,7 +193,11 @@ describe Snowplow::Tracker, 'Querystring construction' do
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'e' => 'ue', 'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 'evn' => 'com.snowplowanalytics'}
+    expected_fields = {
+      'e' => 'ue', 
+      'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 
+      'evn' => 'com.snowplowanalytics'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -173,7 +226,8 @@ describe Snowplow::Tracker, 'Querystring construction' do
       'cd' => '24', 
       'tz' => 'Europe London', 
       'p' => 'mob', 
-      'tv' => Snowplow::TRACKER_VERSION}
+      'tv' => Snowplow::TRACKER_VERSION
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
@@ -192,7 +246,10 @@ describe Snowplow::Tracker, 'Querystring construction' do
       })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
-    expected_fields = {'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}", 'cv' => 'com.example'}
+    expected_fields = {
+      'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}", 
+      'cv' => 'com.example'
+    }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
