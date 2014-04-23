@@ -1,4 +1,8 @@
-# Ruby Analytics for Snowplow [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
+# Ruby Analytics for Snowplow 
+[![Gem Version](https://badge.fury.io/rb/snowplow-tracker.svg)](http://badge.fury.io/rb/snowplow-tracker)
+[![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
+[![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
+[![Coverage Status](https://coveralls.io/repos/snowplow/snowplow-ruby-tracker/badge.png)](https://coveralls.io/r/snowplow/snowplow-ruby-tracker)
 
 ## Overview
 
@@ -15,7 +19,7 @@ With this tracker you can collect event data from your [Ruby] [ruby] application
 
 ## Copyright and license
 
-The Snowplow Ruby Tracker is copyright 2013 Snowplow Analytics Ltd.
+The Snowplow Ruby Tracker is copyright 2013-2014 Snowplow Analytics Ltd.
 
 Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
 you may not use this software except in compliance with the License.

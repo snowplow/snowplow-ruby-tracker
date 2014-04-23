@@ -13,7 +13,34 @@
 # Copyright:: Copyright (c) 2013-2014 SnowPlow Analytics Ltd
 # License:: Apache License Version 2.0
 
+require 'spec_helper'
+
 module SnowplowTracker
-  VERSION = '0.1.0'
-  TRACKER_VERSION = "rb-#{VERSION}"
+  class Tracker
+
+    attr_reader :collector_uri,
+                :standard_nv_pairs,
+                :config
+
+  end
+end
+
+describe SnowplowTracker::Tracker, 'configuration' do
+
+  before(:each) do
+    @t = SnowplowTracker::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", 'com.example', false)
+  end
+
+  it 'should create the collector uri' do
+  	@t.collector_uri.should eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
+  end
+
+  it 'should initialise standard name-value pairs' do
+    @t.standard_nv_pairs.should eq({'tna' => 'cloudfront', 'tv' => SnowplowTracker::TRACKER_VERSION, 'p' => 'pc', 'aid' => 'AF003'})
+  end
+
+  it 'should initialise with the right configuration' do
+    @t.config.should eq({'encode_base64' => false, 'context_vendor' => 'com.example'})
+  end
+
 end
