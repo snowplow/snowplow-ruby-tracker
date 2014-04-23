@@ -2,6 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/snowplow-tracker.svg)](http://badge.fury.io/rb/snowplow-tracker)
 [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
 [![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
+[![Coverage Status](https://coveralls.io/repos/snowplow/snowplow-ruby-tracker/badge.png)](https://coveralls.io/r/snowplow/snowplow-ruby-tracker)
 
 This project is a work in progress.
 
