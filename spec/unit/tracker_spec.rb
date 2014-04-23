@@ -15,7 +15,7 @@
 
 require 'spec_helper'
 
-module Snowplow
+module SnowplowTracker
   class Tracker
 
     attr_reader :collector_uri,
@@ -25,10 +25,10 @@ module Snowplow
   end
 end
 
-describe Snowplow::Tracker, 'configuration' do
+describe SnowplowTracker::Tracker, 'configuration' do
 
   before(:each) do
-    @t = Snowplow::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", 'com.example', false)
+    @t = SnowplowTracker::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", 'com.example', false)
   end
 
   it 'should create the collector uri' do
@@ -36,7 +36,7 @@ describe Snowplow::Tracker, 'configuration' do
   end
 
   it 'should initialise standard name-value pairs' do
-    @t.standard_nv_pairs.should eq({'tna' => 'cloudfront', 'tv' => Snowplow::TRACKER_VERSION, 'p' => 'pc', 'aid' => 'AF003'})
+    @t.standard_nv_pairs.should eq({'tna' => 'cloudfront', 'tv' => SnowplowTracker::TRACKER_VERSION, 'p' => 'pc', 'aid' => 'AF003'})
   end
 
   it 'should initialise with the right configuration' do

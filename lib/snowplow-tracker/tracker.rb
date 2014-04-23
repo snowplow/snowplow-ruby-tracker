@@ -18,7 +18,7 @@ require 'contracts'
 require 'set'
 include Contracts
 
-module Snowplow
+module SnowplowTracker
 
   class Tracker
 
@@ -186,7 +186,7 @@ module Snowplow
     #
     Contract String, Maybe[String], Maybe[String], Maybe[Hash] => [Bool, Num]
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
-      pb = Snowplow::Payload.new
+      pb = Payload.new
       pb.add('e', 'pv')
       pb.add('url', page_url)
       pb.add('page', page_title)
@@ -207,7 +207,7 @@ module Snowplow
     #
     Contract @@AugmentedItem => [Bool, Num]
     def track_ecommerce_transaction_item(argmap)
-      pb = Snowplow::Payload.new
+      pb = Payload.new
       pb.add('e', 'ti')
       pb.add('ti_id', argmap['order_id'])
       pb.add('ti_sk', argmap['sku'])
@@ -228,7 +228,7 @@ module Snowplow
     Contract @@Transaction, ArrayOf[@@Item], Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
-      pb = Snowplow::Payload.new
+      pb = Payload.new
       pb.add('e', 'tr')
       pb.add('tr_id', transaction['order_id'])
       pb.add('tr_tt', transaction['total_value'])
@@ -266,7 +266,7 @@ module Snowplow
     #
     Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
-      pb = Snowplow::Payload.new
+      pb = Payload.new
       pb.add('e', 'se')
       pb.add('se_ca', category)
       pb.add('se_ac', action)
@@ -294,7 +294,7 @@ module Snowplow
     #
     Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil, tstamp=nil)
-      pb = Snowplow::Payload.new
+      pb = Payload.new
       pb.add('e', 'ue')
       pb.add('ue_na', event_name)
       pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')

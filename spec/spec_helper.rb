@@ -14,7 +14,7 @@
 # License:: Apache License Version 2.0
 
 require 'webmock/rspec'
-require './lib/snowplow_tracker'
+require 'snowplow-tracker'
 
 WebMock.disable_net_connect!(:allow_localhost => true)
 

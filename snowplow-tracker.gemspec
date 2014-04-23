@@ -18,12 +18,12 @@
 lib = File.expand_path('../lib', __FILE__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'snowplow_tracker/version'
+require 'snowplow-tracker/version'
 
 Gem::Specification.new do |s|
   s.name        = 'snowplow-tracker'
-  s.version     = Snowplow::VERSION
-  s.date        = File.mtime('./lib/snowplow_tracker/version.rb').strftime('%Y-%m-%d')
+  s.version     = SnowplowTracker::VERSION
+  s.date        = File.mtime('./lib/snowplow-tracker/version.rb').strftime('%Y-%m-%d')
   s.homepage    = 'http://github.com/snowplow/snowplow-ruby-tracker'
   s.license     = 'Apache License 2.0'
   s.summary     = "Ruby Analytics for Snowplow"

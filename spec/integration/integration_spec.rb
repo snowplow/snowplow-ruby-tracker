@@ -16,7 +16,7 @@
 require 'spec_helper'
 require 'cgi'
 
-module Snowplow
+module SnowplowTracker
   class Tracker
 
     # Event querystrings will be added here
@@ -48,10 +48,10 @@ module Snowplow
 end
 
 
-describe Snowplow::Tracker, 'Querystring construction' do
+describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks a page view' do
-    t = Snowplow::Tracker.new('localhost')
+    t = SnowplowTracker::Tracker.new('localhost')
     t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com')
     param_hash = CGI.parse(t.get_last_querystring)
     expected_fields = {
@@ -64,7 +64,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
     
   it 'tracks an ecommerce transaction' do
-    t = Snowplow::Tracker.new('localhost')
+    t = SnowplowTracker::Tracker.new('localhost')
     t.track_ecommerce_transaction({
       'order_id' => '12345',
       'total_value' => 35,
@@ -139,7 +139,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a structured event' do
-    t = Snowplow::Tracker.new('localhost')
+    t = SnowplowTracker::Tracker.new('localhost')
     t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99)
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -157,7 +157,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (no base64)' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, nil, false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
     t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -173,7 +173,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (base64)' do
-    t = Snowplow::Tracker.new('localhost')
+    t = SnowplowTracker::Tracker.new('localhost')
     t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -189,7 +189,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, nil, false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -205,7 +205,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'adds standard name-value pairs to the payload' do
-    t = Snowplow::Tracker.new('localhost', 'cf', 'angry-birds-android')
+    t = SnowplowTracker::Tracker.new('localhost', 'cf', 'angry-birds-android')
     t.set_platform('mob')
     t.set_user_id('user12345')
     t.set_screen_resolution(400, 200)
@@ -226,7 +226,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
       'cd' => '24', 
       'tz' => 'Europe London', 
       'p' => 'mob', 
-      'tv' => Snowplow::TRACKER_VERSION
+      'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -235,7 +235,7 @@ describe Snowplow::Tracker, 'Querystring construction' do
   end
 
   it 'adds a custom context to the payload' do
-    t = Snowplow::Tracker.new('localhost', nil, nil, 'com.example', false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, 'com.example', false)
     t.track_page_view('http://www.example.com', nil, nil, {
       'page' => {
         'page_type' => 'test'

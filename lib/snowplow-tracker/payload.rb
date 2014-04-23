@@ -19,7 +19,7 @@ require 'net/http'
 require 'contracts'
 include Contracts
 
-module Snowplow
+module SnowplowTracker
 
   class Payload
 

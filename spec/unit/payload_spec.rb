@@ -15,10 +15,10 @@
 
 require 'spec_helper'
 
-describe Snowplow::Payload, 'context' do
+describe SnowplowTracker::Payload, 'context' do
 
   before(:each) do
-    @pb = Snowplow::Payload.new
+    @pb = SnowplowTracker::Payload.new
   end
 
   it 'initializes with an empty context hash' do

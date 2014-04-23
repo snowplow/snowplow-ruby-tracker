@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2014 SnowPlow Analytics Ltd. All rights reserved.
+# Copyright (c) 2013-2014 Snowplow Analytics Ltd. All rights reserved.
 #
 # This program is licensed to you under the Apache License Version 2.0,
 # and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -9,11 +9,10 @@
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
-# Author:: Alex Dean, Fred Blundun (mailto:support@snowplowanalytics.com)
-# Copyright:: Copyright (c) 2013-2014 SnowPlow Analytics Ltd
-# License:: Apache License Version 2.0
+# Author::    Alex Dean, Fred Blundun (mailto:snowplow-user@googlegroups.com)
+# Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
+# License::   Apache License Version 2.0
 
-module Snowplow
-  VERSION = '0.1.0'
-  TRACKER_VERSION = "rb-#{VERSION}"
-end
+require 'snowplow-tracker/version.rb'
+require 'snowplow-tracker/payload.rb'
+require 'snowplow-tracker/tracker.rb'
