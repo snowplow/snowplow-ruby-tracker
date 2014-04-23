@@ -4,8 +4,6 @@
 [![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
 [![Coverage Status](https://coveralls.io/repos/snowplow/snowplow-ruby-tracker/badge.png)](https://coveralls.io/r/snowplow/snowplow-ruby-tracker)
 
-This project is a work in progress.
-
 ## Overview
 
 Add analytics to your Ruby and Rails apps and gems with the [Snowplow] [snowplow] event tracker for [Ruby] [ruby].
