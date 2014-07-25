@@ -24,7 +24,7 @@ module SnowplowTracker
 
     @@required_transaction_keys =   Set.new(%w(order_id total_value))
     @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
-    
+
     @@Transaction = lambda { |x|
       return false unless x.class == Hash
       transaction_keys = Set.new(x.keys)
@@ -60,6 +60,11 @@ module SnowplowTracker
     @@http_errors = ['host not found',
                      'No address associated with name',
                      'No address associated with hostname']
+
+    @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
+    @@schema_tag = "jsonschema"
+    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
+    @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
     Contract String, Maybe[String], Maybe[String], Maybe[String], Bool => Tracker
     def initialize(endpoint, namespace=nil, app_id=nil, context_vendor=nil, encode_base64=@@default_encode_base64)
@@ -116,7 +121,7 @@ module SnowplowTracker
     # Setter methods
 
     # Specify the platform
-    # 
+    #
     Contract String => String
     def set_platform(value)
       if @@supported_platforms.include?(value)
@@ -141,7 +146,7 @@ module SnowplowTracker
     end
 
     # Set the dimensions of the current viewport
-    # 
+    #
     Contract Num, Num => String
     def set_viewport(width, height)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
