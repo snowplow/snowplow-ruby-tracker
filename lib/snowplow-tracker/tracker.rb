@@ -298,19 +298,33 @@ module SnowplowTracker
     # Track an unstructured event
     #
     Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
-    def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil, tstamp=nil)
+    def track_unstruct_event(name, event_json, event_vendor=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
-      pb.add('ue_na', event_name)
-      pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')
-      pb.add('evn', event_vendor)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+
+      envelope = {
+        schema: @@unstruct_event_schema,
+        data: event_json
+      }
+      pb.add_json(envelope, @config['encode_base64'], 'ue_px', 'ue_pr')
+
       tid = get_transaction_id
       pb.add('tid', tid)
+
+      if event_vendor
+        pb.add('evn', event_vendor)
+      end
+
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
+
+      if context
+        context_envelope = {schema: @@context_schema, data: context}
+        pb.add_json(context_envelope, @config['encode_base64'], 'cx', 'co')
+      end
+
       track(pb)
     end
 
