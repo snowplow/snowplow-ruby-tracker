@@ -162,8 +162,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}",
       'evn' => 'com.example'
     }
     for pair in expected_fields
@@ -178,8 +178,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 
+      'e' => 'ue',
+      'ue_px' => 'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9fQ==',
       'evn' => 'com.example'
     }
     for pair in expected_fields
@@ -194,8 +194,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}",
       'evn' => 'com.snowplowanalytics'
     }
     for pair in expected_fields
