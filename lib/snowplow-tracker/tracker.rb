@@ -292,7 +292,11 @@ module SnowplowTracker
     #
     Contract String, Maybe[String],  Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_screen_view(name, id=nil, context=nil, tstamp=nil)
-      self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context, tstamp)
+      screen_view_properties = {'name' => name, 'id' => id}
+      screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
+      event_json = {schema: screen_view_schema, data: screen_view_properties}
+
+      self.track_unstruct_event(event_json, context, tstamp)
     end
 
     # Track an unstructured event
