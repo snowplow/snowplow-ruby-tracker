@@ -16,6 +16,9 @@
 require 'webmock/rspec'
 require 'snowplow-tracker'
 
+require 'coveralls'
+Coveralls.wear!
+
 WebMock.disable_net_connect!(:allow_localhost => true)
 
 RSpec.configure do |config|
