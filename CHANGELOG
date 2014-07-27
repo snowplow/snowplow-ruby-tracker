@@ -6,6 +6,7 @@ Removed event name and vendors as argument to track_unstruct_event, thanks @ebea
 Updated track_screen_view to send valid self-describing screen_view JSON, thanks @ebear! (#21) 
 Now generates UUID for event_id and sends as eid parameter (#29)
 Fixed coveralls.io button (#17)
+Fixed links in README (#27)
 
 Version 0.1.0 (2014-04-23)
 --------------------------

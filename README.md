@@ -30,9 +30,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[ruby]: xxx
-[rails]: xxx
-[rubygems]: xxx
+[ruby]: https://www.ruby-lang.org/en/
+[rails]: http://rubyonrails.org/
+[rubygems]: https://rubygems.org/
 
 [snowplow]: http://snowplowanalytics.com
 
