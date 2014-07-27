@@ -178,7 +178,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_px' => 'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9fQ==',
+      'ue_px' => 'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJldmVudF9uYW1lIjoidmlld2VkX3Byb2R1Y3QiLCJldmVudF92ZW5kb3IiOiJjb20uZXhhbXBsZSIsInByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19',
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
