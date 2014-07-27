@@ -2,6 +2,7 @@ Version 0.2.0 (2014-08-XX)
 --------------------------
 Wrapped custom contexts in the contexts schema, thanks @ebear! (#25)
 Wrapped unstructured event payload in the unstructured_event schema, thanks @ebear! (#22)  
+Now generates UUID for event_id and sends as eid parameter (#29)
 
 Version 0.1.0 (2014-04-23)
 --------------------------

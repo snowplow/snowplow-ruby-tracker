@@ -18,6 +18,8 @@ require 'contracts'
 require 'set'
 include Contracts
 
+require 'uuid'
+
 module SnowplowTracker
 
   class Tracker
@@ -74,6 +76,7 @@ module SnowplowTracker
         'context_vendor' => context_vendor,
         'encode_base64' => encode_base64
       }
+      @uuid = UUID.new
       self
     end
 
@@ -89,6 +92,12 @@ module SnowplowTracker
     Contract nil => Num
     def get_transaction_id
       rand(100000..999999)
+    end
+
+    # Generates a type-4 UUID to identify this event
+    Contract nil => String
+    def get_event_id()
+      @uuid.generate
     end
 
     # Generates the timestamp (in milliseconds) to be attached to each event
@@ -179,6 +188,8 @@ module SnowplowTracker
       if pb.context.key? 'co' or pb.context.key? 'cx'
         pb.add('cv', @config['context_vendor'])
       end
+      pb.add('eid', get_event_id())
+
       http_get(pb)
     end
 
@@ -195,6 +206,7 @@ module SnowplowTracker
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
       tid = get_transaction_id
       pb.add('tid', tid)
+
       if tstamp.nil?
         tstamp = get_timestamp
       end
