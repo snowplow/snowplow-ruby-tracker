@@ -173,7 +173,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (base64)' do
     t = SnowplowTracker::Tracker.new('localhost')
-    t.track_unstruct_event('event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
+    t.track_unstruct_event({'event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
