@@ -2,8 +2,8 @@ Version 0.2.0 (2014-08-XX)
 --------------------------
 Wrapped custom contexts in the contexts schema, thanks @ebear! (#25)
 Wrapped unstructured event payload in the unstructured_event schema, thanks @ebear! (#22)  
-Removed event name and vendors as argument to track_unstruct_event, thanks @ebear! (#19) - TODO 
-Updated track_screen_view to send valid self-describing screen_view JSON (#21) - TODO 
+Removed event name and vendors as argument to track_unstruct_event, thanks @ebear! (#19) 
+Updated track_screen_view to send valid self-describing screen_view JSON, thanks @ebear! (#21) 
 Now generates UUID for event_id and sends as eid parameter (#29)
 Fixed coveralls.io button (#17)
 
