@@ -297,8 +297,8 @@ module SnowplowTracker
 
     # Track an unstructured event
     #
-    Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
-    def track_unstruct_event(name, event_json, event_vendor=nil, context=nil, tstamp=nil)
+    Contract Hash, Maybe[Hash], Maybe[Num] => [Bool, Num]
+    def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
 
@@ -310,10 +310,6 @@ module SnowplowTracker
 
       tid = get_transaction_id
       pb.add('tid', tid)
-
-      if event_vendor
-        pb.add('evn', event_vendor)
-      end
 
       if tstamp.nil?
         tstamp = get_timestamp
