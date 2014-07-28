@@ -5,7 +5,7 @@ Wrapped unstructured event payload in the unstructured_event schema, thanks @ebe
 Removed event name and vendors as argument to track_unstruct_event, thanks @ebear! (#19) 
 Updated track_screen_view to send valid self-describing screen_view JSON, thanks @ebear! (#21) 
 Now generates UUID for event_id and sends as eid parameter (#29)
-No longer setting and sending tid (#30)                                  - TODO
+No longer setting and sending tid (#30)
 Fixed Snowplow capitalization (#28)                                      - TODO do last post-@ebear's merge
 Fixed coveralls.io button (#17)
 Fixed links in README (#27)

@@ -44,8 +44,8 @@ module SnowplowTracker
         item_keys.subset? @@recognised_item_keys
     }
 
-    @@required_augmented_item_keys =   Set.new(%w(sku price quantity tstamp tid order_id))
-    @@recognised_augmented_item_keys = Set.new(%w(sku price quantity name category context tstamp tid order_id currency))
+    @@required_augmented_item_keys =   Set.new(%w(sku price quantity tstamp order_id))
+    @@recognised_augmented_item_keys = Set.new(%w(sku price quantity name category context tstamp order_id currency))
 
     @@AugmentedItem = lambda { |x|
       return false unless x.class == Hash
@@ -204,8 +204,6 @@ module SnowplowTracker
       pb.add('refr', referrer)
       pb.add('evn', @@default_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = get_transaction_id
-      pb.add('tid', tid)
 
       if tstamp.nil?
         tstamp = get_timestamp
@@ -230,7 +228,6 @@ module SnowplowTracker
       pb.add('ti_cu', argmap['currency'])
       pb.add('evn', @default_vendor)
       pb.add_json(argmap['context'], @config['encode_base64'], 'cx', 'co')
-      pb.add('tid', argmap['tid'])
       pb.add('dtm', argmap['tstamp'])
       track(pb)
     end
@@ -253,8 +250,6 @@ module SnowplowTracker
       pb.add('tr_cu', transaction['currency'])
       pb.add('evn', @@default_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = get_transaction_id
-      pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
@@ -265,7 +260,6 @@ module SnowplowTracker
 
       for item in items
         item['tstamp'] = tstamp
-        item['tid'] = tid
         item['order_id'] = transaction['order_id']
         item['currency'] = transaction['currency']
         item_results.push(track_ecommerce_transaction_item(item))
@@ -286,8 +280,6 @@ module SnowplowTracker
       pb.add('se_pr', property)
       pb.add('se_va', value)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = get_transaction_id
-      pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
@@ -312,8 +304,6 @@ module SnowplowTracker
       pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')
       pb.add('evn', event_vendor)
       pb.add_json(context, @config['encode_base64'], 'cx', 'co')
-      tid = get_transaction_id
-      pb.add('tid', tid)
       if tstamp.nil?
         tstamp = get_timestamp
       end
