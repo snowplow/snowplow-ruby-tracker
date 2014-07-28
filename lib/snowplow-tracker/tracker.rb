@@ -310,7 +310,10 @@ module SnowplowTracker
     #
     Contract String, Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
     def track_screen_view(name, id=nil, context=nil, tstamp=nil)
-      screen_view_properties = {'name' => name, 'id' => id}
+      screen_view_properties = {'name' => name}
+      unless id.nil? 
+        screen_view_properties['id'] = id
+      end
       screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
       event_json = {schema: screen_view_schema, data: screen_view_properties}
 
