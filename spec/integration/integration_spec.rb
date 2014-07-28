@@ -144,27 +144,26 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'se', 
-      'se_ca' => 'Ecomm', 
-      'se_ac' => 'add-to-basket', 
-      'se_pr' => 'hd', 
+      'e' => 'se',
+      'se_ca' => 'Ecomm',
+      'se_ac' => 'add-to-basket',
+      'se_pr' => 'hd',
       'se_va' => '13.99'
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end    
+    end
 
   end
 
   it 'tracks an unstructured event (no base64)' do
     t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
-    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
+    t.track_unstruct_event({'event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 
-      'evn' => 'com.example'
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"event_name\":\"viewed_product\",\"event_vendor\":\"com.example\",\"product_id\":\"ASO01043\",\"price\":49.95}}",
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -174,13 +173,12 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (base64)' do
     t = SnowplowTracker::Tracker.new('localhost')
-    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
+    t.track_unstruct_event({'event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 
-      'evn' => 'com.example'
+      'e' => 'ue',
+      'ue_px' => 'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJldmVudF9uYW1lIjoidmlld2VkX3Byb2R1Y3QiLCJldmVudF92ZW5kb3IiOiJjb20uZXhhbXBsZSIsInByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19',
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -194,9 +192,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 
-      'evn' => 'com.snowplowanalytics'
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}}",
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
