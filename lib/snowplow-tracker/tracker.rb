@@ -26,7 +26,7 @@ module SnowplowTracker
 
     @@required_transaction_keys =   Set.new(%w(order_id total_value))
     @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
-    
+
     @@Transaction = lambda { |x|
       return false unless x.class == Hash
       transaction_keys = Set.new(x.keys)
@@ -62,6 +62,11 @@ module SnowplowTracker
     @@http_errors = ['host not found',
                      'No address associated with name',
                      'No address associated with hostname']
+
+    @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
+    @@schema_tag = "jsonschema"
+    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
+    @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
     Contract String, Maybe[String], Maybe[String], Maybe[String], Bool => Tracker
     def initialize(endpoint, namespace=nil, app_id=nil, context_vendor=nil, encode_base64=@@default_encode_base64)
@@ -125,7 +130,7 @@ module SnowplowTracker
     # Setter methods
 
     # Specify the platform
-    # 
+    #
     Contract String => String
     def set_platform(value)
       if @@supported_platforms.include?(value)
@@ -150,7 +155,7 @@ module SnowplowTracker
     end
 
     # Set the dimensions of the current viewport
-    # 
+    #
     Contract Num, Num => String
     def set_viewport(width, height)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
@@ -291,23 +296,36 @@ module SnowplowTracker
     #
     Contract String, Maybe[String],  Maybe[Hash], Maybe[Num] => [Bool, Num]
     def track_screen_view(name, id=nil, context=nil, tstamp=nil)
-      self.track_unstruct_event('screen_view', {'name' => name, 'id' => id}, @@default_vendor, context, tstamp)
+      screen_view_properties = {'name' => name, 'id' => id}
+      screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
+      event_json = {schema: screen_view_schema, data: screen_view_properties}
+
+      self.track_unstruct_event(event_json, context, tstamp)
     end
 
     # Track an unstructured event
     #
-    Contract String, Hash, Maybe[String], Maybe[Hash], Maybe[Num] => [Bool, Num]
-    def track_unstruct_event(event_name, dict, event_vendor=nil, context=nil, tstamp=nil)
+    Contract Hash, Maybe[Hash], Maybe[Num] => [Bool, Num]
+    def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
-      pb.add('ue_na', event_name)
-      pb.add_json(dict, @config['encode_base64'], 'ue_px', 'ue_pr')
-      pb.add('evn', event_vendor)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      
+      envelope = {
+        schema: @@unstruct_event_schema,
+        data: event_json
+      }
+      pb.add_json(envelope, @config['encode_base64'], 'ue_px', 'ue_pr')
+
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
+
+      if context
+        context_envelope = {schema: @@context_schema, data: context}
+        pb.add_json(context_envelope, @config['encode_base64'], 'cx', 'co')
+      end
+
       track(pb)
     end
 
