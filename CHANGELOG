@@ -7,7 +7,7 @@ Updated track_screen_view to send valid self-describing screen_view JSON, thanks
 Removed event vendor and context vendor from the payload (#35)
 Now generates UUID for event_id and sends as eid parameter (#29)
 No longer setting and sending tid (#30)
-Fixed Snowplow capitalization (#28)                                      - TODO do last post-@ebear's merge
+Fixed Snowplow capitalization (#28)
 Fixed coveralls.io button (#17)
 Fixed links in README (#27)
 Created new contracts for unstructured events and custom contexts (#34)
