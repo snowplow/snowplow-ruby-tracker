@@ -28,7 +28,7 @@ end
 describe SnowplowTracker::Tracker, 'configuration' do
 
   before(:each) do
-    @t = SnowplowTracker::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", 'com.example', false)
+    @t = SnowplowTracker::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", false)
   end
 
   it 'should create the collector uri' do
@@ -40,7 +40,7 @@ describe SnowplowTracker::Tracker, 'configuration' do
   end
 
   it 'should initialise with the right configuration' do
-    @t.config.should eq({'encode_base64' => false, 'context_vendor' => 'com.example'})
+    @t.config.should eq({'encode_base64' => false})
   end
 
 end

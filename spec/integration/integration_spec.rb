@@ -157,7 +157,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (no base64)' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
     t.track_unstruct_event({
       'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       'data' => {
@@ -199,7 +199,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
@@ -227,7 +227,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
       'tna' => 'cf', 
-      'evn' => 'com.snowplowanalytics', 
       'res' => '400x200',
       'vp' => '100x80',
       'lang' => 'en', 
@@ -244,7 +243,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'adds a custom context to the payload' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, 'com.example', false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
     t.track_page_view('http://www.example.com', nil, nil, [{
         'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
         'data' => {

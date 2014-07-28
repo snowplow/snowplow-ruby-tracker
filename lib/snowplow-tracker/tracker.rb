@@ -67,7 +67,6 @@ module SnowplowTracker
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
     @@default_platform = 'pc'
-    @@default_vendor = 'com.snowplowanalytics'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
     @@http_errors = ['host not found',
                      'No address associated with name',
@@ -78,8 +77,8 @@ module SnowplowTracker
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract String, Maybe[String], Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(endpoint, namespace=nil, app_id=nil, context_vendor=nil, encode_base64=@@default_encode_base64)
+    Contract String, Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
       @collector_uri = as_collector_uri(endpoint)
       @standard_nv_pairs = {
         'tna' => namespace,
@@ -88,7 +87,6 @@ module SnowplowTracker
         'aid' => app_id
       }
       @config = {
-        'context_vendor' => context_vendor,
         'encode_base64' => encode_base64
       }
       @uuid = UUID.new
@@ -100,13 +98,6 @@ module SnowplowTracker
     Contract String => String
     def as_collector_uri(host)
       "http://#{host}/i"
-    end
-
-    # Randomly generates a hopefully unique internal transaction ID for each event
-    #
-    Contract nil => Num
-    def get_transaction_id
-      rand(100000..999999)
     end
 
     # Generates a type-4 UUID to identify this event
@@ -210,9 +201,6 @@ module SnowplowTracker
     Contract Payload => [Bool, Num]
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
-      if pb.context.key? 'co' or pb.context.key? 'cx'
-        pb.add('cv', @config['context_vendor'])
-      end
       pb.add('eid', get_event_id())
 
       http_get(pb)
@@ -227,7 +215,6 @@ module SnowplowTracker
       pb.add('url', page_url)
       pb.add('page', page_title)
       pb.add('refr', referrer)
-      pb.add('evn', @@default_vendor)
       unless context.nil?
         pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
       end
@@ -253,7 +240,6 @@ module SnowplowTracker
       pb.add('ti_nm', argmap['name'])
       pb.add('ti_ca', argmap['category'])
       pb.add('ti_cu', argmap['currency'])
-      pb.add('evn', @default_vendor)
       unless argmap['context'].nil?
         pb.add_json(build_context(argmap['context']), @config['encode_base64'], 'cx', 'co')
       end
@@ -277,7 +263,6 @@ module SnowplowTracker
       pb.add('tr_st', transaction['state'])
       pb.add('tr_co', transaction['country'])
       pb.add('tr_cu', transaction['currency'])
-      pb.add('evn', @@default_vendor)
       unless context.nil?
         pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
       end
@@ -358,7 +343,6 @@ module SnowplowTracker
     end
 
     private :as_collector_uri,
-            :get_transaction_id,
             :get_timestamp,
             :build_context,
             :http_get,
