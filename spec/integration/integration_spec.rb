@@ -158,12 +158,18 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (no base64)' do
     t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
-    t.track_unstruct_event({'event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
+    t.track_unstruct_event({
+      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      'data' => {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"event_name\":\"viewed_product\",\"event_vendor\":\"com.example\",\"product_id\":\"ASO01043\",\"price\":49.95}}",
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -173,12 +179,18 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (base64)' do
     t = SnowplowTracker::Tracker.new('localhost')
-    t.track_unstruct_event({'event_name' => 'viewed_product', 'event_vendor' => 'com.example', 'product_id' => 'ASO01043', 'price' => 49.95})
+    t.track_unstruct_event({
+      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      'data' => {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_px' => 'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJldmVudF9uYW1lIjoidmlld2VkX3Byb2R1Y3QiLCJldmVudF92ZW5kb3IiOiJjb20uZXhhbXBsZSIsInByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19',
+      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ==',
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
