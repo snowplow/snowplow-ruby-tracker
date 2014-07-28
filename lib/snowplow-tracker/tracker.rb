@@ -54,6 +54,16 @@ module SnowplowTracker
         augmented_item_keys.subset? @@recognised_augmented_item_keys
     }
 
+    @@SelfDescribingJson = Or[{
+      schema: String,
+      data: Any
+    }, {
+      'schema' => String,
+      'data' => Any
+    }]
+
+    @@ContextsInput = ArrayOf[@@SelfDescribingJson]
+
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
     @@default_platform = 'pc'
@@ -110,6 +120,16 @@ module SnowplowTracker
     Contract nil => Num
     def get_timestamp
       (Time.now.to_f * 1000).to_i
+    end
+
+    # Builds a self-describing JSON from an array of custom contexts
+    #
+    Contract @@ContextsInput => @@SelfDescribingJson
+    def build_context(context)
+      {
+        schema: @@context_schema,
+        data: context
+      }
     end
 
     # Send request
@@ -200,7 +220,7 @@ module SnowplowTracker
 
     # Log a visit to this page
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[Hash] => [Bool, Num]
+    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => [Bool, Num]
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'pv')
@@ -208,7 +228,9 @@ module SnowplowTracker
       pb.add('page', page_title)
       pb.add('refr', referrer)
       pb.add('evn', @@default_vendor)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      unless context.nil?
+        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+      end
 
       if tstamp.nil?
         tstamp = get_timestamp
@@ -232,14 +254,16 @@ module SnowplowTracker
       pb.add('ti_ca', argmap['category'])
       pb.add('ti_cu', argmap['currency'])
       pb.add('evn', @default_vendor)
-      pb.add_json(argmap['context'], @config['encode_base64'], 'cx', 'co')
+      unless argmap['context'].nil?
+        pb.add_json(build_context(argmap['context']), @config['encode_base64'], 'cx', 'co')
+      end
       pb.add('dtm', argmap['tstamp'])
       track(pb)
     end
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract @@Transaction, ArrayOf[@@Item], Maybe[Hash], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
+    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Payload.new
@@ -254,7 +278,10 @@ module SnowplowTracker
       pb.add('tr_co', transaction['country'])
       pb.add('tr_cu', transaction['currency'])
       pb.add('evn', @@default_vendor)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      unless context.nil?
+        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+      end
+
       if tstamp.nil?
         tstamp = get_timestamp
       end
@@ -275,7 +302,7 @@ module SnowplowTracker
 
     # Track a structured event
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[Hash], Maybe[Num] => [Bool, Num]
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'se')
@@ -284,7 +311,9 @@ module SnowplowTracker
       pb.add('se_la', label)
       pb.add('se_pr', property)
       pb.add('se_va', value)
-      pb.add_json(context, @config['encode_base64'], 'cx', 'co')
+      unless context.nil?
+        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+      end
       if tstamp.nil?
         tstamp = get_timestamp
       end
@@ -294,7 +323,7 @@ module SnowplowTracker
 
     # Track a screen view event
     #
-    Contract String, Maybe[String],  Maybe[Hash], Maybe[Num] => [Bool, Num]
+    Contract String, Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
     def track_screen_view(name, id=nil, context=nil, tstamp=nil)
       screen_view_properties = {'name' => name, 'id' => id}
       screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
@@ -305,7 +334,7 @@ module SnowplowTracker
 
     # Track an unstructured event
     #
-    Contract Hash, Maybe[Hash], Maybe[Num] => [Bool, Num]
+    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
     def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
@@ -316,15 +345,14 @@ module SnowplowTracker
       }
       pb.add_json(envelope, @config['encode_base64'], 'ue_px', 'ue_pr')
 
+      unless context.nil?
+        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+      end
+
       if tstamp.nil?
         tstamp = get_timestamp
       end
       pb.add('dtm', tstamp)
-
-      if context
-        context_envelope = {schema: @@context_schema, data: context}
-        pb.add_json(context_envelope, @config['encode_base64'], 'cx', 'co')
-      end
 
       track(pb)
     end
@@ -332,6 +360,7 @@ module SnowplowTracker
     private :as_collector_uri,
             :get_transaction_id,
             :get_timestamp,
+            :build_context,
             :http_get,
             :track,
             :track_ecommerce_transaction_item

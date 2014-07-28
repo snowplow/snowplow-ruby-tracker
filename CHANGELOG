@@ -9,6 +9,7 @@ No longer setting and sending tid (#30)
 Fixed Snowplow capitalization (#28)                                      - TODO do last post-@ebear's merge
 Fixed coveralls.io button (#17)
 Fixed links in README (#27)
+Created new contracts for unstructured events and custom contexts (#34)
 
 Version 0.1.0 (2014-04-23)
 --------------------------

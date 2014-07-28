@@ -245,19 +245,22 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'adds a custom context to the payload' do
     t = SnowplowTracker::Tracker.new('localhost', nil, nil, 'com.example', false)
-    t.track_page_view('http://www.example.com', nil, nil, {
-      'page' => {
-        'page_type' => 'test'
-        }, 
-      'user' => {
-        'user_type' => 'tester'
+    t.track_page_view('http://www.example.com', nil, nil, [{
+        'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
+        'data' => {
+          'page_type' => 'test'
         }
-      })
+      },
+      {
+        'schema' => 'iglu:com.acme/user/jsonschema/1-0-0',
+        'data' => {
+          'user_type' => 'tester'
+        }
+      }])
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}", 
-      'cv' => 'com.example'
+      'co' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-0\",\"data\":[{\"schema\":\"iglu:com.acme/page/jsonschema/1-0-0\",\"data\":{\"page_type\":\"test\"}},{\"schema\":\"iglu:com.acme/user/jsonschema/1-0-0\",\"data\":{\"user_type\":\"tester\"}}]}"
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
