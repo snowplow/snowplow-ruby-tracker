@@ -9,5 +9,7 @@ install:
  - "gem install contracts"
  - "gem install rspec"
  - "gem install webmock"
+ - "gem install uuid"
+ - "gem install coveralls"
 
 script: rspec

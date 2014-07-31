@@ -1,3 +1,17 @@
+Version 0.2.0 (2014-08-XX)
+--------------------------
+Wrapped custom contexts in the contexts schema, thanks @ebear! (#25)
+Wrapped unstructured event payload in the unstructured_event schema, thanks @ebear! (#22)  
+Removed event name and vendors as argument to track_unstruct_event, thanks @ebear! (#19) 
+Updated track_screen_view to send valid self-describing screen_view JSON, thanks @ebear! (#21)
+Removed event vendor and context vendor from the payload (#35)
+Now generates UUID for event_id and sends as eid parameter (#29)
+No longer setting and sending tid (#30)
+Fixed Snowplow capitalization (#28)
+Fixed coveralls.io button (#17)
+Fixed links in README (#27)
+Created new contracts for unstructured events and custom contexts (#34)
+
 Version 0.1.0 (2014-04-23)
 --------------------------
 Initial release

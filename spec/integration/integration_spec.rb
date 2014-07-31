@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2014 SnowPlow Analytics Ltd. All rights reserved.
+# Copyright (c) 2013-2014 Snowplow Analytics Ltd. All rights reserved.
 #
 # This program is licensed to you under the Apache License Version 2.0,
 # and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,7 +10,7 @@
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
 # Author:: Alex Dean, Fred Blundun (mailto:support@snowplowanalytics.com)
-# Copyright:: Copyright (c) 2013-2014 SnowPlow Analytics Ltd
+# Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
 require 'spec_helper'
@@ -144,27 +144,32 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'se', 
-      'se_ca' => 'Ecomm', 
-      'se_ac' => 'add-to-basket', 
-      'se_pr' => 'hd', 
+      'e' => 'se',
+      'se_ca' => 'Ecomm',
+      'se_ac' => 'add-to-basket',
+      'se_pr' => 'hd',
       'se_va' => '13.99'
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end    
+    end
 
   end
 
   it 'tracks an unstructured event (no base64)' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
-    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
+    t.track_unstruct_event({
+      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      'data' => {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"product_id\":\"ASO01043\",\"price\":49.95}", 
-      'evn' => 'com.example'
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -174,13 +179,18 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (base64)' do
     t = SnowplowTracker::Tracker.new('localhost')
-    t.track_unstruct_event('viewed_product', {'product_id' => 'ASO01043', 'price' => 49.95}, 'com.example')
+    t.track_unstruct_event({
+      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      'data' => {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    })
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_px' => 'eyJwcm9kdWN0X2lkIjoiQVNPMDEwNDMiLCJwcmljZSI6NDkuOTV9', 
-      'evn' => 'com.example'
+      'e' => 'ue',
+      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ==',
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -189,14 +199,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, nil, false)
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ue', 
-      'ue_pr' => "{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}", 
-      'evn' => 'com.snowplowanalytics'
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}}",
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -218,7 +227,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
       'tna' => 'cf', 
-      'evn' => 'com.snowplowanalytics', 
       'res' => '400x200',
       'vp' => '100x80',
       'lang' => 'en', 
@@ -235,20 +243,23 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'adds a custom context to the payload' do
-    t = SnowplowTracker::Tracker.new('localhost', nil, nil, 'com.example', false)
-    t.track_page_view('http://www.example.com', nil, nil, {
-      'page' => {
-        'page_type' => 'test'
-        }, 
-      'user' => {
-        'user_type' => 'tester'
+    t = SnowplowTracker::Tracker.new('localhost', nil, nil, false)
+    t.track_page_view('http://www.example.com', nil, nil, [{
+        'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
+        'data' => {
+          'page_type' => 'test'
         }
-      })
+      },
+      {
+        'schema' => 'iglu:com.acme/user/jsonschema/1-0-0',
+        'data' => {
+          'user_type' => 'tester'
+        }
+      }])
 
     param_hash = CGI.parse(t.get_last_querystring(1))
     expected_fields = {
-      'co' => "{\"page\":{\"page_type\":\"test\"},\"user\":{\"user_type\":\"tester\"}}", 
-      'cv' => 'com.example'
+      'co' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-0\",\"data\":[{\"schema\":\"iglu:com.acme/page/jsonschema/1-0-0\",\"data\":{\"page_type\":\"test\"}},{\"schema\":\"iglu:com.acme/user/jsonschema/1-0-0\",\"data\":{\"user_type\":\"tester\"}}]}"
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
