@@ -3,7 +3,7 @@ Version 0.3.0 (2014-xx-xx)
 Added Emitter class (#39) (TODO)
 Added POST support (#32) (TODO)
 Added ability to send events asynchronously (#18) (TODO)
-Added ability to disable contracts (#11) (TODO)
+Added ability to disable contracts (#11)
 Made "name" an optional argument to track_screen_view (#38)
 Changed default platform to "srv" (#37)
 

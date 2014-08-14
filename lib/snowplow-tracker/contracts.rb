@@ -9,11 +9,22 @@
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
-# Author::    Alex Dean, Fred Blundun (mailto:snowplow-user@googlegroups.com)
+# Author:: Alex Dean, Fred Blundun (mailto:support@snowplowanalytics.com)
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
-# License::   Apache License Version 2.0
+# License:: Apache License Version 2.0
 
-require 'snowplow-tracker/contracts.rb'
-require 'snowplow-tracker/version.rb'
-require 'snowplow-tracker/payload.rb'
-require 'snowplow-tracker/tracker.rb'
+require 'contracts'
+include Contracts
+
+module SnowplowTracker
+
+  ORIGINAL_FAILURE_CALLBACK = Contract.method(:failure_callback)
+
+  def self.disable_contracts
+    Contract.define_singleton_method(:failure_callback) {|data| true}
+  end
+
+  def self.enable_contracts
+    Contract.define_singleton_method(:failure_callback, ORIGINAL_FAILURE_CALLBACK)
+  end
+end
