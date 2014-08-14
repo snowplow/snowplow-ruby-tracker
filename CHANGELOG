@@ -1,6 +1,6 @@
 Version 0.3.0 (2014-xx-xx)
 --------------------------
-Added Emitter class (#39) (TODO)
+Added Emitter class (#39)
 Added POST support (#32) (TODO)
 Added ability to send events asynchronously (#18) (TODO)
 Added ability to disable contracts (#11)
