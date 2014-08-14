@@ -125,72 +125,75 @@ module SnowplowTracker
 
     # Send request
     #
-    Contract Payload => [Bool, Num]
+    Contract Payload => nil
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
-      r = Net::HTTP.get_response(destination)
-      if @@http_errors.include? r.code
-        return false, "Host [#{r.host}] not found (possible connectivity error)"
-      elsif r.code.to_i < 0 or 400 <= r.code.to_i
-        return false, r.code.to_i
-      else
-        return true, r.code.to_i
-      end
+      Net::HTTP.get_response(destination)
+
+      nil
     end
 
     # Setter methods
 
     # Specify the platform
     #
-    Contract String => String
+    Contract String => Tracker
     def set_platform(value)
       if @@supported_platforms.include?(value)
         @standard_nv_pairs['p'] = value
       else
         raise "#{value} is not a supported platform"
       end
+
+      self
     end
 
     # Set the business-defined user ID for a user
     #
-    Contract String => String
+    Contract String => Tracker
     def set_user_id(user_id)
       @standard_nv_pairs['uid'] = user_id
+      self
     end
 
     # Set the screen resolution for a device
     #
-    Contract Num, Num => String
+    Contract Num, Num => Tracker
     def set_screen_resolution(width, height)
       @standard_nv_pairs['res'] = "#{width}x#{height}"
+      self
     end
 
     # Set the dimensions of the current viewport
     #
-    Contract Num, Num => String
+    Contract Num, Num => Tracker
     def set_viewport(width, height)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
+      self
     end
 
     # Set the color depth of the device in bits per pixel
     #
-    Contract Num => Num
+    Contract Num => Tracker
     def set_color_depth(depth)
       @standard_nv_pairs['cd'] = depth
+      self
     end
 
     # Set the timezone field
     #
-    Contract String => String
+    Contract String => Tracker
     def set_timezone(timezone)
       @standard_nv_pairs['tz'] = timezone
+      self
     end
 
     # Set the language field
     #
-    Contract String => String
+    Contract String => Tracker
     def set_lang(lang)
       @standard_nv_pairs['lang'] = lang
+      self
     end
 
     # Tracking methods
@@ -198,17 +201,16 @@ module SnowplowTracker
     # Attaches all the fields in @standard_nv_pairs to the request
     #  Only attaches the context vendor if the event has a custom context
     #
-    Contract Payload => [Bool, Num]
+    Contract Payload => nil
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
       pb.add('eid', get_event_id())
-
       http_get(pb)
     end
 
     # Log a visit to this page
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => [Bool, Num]
+    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => Tracker
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'pv')
@@ -224,12 +226,14 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
       track(pb)
+
+      self
     end
 
     # Track a single item within an ecommerce transaction
     #   Not part of the public API
     #
-    Contract @@AugmentedItem => [Bool, Num]
+    Contract @@AugmentedItem => self
     def track_ecommerce_transaction_item(argmap)
       pb = Payload.new
       pb.add('e', 'ti')
@@ -245,11 +249,13 @@ module SnowplowTracker
       end
       pb.add('dtm', argmap['tstamp'])
       track(pb)
+
+      self
     end
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
+    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Payload.new
@@ -272,22 +278,21 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
 
-      transaction_result = track(pb)
-      item_results = []
+      track(pb)
 
       for item in items
         item['tstamp'] = tstamp
         item['order_id'] = transaction['order_id']
         item['currency'] = transaction['currency']
-        item_results.push(track_ecommerce_transaction_item(item))
+        track_ecommerce_transaction_item(item)
       end
 
-      {'transaction_result' => transaction_result, 'item_results' => item_results}
+      self
     end
 
     # Track a structured event
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'se')
@@ -304,11 +309,13 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
       track(pb)
+
+      self
     end
 
     # Track a screen view event
     #
-    Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_screen_view(name=nil, id=nil, context=nil, tstamp=nil)
       screen_view_properties = {}
       unless name.nil? 
@@ -321,11 +328,13 @@ module SnowplowTracker
       event_json = {schema: screen_view_schema, data: screen_view_properties}
 
       self.track_unstruct_event(event_json, context, tstamp)
+
+      self
     end
 
     # Track an unstructured event
     #
-    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
@@ -346,6 +355,8 @@ module SnowplowTracker
       pb.add('dtm', tstamp)
 
       track(pb)
+
+      self
     end
 
     private :as_collector_uri,

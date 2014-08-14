@@ -28,15 +28,9 @@ module SnowplowTracker
       @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload.context)).query)
 
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
-      r = Net::HTTP.get_response(destination)
-      if @@http_errors.include? r.code
-        return false, "Host [#{r.host}] not found (possible connectivity error)"
-      elsif r.code.to_i < 0 or 400 <= r.code.to_i
-        return false, r.code.to_i
-      else
-        return true, r.code.to_i
-      end
+      Net::HTTP.get_response(destination)
 
+      nil
     end
 
     # New method to get the n-th from last querystring
