@@ -66,7 +66,7 @@ module SnowplowTracker
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
-    @@default_platform = 'pc'
+    @@default_platform = 'srv'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
     @@http_errors = ['host not found',
                      'No address associated with name',

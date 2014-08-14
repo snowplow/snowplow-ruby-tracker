@@ -36,7 +36,12 @@ describe SnowplowTracker::Tracker, 'configuration' do
   end
 
   it 'should initialise standard name-value pairs' do
-    @t.standard_nv_pairs.should eq({'tna' => 'cloudfront', 'tv' => SnowplowTracker::TRACKER_VERSION, 'p' => 'pc', 'aid' => 'AF003'})
+    @t.standard_nv_pairs.should eq({
+      'tna' => 'cloudfront',
+      'tv' => SnowplowTracker::TRACKER_VERSION,
+      'p' => 'srv',
+      'aid' => 'AF003'
+    })
   end
 
   it 'should initialise with the right configuration' do
