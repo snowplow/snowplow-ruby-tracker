@@ -308,9 +308,12 @@ module SnowplowTracker
 
     # Track a screen view event
     #
-    Contract String, Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
-    def track_screen_view(name, id=nil, context=nil, tstamp=nil)
-      screen_view_properties = {'name' => name}
+    Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    def track_screen_view(name=nil, id=nil, context=nil, tstamp=nil)
+      screen_view_properties = {}
+      unless name.nil? 
+        screen_view_properties['name'] = name
+      end
       unless id.nil? 
         screen_view_properties['id'] = id
       end
