@@ -29,6 +29,7 @@ module SnowplowTracker
       @method = method
       @on_success = on_success
       @on_failure = on_failure
+      @threads = []
       self
     end
 
@@ -46,7 +47,7 @@ module SnowplowTracker
       end
     end
 
-    def _flush
+    def _flush(sync=false)
       flush
     end
 
@@ -117,11 +118,18 @@ module SnowplowTracker
 
   class AsyncEmitter < Emitter
 
-    def _flush
+    def _flush(sync=false)
       t = Thread.new do
         flush
       end
       t.abort_on_exception = true
+      @threads.select!{ |thread| thread.alive?}
+      @threads.push(t)
+
+      if sync
+        @threads.each(&:join)
+      end
+
     end
 
   end

@@ -343,6 +343,17 @@ module SnowplowTracker
       self
     end
 
+    # Flush all events stored in all emitters
+    #
+    Contract Bool => Tracker
+    def flush(sync=false)
+      @emitters.each do |emitter|
+        emitter._flush(sync)
+      end
+
+      self
+    end
+
     private :get_timestamp,
             :build_context,
             :track,

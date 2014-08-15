@@ -51,3 +51,19 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
   end
 
 end
+
+describe SnowplowTracker::AsyncEmitter, 'Synchronous flush' do
+
+  it 'sends all events synchronously' do
+    emitter = SnowplowTracker::AsyncEmitter.new('localhost', 'http', nil, 'get', 5)
+    emitter.input({'key' => 'value'})
+    emitter._flush(true)
+    param_hash = CGI.parse(emitter.get_last_querystring)
+    expected_fields = {
+      'key' => 'value'}
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+  end
+
+end
