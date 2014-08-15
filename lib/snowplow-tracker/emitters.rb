@@ -41,6 +41,7 @@ module SnowplowTracker
     end
 
     def input(payload)
+      payload.each { |k,v| payload[k] = v.to_s}
       @buffer.push(payload)
       if @buffer.size > @buffer_size
         _flush
