@@ -76,9 +76,9 @@ module SnowplowTracker
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract Emitter, Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(emitter, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
-      @emitter = emitter
+    Contract Or[Emitter, ArrayOf[Emitter]], Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(emitters, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+      @emitters = Array(emitters)
       @standard_nv_pairs = {
         'tna' => namespace,
         'tv'  => @@version,
@@ -187,7 +187,7 @@ module SnowplowTracker
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
       pb.add('eid', get_event_id())
-      @emitter.input(pb.context)
+      @emitters.each{ |emitter| emitter.input(pb.context)}
 
       nil
     end
