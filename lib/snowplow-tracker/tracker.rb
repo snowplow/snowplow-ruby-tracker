@@ -13,7 +13,6 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'net/http'
 require 'contracts'
 require 'set'
 include Contracts
@@ -77,9 +76,9 @@ module SnowplowTracker
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract String, Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
-      @collector_uri = as_collector_uri(endpoint)
+    Contract Emitter, Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(emitter, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+      @emitter = emitter
       @standard_nv_pairs = {
         'tna' => namespace,
         'tv'  => @@version,
@@ -91,13 +90,6 @@ module SnowplowTracker
       }
       @uuid = UUID.new
       self
-    end
-
-    # Adds the protocol to the fron of the collector URL, and /i to the end
-    #
-    Contract String => String
-    def as_collector_uri(host)
-      "http://#{host}/i"
     end
 
     # Generates a type-4 UUID to identify this event
@@ -121,16 +113,6 @@ module SnowplowTracker
         schema: @@context_schema,
         data: context
       }
-    end
-
-    # Send request
-    #
-    Contract Payload => nil
-    def http_get(payload)
-      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
-      Net::HTTP.get_response(destination)
-
-      nil
     end
 
     # Setter methods
@@ -205,7 +187,9 @@ module SnowplowTracker
     def track(pb)
       pb.add_dict(@standard_nv_pairs)
       pb.add('eid', get_event_id())
-      http_get(pb)
+      @emitter.input(pb.context)
+
+      nil
     end
 
     # Log a visit to this page
@@ -359,10 +343,8 @@ module SnowplowTracker
       self
     end
 
-    private :as_collector_uri,
-            :get_timestamp,
+    private :get_timestamp,
             :build_context,
-            :http_get,
             :track,
             :track_ecommerce_transaction_item
 

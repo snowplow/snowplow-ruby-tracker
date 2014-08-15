@@ -28,11 +28,7 @@ end
 describe SnowplowTracker::Tracker, 'configuration' do
 
   before(:each) do
-    @t = SnowplowTracker::Tracker.new('d3rkrsqld9gmqf.cloudfront.net', 'cloudfront', "AF003", false)
-  end
-
-  it 'should create the collector uri' do
-  	@t.collector_uri.should eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
+    @t = SnowplowTracker::Tracker.new(SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net'), 'cloudfront', "AF003", false)
   end
 
   it 'should initialise standard name-value pairs' do

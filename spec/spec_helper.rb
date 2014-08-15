@@ -28,3 +28,28 @@ RSpec.configure do |config|
       to_return(:status => [200], :body => 'stubbed response')
   end
 end
+
+module SnowplowTracker
+  class Emitter
+
+    # Event querystrings will be added here
+    @@querystrings = ['']
+
+    def http_get(payload)
+
+      # This additional line records event querystrings
+      @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload)).query)
+
+      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
+      Net::HTTP.get_response(destination)
+
+      
+    end
+
+    # New method to get the n-th from last querystring
+    def get_last_querystring(n=1)
+      return @@querystrings[-n]
+    end
+
+  end
+end
