@@ -22,11 +22,13 @@ module SnowplowTracker
   class Emitter
 
     #Contract nil => Emitter
-    def initialize(endpoint, protocol='http', port=nil, method='get', buffer_size=nil)
+    def initialize(endpoint, protocol='http', port=nil, method='get', buffer_size=nil, on_success=nil, on_failure=nil)
       @collector_uri = as_collector_uri(endpoint, protocol, port, method)
       @buffer = []
       @buffer_size = 0
       @method = method
+      @on_success = on_success
+      @on_failure = on_failure
       self
     end
 
@@ -51,18 +53,49 @@ module SnowplowTracker
     def flush
       temp_buffer = @buffer
       @buffer = []
+
       if @method == 'get'
+        success_count = 0
+        unsent_requests = []
         temp_buffer.each do |payload|
-          http_get(payload)
+          request = http_get(payload)
+          if request.code.to_i == 200
+            success_count += 1
+          else
+            unsent_requests.push(payload)
+          end
+          if unsent_requests.size == 0
+            unless @on_success.nil?
+              @on_success.call(success_count)
+            end
+          else
+            unless @on_failure.nil?
+              @on_failure.call(success_count, unsent_requests)
+            end
+          end
         end
+
       elsif @method == 'post'
         if temp_buffer.size > 0
-          http_post({
+          request = http_post({
             'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/1-0-0',
             'data' => temp_buffer
           })
+
+          if request.code.to_i == 200
+            unless @on_success.nil?
+              @on_success.call(temp_buffer.size)
+            end
+
+          else
+            unless @on_failure.nil?
+              @on_failure.call(0, temp_buffer)
+            end
+          end
+
         end
       end
+
     end
 
     def http_get(payload)
