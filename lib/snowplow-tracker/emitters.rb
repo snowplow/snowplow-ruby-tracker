@@ -40,8 +40,12 @@ module SnowplowTracker
     def input(payload)
       @buffer.push(payload)
       if @buffer.size > @buffer_size
-        flush
+        _flush
       end
+    end
+
+    def _flush
+      flush
     end
 
     def flush
@@ -77,6 +81,16 @@ module SnowplowTracker
 
   end
 
-  x = Emitter.new('d3rkrsqld9gmqf.cloudfront.net')
-  x.input({})
+
+  class AsyncEmitter < Emitter
+
+    def _flush
+      t = Thread.new do
+        flush
+      end
+      t.abort_on_exception = true
+    end
+
+  end
+
 end
