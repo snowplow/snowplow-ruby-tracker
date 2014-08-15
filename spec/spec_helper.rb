@@ -23,9 +23,12 @@ WebMock.disable_net_connect!(:allow_localhost => true)
 
 RSpec.configure do |config|
   config.before(:each) do
-    stub_request(:any, /.*/).
+    stub_request(:any, /localhost/).
       with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
       to_return(:status => [200], :body => 'stubbed response')
+    stub_request(:any, /nonexistent/).
+      with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(:status => [404], :body => 'stubbed response')
   end
 end
 
@@ -42,7 +45,6 @@ module SnowplowTracker
 
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
       Net::HTTP.get_response(destination)
-
       
     end
 
