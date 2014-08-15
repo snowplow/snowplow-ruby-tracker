@@ -354,6 +354,14 @@ module SnowplowTracker
       self
     end
 
+    # Add a new emitter
+    #
+    Contract Emitter => Tracker
+    def add_emitter(emitter)
+      @emitters.push(emitter)
+      self
+    end
+
     private :get_timestamp,
             :build_context,
             :track,
