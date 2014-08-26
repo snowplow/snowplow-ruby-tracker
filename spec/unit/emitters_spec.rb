@@ -16,6 +16,37 @@
 require 'spec_helper'
 require 'cgi'
 
+module SnowplowTracker
+  class Emitter
+
+    attr_reader :collector_uri,
+                :buffer_size,
+                :on_success,
+                :on_failure
+
+  end
+end
+
+describe SnowplowTracker::Emitter, 'configuration' do
+
+  it 'should initialise correctly using default settings' do
+    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net')
+    expect(e.collector_uri).to eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
+    expect(e.buffer_size).to eq(0)
+  end
+
+  it 'should initialise correctly using custom settings' do
+    on_success = lambda{ |x| puts x}
+    on_failure = lambda{ |x,y| puts y}
+    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', 'https', 80, 'post', 7, on_success, on_failure)
+    expect(e.collector_uri).to eq('https://d3rkrsqld9gmqf.cloudfront.net:80/com.snowplowanalytics.snowplow/tp2')
+    expect(e.buffer_size).to eq(7)
+    expect(e.on_success).to eq(on_success)
+    expect(e.on_failure).to eq(on_failure)
+  end
+
+end
+
 describe SnowplowTracker::Emitter, 'Sending requests' do
 
   it 'sends a payload' do
