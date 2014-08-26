@@ -14,10 +14,14 @@
 # License:: Apache License Version 2.0
 
 require 'net/http'
+require 'logger'
 require 'contracts'
 include Contracts
 
 module SnowplowTracker
+
+  LOGGER = Logger.new(STDERR)
+  LOGGER.level = Logger::DEBUG
 
   class Emitter
 
@@ -36,6 +40,7 @@ module SnowplowTracker
       @on_success = on_success
       @on_failure = on_failure
       @threads = []
+      LOGGER.info("#{self.class} initialized with endpoint #{@collector_uri}")
 
       self
     end
@@ -60,6 +65,7 @@ module SnowplowTracker
     end
 
     def send_requests
+      LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
       temp_buffer = @buffer
       @buffer = []
 
@@ -95,7 +101,6 @@ module SnowplowTracker
             unless @on_success.nil?
               @on_success.call(temp_buffer.size)
             end
-
           else
             unless @on_failure.nil?
               @on_failure.call(0, temp_buffer)
@@ -109,12 +114,26 @@ module SnowplowTracker
 
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
-      Net::HTTP.get_response(destination)
+      LOGGER.info("Sending GET request to #{@collector_uri}...")
+      LOGGER.debug("Payload: #{payload}")
+      response = Net::HTTP.get_response(destination)
+      LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
+        "GET request to #{@collector_uri} finished with status code #{response.code}"
+      }
+
+      response
     end
 
     def http_post(payload)
       destination = URI(@collector_uri)
-      Net::HTTP.post_form(destination, payload)
+      LOGGER.info("Sending POST request to #{@collector_uri}...")
+      LOGGER.debug("Payload: #{payload}")
+      response = Net::HTTP.post_form(destination, payload)
+      LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
+        "POST request to #{@collector_uri} finished with status code #{response.code}"
+      }
+    
+      response
     end
 
     private :as_collector_uri,
@@ -135,6 +154,7 @@ module SnowplowTracker
       @threads.push(t)
 
       if sync
+        LOGGER.info('Starting synchronous flush')
         @threads.each(&:join)
       end
 
