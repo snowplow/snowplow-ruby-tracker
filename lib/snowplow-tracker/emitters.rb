@@ -36,7 +36,7 @@ module SnowplowTracker
       @on_success = on_success
       @on_failure = on_failure
       @threads = []
-      
+
       self
     end
 
@@ -51,15 +51,15 @@ module SnowplowTracker
       payload.each { |k,v| payload[k] = v.to_s}
       @buffer.push(payload)
       if @buffer.size > @buffer_size
-        _flush
+        flush
       end
     end
 
-    def _flush(sync=false)
-      flush
+    def flush(sync=false)
+      send_requests
     end
 
-    def flush
+    def send_requests
       temp_buffer = @buffer
       @buffer = []
 
@@ -126,9 +126,9 @@ module SnowplowTracker
 
   class AsyncEmitter < Emitter
 
-    def _flush(sync=false)
+    def flush(sync=false)
       t = Thread.new do
-        flush
+        send_requests
       end
       t.abort_on_exception = true
       @threads.select!{ |thread| thread.alive?}
