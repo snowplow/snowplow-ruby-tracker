@@ -38,14 +38,14 @@ module SnowplowTracker
     # Event querystrings will be added here
     @@querystrings = ['']
 
-    def http_get(payload)
+    old_http_get = instance_method(:http_get)
+
+    define_method(:http_get) do |payload|
 
       # This additional line records event querystrings
       @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload)).query)
 
-      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
-      Net::HTTP.get_response(destination)
-      
+      old_http_get.bind(self).(payload)
     end
 
     # New method to get the n-th from last querystring
