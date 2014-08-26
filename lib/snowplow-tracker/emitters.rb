@@ -25,19 +25,26 @@ module SnowplowTracker
     def initialize(endpoint, protocol='http', port=nil, method='get', buffer_size=nil, on_success=nil, on_failure=nil)
       @collector_uri = as_collector_uri(endpoint, protocol, port, method)
       @buffer = []
-      @buffer_size = 0
+      if not buffer_size.nil?
+        @buffer_size = buffer_size
+      elsif method == 'get'
+        @buffer_size = 0
+      else
+        @buffer_size = 10
+      end
       @method = method
       @on_success = on_success
       @on_failure = on_failure
       @threads = []
+      
       self
     end
 
     def as_collector_uri(endpoint, protocol, port, method)
-      port_string = port == nil ? '' : port.to_s + ':'
+      port_string = port == nil ? '' : ":#{port.to_s}"
       path = method == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2'
 
-      protocol + '://' + endpoint + port_string + path
+      "#{protocol}://#{endpoint}#{port_string}#{path}"
     end
 
     def input(payload)
