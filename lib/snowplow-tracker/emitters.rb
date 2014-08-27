@@ -45,6 +45,7 @@ module SnowplowTracker
       self
     end
 
+    Contract String, String, Maybe[Num], String => String
     def as_collector_uri(endpoint, protocol, port, method)
       port_string = port == nil ? '' : ":#{port.to_s}"
       path = method == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2'
@@ -52,18 +53,25 @@ module SnowplowTracker
       "#{protocol}://#{endpoint}#{port_string}#{path}"
     end
 
+    Contract Hash => nil
     def input(payload)
       payload.each { |k,v| payload[k] = v.to_s}
       @buffer.push(payload)
       if @buffer.size > @buffer_size
         flush
       end
+
+      nil
     end
 
+    Contract Bool => nil
     def flush(sync=false)
       send_requests
+
+      nil
     end
 
+    Contract None => nil
     def send_requests
       LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
       temp_buffer = @buffer
@@ -110,8 +118,10 @@ module SnowplowTracker
         end
       end
 
+      nil
     end
 
+    Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
       LOGGER.info("Sending GET request to #{@collector_uri}...")
@@ -124,6 +134,7 @@ module SnowplowTracker
       response
     end
 
+    Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_post(payload)
       destination = URI(@collector_uri)
       LOGGER.info("Sending POST request to #{@collector_uri}...")
@@ -158,8 +169,13 @@ module SnowplowTracker
         @threads.each(&:join)
       end
 
+      nil
     end
 
   end
 
+  e = AsyncEmitter.new('d3rkrsqld9gmqf.cloudfront.net')
+  e.input({'a' => 'n'})
+
 end
+sleep(0.2)
