@@ -14,6 +14,7 @@
 # License:: Apache License Version 2.0
 
 require 'net/http'
+require 'set'
 require 'logger'
 require 'contracts'
 include Contracts
@@ -21,24 +22,43 @@ include Contracts
 module SnowplowTracker
 
   LOGGER = Logger.new(STDERR)
-  LOGGER.level = Logger::DEBUG
+  LOGGER.level = Logger::FATAL
 
   class Emitter
 
-    #Contract nil => Emitter
-    def initialize(endpoint, protocol='http', port=nil, method='get', buffer_size=nil, on_success=nil, on_failure=nil)
-      @collector_uri = as_collector_uri(endpoint, protocol, port, method)
+    @@ConfigHash = ({
+      :protocol => Maybe[Or['http', 'https']],
+      :port => Maybe[Num],
+      :method => Maybe[Or['get', 'post']],
+      :buffer_size => Maybe[Num],
+      :on_success => Maybe[Func[Num => Any]],
+      :on_failure => Maybe[Func[Num, Hash => Any]]
+    })
+
+    @@StrictConfigHash = And[@@ConfigHash, lambda { |x|
+      x.class == Hash and Set.new(x.keys).subset? Set.new(@@ConfigHash.keys)
+    }]
+
+    @@DefaultConfig = {
+      :protocol => 'http',
+      :method => 'get'
+    }
+
+    Contract String, @@StrictConfigHash => lambda { |x| x.is_a? Emitter }
+    def initialize(endpoint, config={})
+      config = @@DefaultConfig.merge(config)
+      @collector_uri = as_collector_uri(endpoint, config[:protocol], config[:port], config[:method])
       @buffer = []
-      if not buffer_size.nil?
-        @buffer_size = buffer_size
-      elsif method == 'get'
+      if not config[:buffer_size].nil?
+        @buffer_size = config[:buffer_size]
+      elsif config[:method] == 'get'
         @buffer_size = 0
       else
         @buffer_size = 10
       end
-      @method = method
-      @on_success = on_success
-      @on_failure = on_failure
+      @method = config[:method]
+      @on_success = config[:on_success]
+      @on_failure = config[:on_failure]
       @threads = []
       LOGGER.info("#{self.class} initialized with endpoint #{@collector_uri}")
 
@@ -174,8 +194,4 @@ module SnowplowTracker
 
   end
 
-  e = AsyncEmitter.new('d3rkrsqld9gmqf.cloudfront.net')
-  e.input({'a' => 'n'})
-
 end
-sleep(0.2)
