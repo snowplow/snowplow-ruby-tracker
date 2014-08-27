@@ -65,6 +65,8 @@ module SnowplowTracker
       self
     end
 
+    # Build the collector URI from the configuration hash
+    #
     Contract String, String, Maybe[Num], String => String
     def as_collector_uri(endpoint, protocol, port, method)
       port_string = port == nil ? '' : ":#{port.to_s}"
@@ -73,6 +75,8 @@ module SnowplowTracker
       "#{protocol}://#{endpoint}#{port_string}#{path}"
     end
 
+    # Add an event to the buffer and flush it if maximum size has been reached
+    #
     Contract Hash => nil
     def input(payload)
       payload.each { |k,v| payload[k] = v.to_s}
@@ -84,6 +88,8 @@ module SnowplowTracker
       nil
     end
 
+    # Flush the buffer
+    #
     Contract Bool => nil
     def flush(sync=false)
       send_requests
@@ -91,6 +97,8 @@ module SnowplowTracker
       nil
     end
 
+    # Send all events in the buffer to the collector
+    #
     Contract None => nil
     def send_requests
       LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
@@ -141,6 +149,8 @@ module SnowplowTracker
       nil
     end
 
+    # Send a GET request
+    #
     Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
@@ -154,6 +164,8 @@ module SnowplowTracker
       response
     end
 
+    # Send a POST request
+    #
     Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_post(payload)
       destination = URI(@collector_uri)
@@ -176,6 +188,9 @@ module SnowplowTracker
 
   class AsyncEmitter < Emitter
 
+    # Flush the buffer in a new thread
+    #  If sync is true, block until all flushing threads have exited
+    #
     def flush(sync=false)
       t = Thread.new do
         send_requests
