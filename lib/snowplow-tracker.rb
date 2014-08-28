@@ -16,5 +16,6 @@
 require 'snowplow-tracker/contracts.rb'
 require 'snowplow-tracker/version.rb'
 require 'snowplow-tracker/payload.rb'
+require 'snowplow-tracker/subject.rb'
 require 'snowplow-tracker/emitters.rb'
 require 'snowplow-tracker/tracker.rb'
