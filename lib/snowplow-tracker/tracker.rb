@@ -23,6 +23,8 @@ module SnowplowTracker
 
   class Tracker
 
+    @@EmitterInput = Or[lambda {|x| x.is_a? Emitter}, ArrayOf[lambda {|x| x.is_a? Emitter}]]
+
     @@required_transaction_keys =   Set.new(%w(order_id total_value))
     @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
 
@@ -76,7 +78,7 @@ module SnowplowTracker
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract Or[Emitter, ArrayOf[Emitter]], Maybe[String], Maybe[String], Bool => Tracker
+    Contract @@EmitterInput, Maybe[String], Maybe[String], Bool => Tracker
     def initialize(emitters, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
       @emitters = Array(emitters)
       @standard_nv_pairs = {
@@ -348,7 +350,7 @@ module SnowplowTracker
     Contract Bool => Tracker
     def flush(sync=false)
       @emitters.each do |emitter|
-        emitter._flush(sync)
+        emitter.flush(sync)
       end
 
       self

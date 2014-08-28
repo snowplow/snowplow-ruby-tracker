@@ -22,7 +22,7 @@ include Contracts
 module SnowplowTracker
 
   LOGGER = Logger.new(STDERR)
-  LOGGER.level = Logger::FATAL
+  LOGGER.level = Logger::INFO
 
   class Emitter
 
