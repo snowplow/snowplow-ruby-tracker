@@ -168,14 +168,18 @@ module SnowplowTracker
     #
     Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_post(payload)
-      destination = URI(@collector_uri)
       LOGGER.info("Sending POST request to #{@collector_uri}...")
       LOGGER.debug("Payload: #{payload}")
-      response = Net::HTTP.post_form(destination, payload)
+      destination = URI(@collector_uri)
+      http = Net::HTTP.new(destination.host, destination.port)
+      request = Net::HTTP::Post.new(destination)
+      request.form_data = payload
+      request.set_content_type('application/json; charset=utf-8')
+      response = http.request(request)
       LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
         "POST request to #{@collector_uri} finished with status code #{response.code}"
       }
-    
+
       response
     end
 
