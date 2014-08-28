@@ -67,7 +67,6 @@ module SnowplowTracker
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
-    @@default_platform = 'srv'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
     @@http_errors = ['host not found',
                      'No address associated with name',
@@ -78,20 +77,33 @@ module SnowplowTracker
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract @@EmitterInput, Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(emitters, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+    Contract @@EmitterInput, Maybe[Subject], Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(emitters, subject=nil, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
       @emitters = Array(emitters)
+      if subject.nil?
+        @subject = Subject.new
+      else
+        @subject = subject
+      end
       @standard_nv_pairs = {
         'tna' => namespace,
         'tv'  => @@version,
-        'p'   => @@default_platform,
         'aid' => app_id
       }
       @config = {
         'encode_base64' => encode_base64
       }
       @uuid = UUID.new
+
       self
+    end
+
+    # Call subject methods from tracker instance
+    #
+    Subject.instance_methods(false).each do |name|
+      define_method name, ->(*splat) do
+        @subject.method(name.to_sym).call(*splat)
+      end
     end
 
     # Generates a type-4 UUID to identify this event
@@ -117,69 +129,6 @@ module SnowplowTracker
       }
     end
 
-    # Setter methods
-
-    # Specify the platform
-    #
-    Contract String => Tracker
-    def set_platform(value)
-      if @@supported_platforms.include?(value)
-        @standard_nv_pairs['p'] = value
-      else
-        raise "#{value} is not a supported platform"
-      end
-
-      self
-    end
-
-    # Set the business-defined user ID for a user
-    #
-    Contract String => Tracker
-    def set_user_id(user_id)
-      @standard_nv_pairs['uid'] = user_id
-      self
-    end
-
-    # Set the screen resolution for a device
-    #
-    Contract Num, Num => Tracker
-    def set_screen_resolution(width, height)
-      @standard_nv_pairs['res'] = "#{width}x#{height}"
-      self
-    end
-
-    # Set the dimensions of the current viewport
-    #
-    Contract Num, Num => Tracker
-    def set_viewport(width, height)
-      @standard_nv_pairs['vp'] = "#{width}x#{height}"
-      self
-    end
-
-    # Set the color depth of the device in bits per pixel
-    #
-    Contract Num => Tracker
-    def set_color_depth(depth)
-      @standard_nv_pairs['cd'] = depth
-      self
-    end
-
-    # Set the timezone field
-    #
-    Contract String => Tracker
-    def set_timezone(timezone)
-      @standard_nv_pairs['tz'] = timezone
-      self
-    end
-
-    # Set the language field
-    #
-    Contract String => Tracker
-    def set_lang(lang)
-      @standard_nv_pairs['lang'] = lang
-      self
-    end
-
     # Tracking methods
 
     # Attaches all the fields in @standard_nv_pairs to the request
@@ -187,6 +136,7 @@ module SnowplowTracker
     #
     Contract Payload => nil
     def track(pb)
+      pb.add_dict(@subject.standard_nv_pairs)
       pb.add_dict(@standard_nv_pairs)
       pb.add('eid', get_event_id())
       @emitters.each{ |emitter| emitter.input(pb.context)}
@@ -353,6 +303,14 @@ module SnowplowTracker
         emitter.flush(sync)
       end
 
+      self
+    end
+
+    # Set the subject of the events fired by the tracker
+    #
+    Contract Subject => Tracker
+    def set_subject(subject)
+      @subject = subject
       self
     end
 

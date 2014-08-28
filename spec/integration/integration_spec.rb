@@ -129,7 +129,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks an unstructured event (no base64)' do
     e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e, nil, nil, false)
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_unstruct_event({
       'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       'data' => {
@@ -173,7 +173,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks a screen view unstructured event' do
     e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e, nil, nil, false)
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -189,7 +189,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'adds standard name-value pairs to the payload' do
     e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e, 'cf', 'angry-birds-android')
+    t = SnowplowTracker::Tracker.new(e, nil, 'cf', 'angry-birds-android')
     t.set_platform('mob')
     t.set_user_id('user12345')
     t.set_screen_resolution(400, 200)
@@ -217,9 +217,61 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   end
 
+  it 'can have more than one Subject' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e, SnowplowTracker::Subject.new, 'cf', 'angry-birds-android')
+    t.set_platform('mob')
+    t.set_user_id('user12345')
+    t.set_screen_resolution(400, 200)
+    t.set_viewport(100, 80)
+    t.set_color_depth(24)
+    t.set_timezone('Europe London')
+    t.set_lang('en')
+    t.track_page_view('http://www.example.com', 'title page')
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'tna' => 'cf', 
+      'res' => '400x200',
+      'vp' => '100x80',
+      'lang' => 'en', 
+      'aid' => 'angry-birds-android', 
+      'cd' => '24', 
+      'tz' => 'Europe London', 
+      'p' => 'mob', 
+      'tv' => SnowplowTracker::TRACKER_VERSION
+    }
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+    s = SnowplowTracker::Subject.new.set_viewport(100,100).set_lang('fr')
+    t.set_subject(s)
+    t.set_user_id('another_user')
+    t.track_page_view('http://www.example.com', 'title page')
+
+    param_hash_2 = CGI.parse(e.get_last_querystring(1))
+    expected_fields_2 = {
+      'tna' => 'cf', 
+      'res' => nil,
+      'vp' => '100x100',
+      'lang' => 'fr', 
+      'aid' => 'angry-birds-android', 
+      'cd' => nil, 
+      'tz' => nil, 
+      'p' => 'srv', 
+      'tv' => SnowplowTracker::TRACKER_VERSION
+    }
+    for pair in expected_fields_2
+      expect(param_hash_2[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+
   it 'adds a custom context to the payload' do
     e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e, nil, nil, false)
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_page_view('http://www.example.com', nil, nil, [{
         'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
         'data' => {

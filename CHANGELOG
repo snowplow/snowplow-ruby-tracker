@@ -1,5 +1,6 @@
 Version 0.3.0 (2014-xx-xx)
 --------------------------
+Added Subject class (#42)
 Added Emitter class (#39)
 Added POST support (#32)
 Added ability to send events asynchronously (#18)

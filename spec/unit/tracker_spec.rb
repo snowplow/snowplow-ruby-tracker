@@ -28,14 +28,13 @@ end
 describe SnowplowTracker::Tracker, 'configuration' do
 
   before(:each) do
-    @t = SnowplowTracker::Tracker.new(SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net'), 'cloudfront', "AF003", false)
+    @t = SnowplowTracker::Tracker.new(SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net'), nil, 'cloudfront', "AF003", false)
   end
 
   it 'should initialise standard name-value pairs' do
     @t.standard_nv_pairs.should eq({
       'tna' => 'cloudfront',
       'tv' => SnowplowTracker::TRACKER_VERSION,
-      'p' => 'srv',
       'aid' => 'AF003'
     })
   end
