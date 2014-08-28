@@ -67,10 +67,6 @@ module SnowplowTracker
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
-    @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
-    @@http_errors = ['host not found',
-                     'No address associated with name',
-                     'No address associated with hostname']
 
     @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
     @@schema_tag = "jsonschema"
@@ -103,6 +99,8 @@ module SnowplowTracker
     Subject.instance_methods(false).each do |name|
       define_method name, ->(*splat) do
         @subject.method(name.to_sym).call(*splat)
+
+        self
       end
     end
 
