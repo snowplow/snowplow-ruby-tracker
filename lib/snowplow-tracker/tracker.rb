@@ -13,7 +13,6 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'net/http'
 require 'contracts'
 require 'set'
 include Contracts
@@ -23,6 +22,8 @@ require 'uuid'
 module SnowplowTracker
 
   class Tracker
+
+    @@EmitterInput = Or[lambda {|x| x.is_a? Emitter}, ArrayOf[lambda {|x| x.is_a? Emitter}]]
 
     @@required_transaction_keys =   Set.new(%w(order_id total_value))
     @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
@@ -66,38 +67,41 @@ module SnowplowTracker
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
-    @@default_platform = 'pc'
-    @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
-    @@http_errors = ['host not found',
-                     'No address associated with name',
-                     'No address associated with hostname']
 
     @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
     @@schema_tag = "jsonschema"
     @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
-    Contract String, Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(endpoint, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
-      @collector_uri = as_collector_uri(endpoint)
+    Contract @@EmitterInput, Maybe[Subject], Maybe[String], Maybe[String], Bool => Tracker
+    def initialize(emitters, subject=nil, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+      @emitters = Array(emitters)
+      if subject.nil?
+        @subject = Subject.new
+      else
+        @subject = subject
+      end
       @standard_nv_pairs = {
         'tna' => namespace,
         'tv'  => @@version,
-        'p'   => @@default_platform,
         'aid' => app_id
       }
       @config = {
         'encode_base64' => encode_base64
       }
       @uuid = UUID.new
+
       self
     end
 
-    # Adds the protocol to the fron of the collector URL, and /i to the end
+    # Call subject methods from tracker instance
     #
-    Contract String => String
-    def as_collector_uri(host)
-      "http://#{host}/i"
+    Subject.instance_methods(false).each do |name|
+      define_method name, ->(*splat) do
+        @subject.method(name.to_sym).call(*splat)
+
+        self
+      end
     end
 
     # Generates a type-4 UUID to identify this event
@@ -123,92 +127,24 @@ module SnowplowTracker
       }
     end
 
-    # Send request
-    #
-    Contract Payload => [Bool, Num]
-    def http_get(payload)
-      destination = URI(@collector_uri + '?' + URI.encode_www_form(payload.context))
-      r = Net::HTTP.get_response(destination)
-      if @@http_errors.include? r.code
-        return false, "Host [#{r.host}] not found (possible connectivity error)"
-      elsif r.code.to_i < 0 or 400 <= r.code.to_i
-        return false, r.code.to_i
-      else
-        return true, r.code.to_i
-      end
-    end
-
-    # Setter methods
-
-    # Specify the platform
-    #
-    Contract String => String
-    def set_platform(value)
-      if @@supported_platforms.include?(value)
-        @standard_nv_pairs['p'] = value
-      else
-        raise "#{value} is not a supported platform"
-      end
-    end
-
-    # Set the business-defined user ID for a user
-    #
-    Contract String => String
-    def set_user_id(user_id)
-      @standard_nv_pairs['uid'] = user_id
-    end
-
-    # Set the screen resolution for a device
-    #
-    Contract Num, Num => String
-    def set_screen_resolution(width, height)
-      @standard_nv_pairs['res'] = "#{width}x#{height}"
-    end
-
-    # Set the dimensions of the current viewport
-    #
-    Contract Num, Num => String
-    def set_viewport(width, height)
-      @standard_nv_pairs['vp'] = "#{width}x#{height}"
-    end
-
-    # Set the color depth of the device in bits per pixel
-    #
-    Contract Num => Num
-    def set_color_depth(depth)
-      @standard_nv_pairs['cd'] = depth
-    end
-
-    # Set the timezone field
-    #
-    Contract String => String
-    def set_timezone(timezone)
-      @standard_nv_pairs['tz'] = timezone
-    end
-
-    # Set the language field
-    #
-    Contract String => String
-    def set_lang(lang)
-      @standard_nv_pairs['lang'] = lang
-    end
-
     # Tracking methods
 
     # Attaches all the fields in @standard_nv_pairs to the request
     #  Only attaches the context vendor if the event has a custom context
     #
-    Contract Payload => [Bool, Num]
+    Contract Payload => nil
     def track(pb)
+      pb.add_dict(@subject.standard_nv_pairs)
       pb.add_dict(@standard_nv_pairs)
       pb.add('eid', get_event_id())
+      @emitters.each{ |emitter| emitter.input(pb.context)}
 
-      http_get(pb)
+      nil
     end
 
     # Log a visit to this page
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => [Bool, Num]
+    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => Tracker
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'pv')
@@ -224,12 +160,14 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
       track(pb)
+
+      self
     end
 
     # Track a single item within an ecommerce transaction
     #   Not part of the public API
     #
-    Contract @@AugmentedItem => [Bool, Num]
+    Contract @@AugmentedItem => self
     def track_ecommerce_transaction_item(argmap)
       pb = Payload.new
       pb.add('e', 'ti')
@@ -245,11 +183,13 @@ module SnowplowTracker
       end
       pb.add('dtm', argmap['tstamp'])
       track(pb)
+
+      self
     end
 
     # Track an ecommerce transaction and all the items in it
     #
-    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => ({'transaction_result' => [Bool, Num], 'item_results' => ArrayOf[[Bool, Num]]})
+    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_ecommerce_transaction(transaction, items,
                                     context=nil, tstamp=nil)
       pb = Payload.new
@@ -272,22 +212,21 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
 
-      transaction_result = track(pb)
-      item_results = []
+      track(pb)
 
       for item in items
         item['tstamp'] = tstamp
         item['order_id'] = transaction['order_id']
         item['currency'] = transaction['currency']
-        item_results.push(track_ecommerce_transaction_item(item))
+        track_ecommerce_transaction_item(item)
       end
 
-      {'transaction_result' => transaction_result, 'item_results' => item_results}
+      self
     end
 
     # Track a structured event
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'se')
@@ -304,13 +243,18 @@ module SnowplowTracker
       end
       pb.add('dtm', tstamp)
       track(pb)
+
+      self
     end
 
     # Track a screen view event
     #
-    Contract String, Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
-    def track_screen_view(name, id=nil, context=nil, tstamp=nil)
-      screen_view_properties = {'name' => name}
+    Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => Tracker
+    def track_screen_view(name=nil, id=nil, context=nil, tstamp=nil)
+      screen_view_properties = {}
+      unless name.nil? 
+        screen_view_properties['name'] = name
+      end
       unless id.nil? 
         screen_view_properties['id'] = id
       end
@@ -318,11 +262,13 @@ module SnowplowTracker
       event_json = {schema: screen_view_schema, data: screen_view_properties}
 
       self.track_unstruct_event(event_json, context, tstamp)
+
+      self
     end
 
     # Track an unstructured event
     #
-    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => [Bool, Num]
+    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
@@ -343,12 +289,39 @@ module SnowplowTracker
       pb.add('dtm', tstamp)
 
       track(pb)
+
+      self
     end
 
-    private :as_collector_uri,
-            :get_timestamp,
+    # Flush all events stored in all emitters
+    #
+    Contract Bool => Tracker
+    def flush(sync=false)
+      @emitters.each do |emitter|
+        emitter.flush(sync)
+      end
+
+      self
+    end
+
+    # Set the subject of the events fired by the tracker
+    #
+    Contract Subject => Tracker
+    def set_subject(subject)
+      @subject = subject
+      self
+    end
+
+    # Add a new emitter
+    #
+    Contract Emitter => Tracker
+    def add_emitter(emitter)
+      @emitters.push(emitter)
+      self
+    end
+
+    private :get_timestamp,
             :build_context,
-            :http_get,
             :track,
             :track_ecommerce_transaction_item
 

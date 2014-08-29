@@ -13,34 +13,18 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'spec_helper'
+require 'contracts'
+include Contracts
 
 module SnowplowTracker
-  class Tracker
 
-    attr_reader :collector_uri,
-                :standard_nv_pairs,
-                :config
+  ORIGINAL_FAILURE_CALLBACK = Contract.method(:failure_callback)
 
-  end
-end
-
-describe SnowplowTracker::Tracker, 'configuration' do
-
-  before(:each) do
-    @t = SnowplowTracker::Tracker.new(SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net'), nil, 'cloudfront', "AF003", false)
+  def self.disable_contracts
+    Contract.define_singleton_method(:failure_callback) {|data| true}
   end
 
-  it 'should initialise standard name-value pairs' do
-    @t.standard_nv_pairs.should eq({
-      'tna' => 'cloudfront',
-      'tv' => SnowplowTracker::TRACKER_VERSION,
-      'aid' => 'AF003'
-    })
+  def self.enable_contracts
+    Contract.define_singleton_method(:failure_callback, ORIGINAL_FAILURE_CALLBACK)
   end
-
-  it 'should initialise with the right configuration' do
-    @t.config.should eq({'encode_base64' => false})
-  end
-
 end

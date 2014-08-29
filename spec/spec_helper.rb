@@ -23,8 +23,35 @@ WebMock.disable_net_connect!(:allow_localhost => true)
 
 RSpec.configure do |config|
   config.before(:each) do
-    stub_request(:any, /.*/).
+    stub_request(:any, /localhost/).
       with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
       to_return(:status => [200], :body => 'stubbed response')
+    stub_request(:any, /nonexistent/).
+      with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(:status => [404], :body => 'stubbed response')
+  end
+end
+
+module SnowplowTracker
+  class Emitter
+
+    # Event querystrings will be added here
+    @@querystrings = ['']
+
+    old_http_get = instance_method(:http_get)
+
+    define_method(:http_get) do |payload|
+
+      # This additional line records event querystrings
+      @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload)).query)
+
+      old_http_get.bind(self).(payload)
+    end
+
+    # New method to get the n-th from last querystring
+    def get_last_querystring(n=1)
+      return @@querystrings[-n]
+    end
+
   end
 end

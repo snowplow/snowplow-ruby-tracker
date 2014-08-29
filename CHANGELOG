@@ -1,3 +1,15 @@
+Version 0.3.0 (2014-08-29)
+--------------------------
+Added Subject class (#42)
+Added Emitter class (#39)
+Added POST support (#32)
+Added ability to send events asynchronously (#18)
+Added ability to disable contracts (#11)
+Made "name" an optional argument to track_screen_view (#38)
+Changed default platform to "srv" (#37)
+Made all tracker methods chainable (#40)
+Added logging (#41)
+
 Version 0.2.0 (2014-07-31)
 --------------------------
 Wrapped custom contexts in the contexts schema, thanks @ebear! (#25)

@@ -14,6 +14,6 @@
 # License:: Apache License Version 2.0
 
 module SnowplowTracker
-  VERSION = '0.2.0'
+  VERSION = '0.3.0'
   TRACKER_VERSION = "rb-#{VERSION}"
 end
