@@ -205,7 +205,9 @@ module SnowplowTracker
 
       if sync
         LOGGER.info('Starting synchronous flush')
-        @threads.each(&:join)
+        @threads.each do |thread|
+          thread.join(10)
+        end
       end
 
       nil
