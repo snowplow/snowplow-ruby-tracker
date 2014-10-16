@@ -108,6 +108,14 @@ module SnowplowTracker
       self
     end
 
+    # Set the user agent
+    #
+    Contract String => Subject
+    def set_useragent(ua)
+      @standard_nv_pairs['ua'] = ua
+      self
+    end
+
   end
 
 end
