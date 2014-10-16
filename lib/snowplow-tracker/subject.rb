@@ -92,6 +92,14 @@ module SnowplowTracker
       self
     end
 
+    # Set the domain user ID
+    #
+    Contract String => Subject
+    def set_domain_user_id(duid)
+      @standard_nv_pairs['duid'] = duid
+      self
+    end
+
   end
 
 end
