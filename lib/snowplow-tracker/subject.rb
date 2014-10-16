@@ -100,6 +100,14 @@ module SnowplowTracker
       self
     end
 
+    # Set the IP address field
+    #
+    Contract String => Subject
+    def set_ip_address(ip)
+      @standard_nv_pairs['ip'] = ip
+      self
+    end
+
   end
 
 end
