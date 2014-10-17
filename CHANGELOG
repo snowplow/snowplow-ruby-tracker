@@ -5,6 +5,7 @@ Added set_ip_address method (#49)
 Added set_useragent method (#48)
 Added set_network_user_id method (#47)
 Updated payload_data to 1-0-1 (#45)
+Started using SSL for requests over HTTPS (#52)
 
 Version 0.3.0 (2014-08-29)
 --------------------------
