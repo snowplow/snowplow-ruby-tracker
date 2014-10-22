@@ -116,6 +116,15 @@ module SnowplowTracker
       self
     end
 
+    # Set the network user ID field
+    #  This overwrites the nuid field set by the collector
+    #
+    Contract String => Subject
+    def set_network_user_id(nuid)
+      @standard_nv_pairs['tnuid'] = nuid
+      self
+    end
+
   end
 
 end
