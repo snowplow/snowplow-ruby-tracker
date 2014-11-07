@@ -1,4 +1,4 @@
-Version 0.4.0 (2014-xx-xx)
+Version 0.4.0 (2014-11-07)
 --------------------------
 Added set_domain_user_id method (#50)
 Added set_ip_address method (#49)
