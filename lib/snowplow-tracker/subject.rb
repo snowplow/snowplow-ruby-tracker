@@ -92,6 +92,39 @@ module SnowplowTracker
       self
     end
 
+    # Set the domain user ID
+    #
+    Contract String => Subject
+    def set_domain_user_id(duid)
+      @standard_nv_pairs['duid'] = duid
+      self
+    end
+
+    # Set the IP address field
+    #
+    Contract String => Subject
+    def set_ip_address(ip)
+      @standard_nv_pairs['ip'] = ip
+      self
+    end
+
+    # Set the user agent
+    #
+    Contract String => Subject
+    def set_useragent(ua)
+      @standard_nv_pairs['ua'] = ua
+      self
+    end
+
+    # Set the network user ID field
+    #  This overwrites the nuid field set by the collector
+    #
+    Contract String => Subject
+    def set_network_user_id(nuid)
+      @standard_nv_pairs['tnuid'] = nuid
+      self
+    end
+
   end
 
 end
