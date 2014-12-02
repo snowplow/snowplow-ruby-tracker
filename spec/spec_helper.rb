@@ -38,6 +38,9 @@ module SnowplowTracker
     # Event querystrings will be added here
     @@querystrings = ['']
 
+    # Post request bodies will be added here
+    @@post_bodies = [{}]
+
     old_http_get = instance_method(:http_get)
 
     define_method(:http_get) do |payload|
@@ -48,9 +51,26 @@ module SnowplowTracker
       old_http_get.bind(self).(payload)
     end
 
+    old_http_post = instance_method(:http_post)
+
+    define_method(:http_post) do |payload|
+
+      request = Net::HTTP::Post.new("localhost")
+      request.body = payload.to_json
+
+      # This additional line records POST request bodies
+      @@post_bodies.push(request.body)
+
+      old_http_post.bind(self).(payload)
+    end
+
     # New method to get the n-th from last querystring
     def get_last_querystring(n=1)
       return @@querystrings[-n]
+    end
+
+    def get_last_body(n=1)
+      return @@post_bodies[-n]
     end
 
   end

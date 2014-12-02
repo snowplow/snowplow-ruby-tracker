@@ -15,6 +15,7 @@
 
 require 'spec_helper'
 require 'cgi'
+require 'json'
 
 describe SnowplowTracker::Tracker, 'Querystring construction' do
 
@@ -301,6 +302,37 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
 
+  end
+
+  it 'batches and sends multiple events using GET' do
+    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 2})
+    t = SnowplowTracker::Tracker.new(e)
+    t.track_page_view('http://www.example.com', 'first')
+    t.track_page_view('http://www.example.com', 'second')
+    t.track_page_view('http://www.example.com', 'third')
+
+    param_hash_1 = CGI.parse(e.get_last_querystring(1))
+    expect(param_hash_1['page'][0]).to eq('third')
+
+    param_hash_2 = CGI.parse(e.get_last_querystring(2))
+    expect(param_hash_2['page'][0]).to eq('second')
+
+    param_hash_3 = CGI.parse(e.get_last_querystring(3))
+    expect(param_hash_3['page'][0]).to eq('first')
+  end
+
+  it 'batches and sends multiple events using POST' do
+    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 2})
+    t = SnowplowTracker::Tracker.new(e)
+    t.track_page_view('http://www.example.com', 'fourth')
+    t.track_page_view('http://www.example.com', 'fifth')
+    t.track_page_view('http://www.example.com', 'sixth')
+
+    payload_data = JSON.parse(e.get_last_body)['data']
+    expect(payload_data[0]['page']).to eq('fourth')
+    expect(payload_data[1]['page']).to eq('fifth')
+    expect(payload_data[2]['page']).to eq('sixth')
+    
   end
 
 end
