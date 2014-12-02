@@ -129,7 +129,7 @@ module SnowplowTracker
       elsif @method == 'post'
         if temp_buffer.size > 0
           request = http_post({
-            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/1-0-1',
+            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
             'data' => temp_buffer
           })
 

@@ -100,7 +100,7 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     emitter.input({"key3" => "value3"})
 
     expect(JSON.parse(emitter.get_last_body(1))).to eq({
-      "schema" => "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-1",
+      "schema" => "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2",
       "data" => [
         {"key1" => "value1"},
         {"key2"=>"value2"},
