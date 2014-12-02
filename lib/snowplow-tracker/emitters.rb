@@ -177,12 +177,11 @@ module SnowplowTracker
       LOGGER.debug("Payload: #{payload}")
       destination = URI(@collector_uri)
       http = Net::HTTP.new(destination.host, destination.port)
-      request = Net::HTTP::Post.new(destination)
       request = Net::HTTP::Post.new(destination.request_uri)
       if destination.scheme == 'https'
         http.use_ssl = true
       end
-      request.form_data = payload
+      request.body = payload.to_json
       request.set_content_type('application/json; charset=utf-8')
       response = http.request(request)
       LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {

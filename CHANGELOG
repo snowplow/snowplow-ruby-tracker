@@ -1,3 +1,7 @@
+Version 0.4.1 (2014-12-02)
+--------------------------
+Started sending stringified JSON rather than form data in POST requests (#54)
+
 Version 0.4.0 (2014-11-07)
 --------------------------
 Added set_domain_user_id method (#50)
