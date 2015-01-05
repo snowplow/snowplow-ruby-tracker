@@ -1,3 +1,11 @@
+Version 0.4.1 (2015-01-05)
+--------------------------
+Updated payload_data schema to 1-0-2 (#55)
+Started sending stringified JSON rather than form data in POST requests (#54)
+Added Quickstart section to README (#59)
+Added dedicated Vagrant setup (#57)
+Implemented vagrant push scripting for deployment (#60)
+
 Version 0.4.0 (2014-11-07)
 --------------------------
 Added set_domain_user_id method (#50)

@@ -6,9 +6,28 @@
 
 ## Overview
 
-Add analytics to your Ruby and Rails apps and gems with the [Snowplow] [snowplow] event tracker for [Ruby] [ruby].
+Add analytics to your Ruby and Rails apps and gems with the **[Snowplow] [snowplow]** event tracker for **[Ruby] [ruby]**.
 
-With this tracker you can collect event data from your [Ruby] [ruby] applications, [Ruby on Rails] [rails] web applications and [Ruby gems] [rubygems].
+With this tracker you can collect event data from your **[Ruby] [ruby]** applications, **[Ruby on Rails] [rails]** web applications and **[Ruby gems] [rubygems]**.
+
+## Quickstart
+
+Assuming git, **[Vagrant] [vagrant-install]** and **[VirtualBox] [virtualbox-install]** installed:
+
+```bash
+ host$ git clone https://github.com/snowplow/snowplow-ruby-tracker.git
+ host$ cd snowplow-ruby-tracker
+ host$ vagrant up && vagrant ssh
+guest$ cd /vagrant
+guest$ bundle install
+guest$ rspec
+```
+
+## Publishing
+
+```bash
+ host$ vagrant push
+```
 
 ## Find out more
 
@@ -35,6 +54,9 @@ limitations under the License.
 [rubygems]: https://rubygems.org/
 
 [snowplow]: http://snowplowanalytics.com
+
+[vagrant-install]: http://docs.vagrantup.com/v2/installation/index.html
+[virtualbox-install]: https://www.virtualbox.org/wiki/Downloads
 
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png

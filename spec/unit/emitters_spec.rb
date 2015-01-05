@@ -15,6 +15,7 @@
 
 require 'spec_helper'
 require 'cgi'
+require 'json'
 
 module SnowplowTracker
   class Emitter
@@ -90,6 +91,24 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     })
     emitter.input({'failure' => 'bad'})
     expect(callback_executed).to eq(true)
+  end
+
+  it 'correctly batches multiple events' do
+    emitter = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 2})
+    emitter.input({"key1" => "value1"})
+    emitter.input({"key2" => "value2"})
+    emitter.input({"key3" => "value3"})
+
+    expect(JSON.parse(emitter.get_last_body(1))).to eq({
+      "schema" => "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2",
+      "data" => [
+        {"key1" => "value1"},
+        {"key2"=>"value2"},
+        {"key3"=>"value3"}
+      ]
+    })
+
+
   end
 
 end

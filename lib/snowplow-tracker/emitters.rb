@@ -129,7 +129,7 @@ module SnowplowTracker
       elsif @method == 'post'
         if temp_buffer.size > 0
           request = http_post({
-            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/1-0-1',
+            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
             'data' => temp_buffer
           })
 
@@ -177,12 +177,11 @@ module SnowplowTracker
       LOGGER.debug("Payload: #{payload}")
       destination = URI(@collector_uri)
       http = Net::HTTP.new(destination.host, destination.port)
-      request = Net::HTTP::Post.new(destination)
       request = Net::HTTP::Post.new(destination.request_uri)
       if destination.scheme == 'https'
         http.use_ssl = true
       end
-      request.form_data = payload
+      request.body = payload.to_json
       request.set_content_type('application/json; charset=utf-8')
       response = http.request(request)
       LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
