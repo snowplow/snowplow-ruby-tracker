@@ -2,6 +2,7 @@ Version 0.4.1 (2014-12-02)
 --------------------------
 Updated payload_data schema to 1-0-2 (#55)
 Started sending stringified JSON rather than form data in POST requests (#54)
+Added Quickstart section to README (#59)
 
 Version 0.4.0 (2014-11-07)
 --------------------------
