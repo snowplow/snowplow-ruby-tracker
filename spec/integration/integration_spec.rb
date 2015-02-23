@@ -198,6 +198,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_color_depth(24)
     t.set_timezone('Europe London')
     t.set_lang('en')
+    t.set_fingerprint(987654321)
     t.track_page_view('http://www.example.com', 'title page')
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -210,6 +211,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'cd' => '24', 
       'tz' => 'Europe London', 
       'p' => 'mob', 
+      'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields
@@ -232,7 +234,9 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_ip_address('255.255.255.255')
     t.set_useragent('Mozilla/5.0')
     t.set_network_user_id('ecdff4d0-9175-40ac-a8bb-325c49733607')
+    t.set_fingerprint(987654321)
     t.track_page_view('http://www.example.com', 'title page')
+
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -248,6 +252,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ua' => 'Mozilla/5.0',
       'ip' => '255.255.255.255',
       'tnuid' => 'ecdff4d0-9175-40ac-a8bb-325c49733607',
+      'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields

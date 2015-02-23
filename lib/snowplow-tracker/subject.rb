@@ -52,6 +52,14 @@ module SnowplowTracker
       self
     end
 
+    # Set fingerprint for the user
+    #
+    Contract Num => Subject
+    def set_fingerprint(fingerprint)
+      @standard_nv_pairs['fp'] = fingerprint
+      self
+    end
+
     # Set the screen resolution for a device
     #
     Contract Num, Num => Subject
