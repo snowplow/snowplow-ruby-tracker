@@ -1,3 +1,10 @@
+Version 0.4.2 (2015-04-08)
+--------------------------
+Relaxed Contracts dependency (#68)
+Added License button to README (#66)
+Added missing bundler step to Vagrant quickstart (#70)
+Updated vagrant up to work with latest Peru version (#69)
+
 Version 0.4.1 (2015-01-05)
 --------------------------
 Updated payload_data schema to 1-0-2 (#55)
