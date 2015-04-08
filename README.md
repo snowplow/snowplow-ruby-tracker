@@ -20,6 +20,7 @@ Assuming git, **[Vagrant] [vagrant-install]** and **[VirtualBox] [virtualbox-ins
  host$ cd snowplow-ruby-tracker
  host$ vagrant up && vagrant ssh
 guest$ cd /vagrant
+guest$ gem install bundler
 guest$ bundle install
 guest$ rspec
 ```
