@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
 [![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
 [![Coverage Status](https://coveralls.io/repos/snowplow/snowplow-ruby-tracker/badge.png)](https://coveralls.io/r/snowplow/snowplow-ruby-tracker)
+[![License][license-image]][license]
 
 ## Overview
 
@@ -19,6 +20,7 @@ Assuming git, **[Vagrant] [vagrant-install]** and **[VirtualBox] [virtualbox-ins
  host$ cd snowplow-ruby-tracker
  host$ vagrant up && vagrant ssh
 guest$ cd /vagrant
+guest$ gem install bundler
 guest$ bundle install
 guest$ rspec
 ```
@@ -49,6 +51,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+[license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
+[license]: http://www.apache.org/licenses/LICENSE-2.0
+
 [ruby]: https://www.ruby-lang.org/en/
 [rails]: http://rubyonrails.org/
 [rubygems]: https://rubygems.org/
@@ -67,5 +72,3 @@ limitations under the License.
 [setup]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker-Setup
 [roadmap]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker-Roadmap
 [contributing]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker-Contributing
-
-[license]: http://www.apache.org/licenses/LICENSE-2.0
