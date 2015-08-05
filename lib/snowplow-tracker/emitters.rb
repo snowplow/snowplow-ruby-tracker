@@ -108,13 +108,18 @@ module SnowplowTracker
     def send_requests(evts)
       LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
 
-
       if @method == 'post'
-        request = http_post({
-          'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
-          'data' => evts
-        })
-        if is_good_status_code(request.code)
+        post_succeeded = false
+        begin
+          request = http_post({
+            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
+            'data' => evts
+          })
+          post_succeeded = is_good_status_code(request.code)
+        rescue StandardError => se
+          LOGGER.warn(se)
+        end
+        if post_succeeded
           unless @on_success.nil?
             @on_success.call(evts.size)
           end
@@ -128,8 +133,13 @@ module SnowplowTracker
         success_count = 0
         unsent_requests = []
         evts.each do |evt|
-          request = http_get(evt)
-          get_succeeded = is_good_status_code(request.code)
+          get_succeeded = false
+          begin
+            request = http_get(evt)
+            get_succeeded = is_good_status_code(request.code)
+          rescue StandardError => se
+            LOGGER.warn(se)
+          end
           if get_succeeded
             success_count += 1
           else
