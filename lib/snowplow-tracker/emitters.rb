@@ -114,7 +114,7 @@ module SnowplowTracker
           'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
           'data' => evts
         })
-        if request.code.to_i == 200
+        if is_good_status_code(request.code)
           unless @on_success.nil?
             @on_success.call(evts.size)
           end
@@ -129,7 +129,7 @@ module SnowplowTracker
         unsent_requests = []
         evts.each do |evt|
           request = http_get(evt)
-          get_succeeded = request.code.to_i == 200
+          get_succeeded = is_good_status_code(request.code)
           if get_succeeded
             success_count += 1
           else
@@ -163,7 +163,7 @@ module SnowplowTracker
         http.use_ssl = true
       end
       response = http.request(request)
-      LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
+      LOGGER.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
         "GET request to #{@collector_uri} finished with status code #{response.code}"
       }
 
@@ -185,11 +185,18 @@ module SnowplowTracker
       request.body = payload.to_json
       request.set_content_type('application/json; charset=utf-8')
       response = http.request(request)
-      LOGGER.add(response.code == '200' ? Logger::INFO : Logger::WARN) {
+      LOGGER.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
         "POST request to #{@collector_uri} finished with status code #{response.code}"
       }
 
       response
+    end
+
+    # Only 2xx and 3xx status codes are considered successes
+    #
+    Contract String => Bool
+    def is_good_status_code(status_code)
+      status_code.to_i >= 200 && status_code.to_i < 400
     end
 
     private :as_collector_uri,
