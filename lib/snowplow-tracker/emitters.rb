@@ -47,6 +47,7 @@ module SnowplowTracker
     Contract String, @@StrictConfigHash => lambda { |x| x.is_a? Emitter }
     def initialize(endpoint, config={})
       config = @@DefaultConfig.merge(config)
+      @lock = Monitor.new
       @collector_uri = as_collector_uri(endpoint, config[:protocol], config[:port], config[:method])
       @buffer = []
       if not config[:buffer_size].nil?
@@ -59,7 +60,6 @@ module SnowplowTracker
       @method = config[:method]
       @on_success = config[:on_success]
       @on_failure = config[:on_failure]
-      @threads = []
       LOGGER.info("#{self.class} initialized with endpoint #{@collector_uri}")
 
       self
@@ -80,9 +80,11 @@ module SnowplowTracker
     Contract Hash => nil
     def input(payload)
       payload.each { |k,v| payload[k] = v.to_s}
-      @buffer.push(payload)
-      if @buffer.size > @buffer_size
-        flush
+      @lock.synchronize do
+        @buffer.push(payload)
+        if @buffer.size > @buffer_size
+          flush
+        end
       end
 
       nil
@@ -92,57 +94,55 @@ module SnowplowTracker
     #
     Contract Bool => nil
     def flush(sync=false)
-      send_requests
-
+      @lock.synchronize do
+        send_requests(@buffer)
+        @buffer = []
+      end
       nil
     end
 
     # Send all events in the buffer to the collector
     #
-    Contract None => nil
-    def send_requests
+    Contract ArrayOf[Hash] => nil
+    def send_requests(evts)
       LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
-      temp_buffer = @buffer
-      @buffer = []
 
-      if @method == 'get'
-        success_count = 0
-        unsent_requests = []
-        temp_buffer.each do |payload|
-          request = http_get(payload)
-          if request.code.to_i == 200
-            success_count += 1
-          else
-            unsent_requests.push(payload)
+
+      if @method == 'post'
+        request = http_post({
+          'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
+          'data' => evts
+        })
+        if request.code.to_i == 200
+          unless @on_success.nil?
+            @on_success.call(evts.size)
           end
-          if unsent_requests.size == 0
-            unless @on_success.nil?
-              @on_success.call(success_count)
-            end
-          else
-            unless @on_failure.nil?
-              @on_failure.call(success_count, unsent_requests)
-            end
+        else
+          unless @on_failure.nil?
+            @on_failure.call(0, evts)
           end
         end
 
-      elsif @method == 'post'
-        if temp_buffer.size > 0
-          request = http_post({
-            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
-            'data' => temp_buffer
-          })
-
-          if request.code.to_i == 200
-            unless @on_success.nil?
-              @on_success.call(temp_buffer.size)
-            end
+      elsif @method == 'get'
+        success_count = 0
+        unsent_requests = []
+        evts.each do |evt|
+          request = http_get(evt)
+          get_succeeded = request.code.to_i == 200
+          if get_succeeded
+            success_count += 1
           else
-            unless @on_failure.nil?
-              @on_failure.call(0, temp_buffer)
-            end
+            unsent_requests << evt
           end
-
+        end
+        if unsent_requests.size == 0
+          unless @on_success.nil?
+            @on_success.call(success_count)
+          end
+        else
+          unless @on_failure.nil?
+            @on_failure.call(success_count, unsent_requests)
+          end
         end
       end
 
@@ -200,27 +200,51 @@ module SnowplowTracker
 
   class AsyncEmitter < Emitter
 
-    # Flush the buffer in a new thread
-    #  If sync is true, block until all flushing threads have exited
-    #
-    def flush(sync=false)
-      t = Thread.new do
-        send_requests
-      end
-      t.abort_on_exception = true
-      @threads.select!{ |thread| thread.alive?}
-      @threads.push(t)
-
-      if sync
-        LOGGER.info('Starting synchronous flush')
-        @threads.each do |thread|
-          thread.join(10)
+    Contract String, @@StrictConfigHash => lambda { |x| x.is_a? Emitter }
+    def initialize(endpoint, config={})
+      @queue = Queue.new()
+      # @all_processed_condition and @results_unprocessed are used to emulate Python's Queue.task_done()
+      @queue.extend(MonitorMixin)
+      @all_processed_condition = @queue.new_cond
+      @results_unprocessed = 0
+      1.times do
+        t = Thread.new do
+          consume
         end
       end
-
-      nil
+      super(endpoint, config)
     end
 
+    def consume
+      loop do
+        work_unit = @queue.pop
+        send_requests(work_unit)
+        @queue.synchronize do
+          @results_unprocessed -= 1
+          @all_processed_condition.broadcast
+        end
+      end
+    end
+
+    # Flush the buffer
+    #  If sync is true, block until the queue is empty
+    #
+    def flush(sync=false)
+      @lock.synchronize do
+        @queue.synchronize do
+          @results_unprocessed += 1
+        end
+        @queue << @buffer
+        @buffer = []
+      end
+      if sync
+        LOGGER.info('Starting synchronous flush')
+        @queue.synchronize do
+          @all_processed_condition.wait_while { @results_unprocessed > 0 }
+          LOGGER.info('Finished synchronous flush')
+        end
+      end
+    end
   end
 
 end
