@@ -310,7 +310,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using GET' do
-    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 2})
+    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 3})
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'first')
     t.track_page_view('http://www.example.com', 'second')
@@ -327,7 +327,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using POST' do
-    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 2})
+    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 3})
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'fourth')
     t.track_page_view('http://www.example.com', 'fifth')

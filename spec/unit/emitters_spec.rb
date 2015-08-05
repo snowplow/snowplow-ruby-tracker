@@ -33,7 +33,7 @@ describe SnowplowTracker::Emitter, 'configuration' do
   it 'should initialise correctly using default settings' do
     e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net')
     expect(e.collector_uri).to eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
-    expect(e.buffer_size).to eq(0)
+    expect(e.buffer_size).to eq(1)
   end
 
   it 'should initialise correctly using custom settings' do
@@ -94,7 +94,7 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
   end
 
   it 'correctly batches multiple events' do
-    emitter = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 2})
+    emitter = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 3})
     emitter.input({"key1" => "value1"})
     emitter.input({"key2" => "value2"})
     emitter.input({"key3" => "value3"})
@@ -116,7 +116,7 @@ end
 describe SnowplowTracker::AsyncEmitter, 'Synchronous flush' do
 
   it 'sends all events synchronously' do
-    emitter = SnowplowTracker::AsyncEmitter.new('localhost',{:buffer_size => 5})
+    emitter = SnowplowTracker::AsyncEmitter.new('localhost',{:buffer_size => 6})
     emitter.input({'key' => 'value'})
     emitter.flush(true)
     param_hash = CGI.parse(emitter.get_last_querystring)

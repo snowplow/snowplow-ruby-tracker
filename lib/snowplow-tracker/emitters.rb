@@ -54,7 +54,7 @@ module SnowplowTracker
       if not config[:buffer_size].nil?
         @buffer_size = config[:buffer_size]
       elsif config[:method] == 'get'
-        @buffer_size = 0
+        @buffer_size = 1
       else
         @buffer_size = 10
       end
@@ -83,7 +83,7 @@ module SnowplowTracker
       payload.each { |k,v| payload[k] = v.to_s}
       @lock.synchronize do
         @buffer.push(payload)
-        if @buffer.size > @buffer_size
+        if @buffer.size >= @buffer_size
           flush
         end
       end
