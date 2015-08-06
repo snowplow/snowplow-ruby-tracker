@@ -248,19 +248,22 @@ module SnowplowTracker
     #  If sync is true, block until the queue is empty
     #
     def flush(sync=false)
-      @lock.synchronize do
-        @queue.synchronize do
-          @results_unprocessed += 1
+      loop do
+        @lock.synchronize do
+          @queue.synchronize do
+            @results_unprocessed += 1
+          end
+          @queue << @buffer
+          @buffer = []
         end
-        @queue << @buffer
-        @buffer = []
-      end
-      if sync
-        LOGGER.info('Starting synchronous flush')
-        @queue.synchronize do
-          @all_processed_condition.wait_while { @results_unprocessed > 0 }
-          LOGGER.info('Finished synchronous flush')
+        if sync
+          LOGGER.info('Starting synchronous flush')
+          @queue.synchronize do
+            @all_processed_condition.wait_while { @results_unprocessed > 0 }
+            LOGGER.info('Finished synchronous flush')
+          end
         end
+        break if @buffer.size < 1
       end
     end
   end
