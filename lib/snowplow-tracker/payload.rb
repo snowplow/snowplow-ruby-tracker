@@ -17,11 +17,12 @@ require 'base64'
 require 'json'
 require 'net/http'
 require 'contracts'
-include Contracts
 
 module SnowplowTracker
 
   class Payload
+
+    include Contracts
 
     attr_reader :context
 

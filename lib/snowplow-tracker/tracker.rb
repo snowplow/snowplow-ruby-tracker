@@ -15,13 +15,13 @@
 
 require 'contracts'
 require 'set'
-include Contracts
-
 require 'uuid'
 
 module SnowplowTracker
 
   class Tracker
+
+    include Contracts
 
     @@EmitterInput = Or[lambda {|x| x.is_a? Emitter}, ArrayOf[lambda {|x| x.is_a? Emitter}]]
 

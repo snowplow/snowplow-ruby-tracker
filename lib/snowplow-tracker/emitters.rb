@@ -17,7 +17,6 @@ require 'net/https'
 require 'set'
 require 'logger'
 require 'contracts'
-include Contracts
 
 module SnowplowTracker
 
@@ -25,6 +24,8 @@ module SnowplowTracker
   LOGGER.level = Logger::INFO
 
   class Emitter
+
+    include Contracts
 
     @@ConfigHash = ({
       :protocol => Maybe[Or['http', 'https']],
