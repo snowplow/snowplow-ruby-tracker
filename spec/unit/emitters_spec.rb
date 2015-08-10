@@ -118,7 +118,7 @@ describe SnowplowTracker::AsyncEmitter, 'Synchronous flush' do
   it 'sends all events synchronously' do
     emitter = SnowplowTracker::AsyncEmitter.new('localhost',{:buffer_size => 6})
     emitter.input({'key' => 'value'})
-    emitter.flush(true)
+    emitter.flush(false)
     param_hash = CGI.parse(emitter.get_last_querystring)
     expected_fields = {
       'key' => 'value'}

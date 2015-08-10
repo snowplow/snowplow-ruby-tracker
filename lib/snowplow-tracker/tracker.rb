@@ -287,9 +287,9 @@ module SnowplowTracker
     # Flush all events stored in all emitters
     #
     Contract Bool => Tracker
-    def flush(sync=false)
+    def flush(async=false)
       @emitters.each do |emitter|
-        emitter.flush(sync)
+        emitter.flush(async)
       end
 
       self

@@ -95,7 +95,7 @@ module SnowplowTracker
     # Flush the buffer
     #
     Contract Bool => nil
-    def flush(sync=false)
+    def flush(async=true)
       @lock.synchronize do
         send_requests(@buffer)
         @buffer = []
@@ -250,9 +250,9 @@ module SnowplowTracker
     end
 
     # Flush the buffer
-    #  If sync is true, block until the queue is empty
+    #  If async is false, block until the queue is empty
     #
-    def flush(sync=false)
+    def flush(async=true)
       loop do
         @lock.synchronize do
           @queue.synchronize do
@@ -261,7 +261,7 @@ module SnowplowTracker
           @queue << @buffer
           @buffer = []
         end
-        if sync
+        if not async
           LOGGER.info('Starting synchronous flush')
           @queue.synchronize do
             @all_processed_condition.wait_while { @results_unprocessed > 0 }
