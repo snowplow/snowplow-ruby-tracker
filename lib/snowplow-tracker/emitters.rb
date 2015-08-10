@@ -32,7 +32,8 @@ module SnowplowTracker
       :method => Maybe[Or['get', 'post']],
       :buffer_size => Maybe[Num],
       :on_success => Maybe[Func[Num => Any]],
-      :on_failure => Maybe[Func[Num, Hash => Any]]
+      :on_failure => Maybe[Func[Num, Hash => Any]],
+      :thread_count => Maybe[Num]
     })
 
     @@StrictConfigHash = And[@@ConfigHash, lambda { |x|
@@ -207,7 +208,7 @@ module SnowplowTracker
       @queue.extend(MonitorMixin)
       @all_processed_condition = @queue.new_cond
       @results_unprocessed = 0
-      1.times do
+      (config[:thread_count] || 1).times do
         t = Thread.new do
           consume
         end
