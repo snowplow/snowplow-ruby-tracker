@@ -70,7 +70,7 @@ module SnowplowTracker
 
     @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
     @@schema_tag = "jsonschema"
-    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
+    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-1"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
     Contract @@EmitterInput, Maybe[Subject], Maybe[String], Maybe[String], Bool => Tracker
