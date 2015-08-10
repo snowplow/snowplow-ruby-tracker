@@ -107,7 +107,11 @@ module SnowplowTracker
     #
     Contract ArrayOf[Hash] => nil
     def send_requests(evts)
-      LOGGER.info("Attempting to send #{@buffer.size} request#{@buffer.size == 1 ? '' : 's'}")
+      if evts.size < 1
+        LOGGER.info("Skipping sending events since buffer is empty")
+        return
+      end
+      LOGGER.info("Attempting to send #{evts.size} request#{evts.size == 1 ? '' : 's'}")
 
       if @method == 'post'
         post_succeeded = false
