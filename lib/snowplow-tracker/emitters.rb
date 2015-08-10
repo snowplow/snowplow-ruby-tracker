@@ -116,10 +116,10 @@ module SnowplowTracker
       if @method == 'post'
         post_succeeded = false
         begin
-          request = http_post({
-            'schema' => 'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
-            'data' => evts
-          })
+          request = http_post(SelfDescribingJson.new(
+            'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
+            evts
+          ).to_json)
           post_succeeded = is_good_status_code(request.code)
         rescue StandardError => se
           LOGGER.warn(se)

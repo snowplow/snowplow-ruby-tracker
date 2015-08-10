@@ -19,6 +19,8 @@ require 'json'
 
 describe SnowplowTracker::Tracker, 'Querystring construction' do
 
+  SelfDescribingJson = SnowplowTracker::SelfDescribingJson
+
   it 'tracks a page view' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
@@ -131,13 +133,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks an unstructured event (no base64)' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
-    t.track_unstruct_event({
-      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      'data' => {
+    t.track_unstruct_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
         'product_id' => 'ASO01043', 
         'price' => 49.95
       }
-    })
+    ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -153,13 +155,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks an unstructured event (base64)' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
-    t.track_unstruct_event({
-      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      'data' => {
+    t.track_unstruct_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
         'product_id' => 'ASO01043', 
         'price' => 49.95
       }
-    })
+    ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -286,18 +288,19 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'adds a custom context to the payload' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
-    t.track_page_view('http://www.example.com', nil, nil, [{
-        'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
-        'data' => {
+    t.track_page_view('http://www.example.com', nil, nil, [
+      SelfDescribingJson.new(
+        'iglu:com.acme/page/jsonschema/1-0-0',
+        {
           'page_type' => 'test'
         }
-      },
-      {
-        'schema' => 'iglu:com.acme/user/jsonschema/1-0-0',
-        'data' => {
+      ),
+      SelfDescribingJson.new(
+        'iglu:com.acme/user/jsonschema/1-0-0',
+        {
           'user_type' => 'tester'
         }
-      }])
+      )])
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
