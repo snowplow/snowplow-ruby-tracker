@@ -1,4 +1,4 @@
-Version 0.5.0 (2015-xx-xx)
+Version 0.5.0 (2015-08-11)
 --------------------------
 Made tracker.flush synchronous by default (#80)
 Added SelfDescribingJson class (#82)
