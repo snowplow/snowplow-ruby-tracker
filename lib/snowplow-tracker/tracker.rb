@@ -15,13 +15,13 @@
 
 require 'contracts'
 require 'set'
-include Contracts
-
 require 'uuid'
 
 module SnowplowTracker
 
   class Tracker
+
+    include Contracts
 
     @@EmitterInput = Or[lambda {|x| x.is_a? Emitter}, ArrayOf[lambda {|x| x.is_a? Emitter}]]
 
@@ -55,22 +55,14 @@ module SnowplowTracker
         augmented_item_keys.subset? @@recognised_augmented_item_keys
     }
 
-    @@SelfDescribingJson = Or[{
-      schema: String,
-      data: Any
-    }, {
-      'schema' => String,
-      'data' => Any
-    }]
-
-    @@ContextsInput = ArrayOf[@@SelfDescribingJson]
+    @@ContextsInput = ArrayOf[SelfDescribingJson]
 
     @@version = TRACKER_VERSION
     @@default_encode_base64 = true
 
     @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
     @@schema_tag = "jsonschema"
-    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-0"
+    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-1"
     @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
 
     Contract @@EmitterInput, Maybe[Subject], Maybe[String], Maybe[String], Bool => Tracker
@@ -119,12 +111,12 @@ module SnowplowTracker
 
     # Builds a self-describing JSON from an array of custom contexts
     #
-    Contract @@ContextsInput => @@SelfDescribingJson
+    Contract @@ContextsInput => Hash
     def build_context(context)
-      {
-        schema: @@context_schema,
-        data: context
-      }
+      SelfDescribingJson.new(
+        @@context_schema,
+        context.map {|c| c.to_json}
+        ).to_json
     end
 
     # Tracking methods
@@ -259,7 +251,8 @@ module SnowplowTracker
         screen_view_properties['id'] = id
       end
       screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
-      event_json = {schema: screen_view_schema, data: screen_view_properties}
+
+      event_json = SelfDescribingJson.new(screen_view_schema, screen_view_properties)
 
       self.track_unstruct_event(event_json, context, tstamp)
 
@@ -268,16 +261,14 @@ module SnowplowTracker
 
     # Track an unstructured event
     #
-    Contract @@SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
+    Contract SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
       
-      envelope = {
-        schema: @@unstruct_event_schema,
-        data: event_json
-      }
-      pb.add_json(envelope, @config['encode_base64'], 'ue_px', 'ue_pr')
+      envelope = SelfDescribingJson.new(@@unstruct_event_schema, event_json.to_json)
+
+      pb.add_json(envelope.to_json, @config['encode_base64'], 'ue_px', 'ue_pr')
 
       unless context.nil?
         pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
@@ -296,9 +287,9 @@ module SnowplowTracker
     # Flush all events stored in all emitters
     #
     Contract Bool => Tracker
-    def flush(sync=false)
+    def flush(async=false)
       @emitters.each do |emitter|
-        emitter.flush(sync)
+        emitter.flush(async)
       end
 
       self

@@ -19,6 +19,8 @@ require 'json'
 
 describe SnowplowTracker::Tracker, 'Querystring construction' do
 
+  SelfDescribingJson = SnowplowTracker::SelfDescribingJson
+
   it 'tracks a page view' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
@@ -131,13 +133,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks an unstructured event (no base64)' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
-    t.track_unstruct_event({
-      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      'data' => {
+    t.track_unstruct_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
         'product_id' => 'ASO01043', 
         'price' => 49.95
       }
-    })
+    ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -153,13 +155,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks an unstructured event (base64)' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
-    t.track_unstruct_event({
-      'schema' => 'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      'data' => {
+    t.track_unstruct_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
         'product_id' => 'ASO01043', 
         'price' => 49.95
       }
-    })
+    ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -198,6 +200,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_color_depth(24)
     t.set_timezone('Europe London')
     t.set_lang('en')
+    t.set_fingerprint(987654321)
     t.track_page_view('http://www.example.com', 'title page')
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -210,6 +213,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'cd' => '24', 
       'tz' => 'Europe London', 
       'p' => 'mob', 
+      'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields
@@ -232,7 +236,9 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_ip_address('255.255.255.255')
     t.set_useragent('Mozilla/5.0')
     t.set_network_user_id('ecdff4d0-9175-40ac-a8bb-325c49733607')
+    t.set_fingerprint(987654321)
     t.track_page_view('http://www.example.com', 'title page')
+
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -248,6 +254,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ua' => 'Mozilla/5.0',
       'ip' => '255.255.255.255',
       'tnuid' => 'ecdff4d0-9175-40ac-a8bb-325c49733607',
+      'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields
@@ -281,22 +288,23 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'adds a custom context to the payload' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
-    t.track_page_view('http://www.example.com', nil, nil, [{
-        'schema' => 'iglu:com.acme/page/jsonschema/1-0-0',
-        'data' => {
+    t.track_page_view('http://www.example.com', nil, nil, [
+      SelfDescribingJson.new(
+        'iglu:com.acme/page/jsonschema/1-0-0',
+        {
           'page_type' => 'test'
         }
-      },
-      {
-        'schema' => 'iglu:com.acme/user/jsonschema/1-0-0',
-        'data' => {
+      ),
+      SelfDescribingJson.new(
+        'iglu:com.acme/user/jsonschema/1-0-0',
+        {
           'user_type' => 'tester'
         }
-      }])
+      )])
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
-      'co' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-0\",\"data\":[{\"schema\":\"iglu:com.acme/page/jsonschema/1-0-0\",\"data\":{\"page_type\":\"test\"}},{\"schema\":\"iglu:com.acme/user/jsonschema/1-0-0\",\"data\":{\"user_type\":\"tester\"}}]}"
+      'co' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1\",\"data\":[{\"schema\":\"iglu:com.acme/page/jsonschema/1-0-0\",\"data\":{\"page_type\":\"test\"}},{\"schema\":\"iglu:com.acme/user/jsonschema/1-0-0\",\"data\":{\"user_type\":\"tester\"}}]}"
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
@@ -305,7 +313,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using GET' do
-    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 2})
+    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 3})
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'first')
     t.track_page_view('http://www.example.com', 'second')
@@ -322,7 +330,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using POST' do
-    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 2})
+    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 3})
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'fourth')
     t.track_page_view('http://www.example.com', 'fifth')

@@ -14,11 +14,12 @@
 # License:: Apache License Version 2.0
 
 require 'contracts'
-include Contracts
 
 module SnowplowTracker
 
   class Subject
+
+    include Contracts
 
     @@default_platform = 'srv'
     @@supported_platforms = ['pc', 'tv', 'mob', 'cnsl', 'iot']
@@ -49,6 +50,14 @@ module SnowplowTracker
     Contract String => Subject
     def set_user_id(user_id)
       @standard_nv_pairs['uid'] = user_id
+      self
+    end
+
+    # Set fingerprint for the user
+    #
+    Contract Num => Subject
+    def set_fingerprint(fingerprint)
+      @standard_nv_pairs['fp'] = fingerprint
       self
     end
 

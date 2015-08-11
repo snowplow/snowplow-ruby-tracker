@@ -13,17 +13,22 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'contracts'
-
 module SnowplowTracker
 
-  ORIGINAL_FAILURE_CALLBACK = Contract.method(:failure_callback)
+  class SelfDescribingJson
 
-  def self.disable_contracts
-    Contract.define_singleton_method(:failure_callback) {|data| true}
+    def initialize(schema, data)
+      @schema = schema
+      @data = data
+    end
+
+    def to_json
+      {
+        :schema => @schema,
+        :data => @data
+      }
+    end
+
   end
 
-  def self.enable_contracts
-    Contract.define_singleton_method(:failure_callback, ORIGINAL_FAILURE_CALLBACK)
-  end
 end

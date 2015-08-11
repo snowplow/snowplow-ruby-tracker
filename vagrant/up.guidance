@@ -1,5 +1,6 @@
 To get started:
 vagrant ssh
 cd /vagrant
+gem install bundler
 bundle install
 rspec

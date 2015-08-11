@@ -1,3 +1,21 @@
+Version 0.5.0 (2015-08-11)
+--------------------------
+Made tracker.flush synchronous by default (#80)
+Added SelfDescribingJson class (#82)
+Prevented the buffer from being flushed when it is empty (#62)
+Bumped contexts schema to 1-0-1 (#53)
+Updated Contracts dependency range to "~> 0.7", "<= 0.11" (#81)
+Moved Contracts mixin inside classes (#73)
+Made synchronous flush wait until buffer is empty (#79)
+Made buffer size 1-indexed rather than 0-indexed (#67)
+Started handling all network-related exceptions (#76)
+Started treating all 2xx and 3xx status codes as successful (#75)
+Made number of worker threads used by AsyncEmitter configurable (#77)
+Made Emitter and AsyncEmitter thread-safe (#74) Fixed callback logic to only fire one callback per buffer flush (#61)
+Added set_fingerprint method, thanks @kazjote! (#65)
+Updated Travis image to show status of master branch (#78)
+Added bundler installation to up.guidance (#83)
+
 Version 0.4.2 (2015-04-08)
 --------------------------
 Relaxed Contracts dependency (#68)
