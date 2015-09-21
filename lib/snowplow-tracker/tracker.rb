@@ -15,7 +15,6 @@
 
 require 'contracts'
 require 'set'
-require 'uuid'
 
 module SnowplowTracker
 
@@ -81,7 +80,6 @@ module SnowplowTracker
       @config = {
         'encode_base64' => encode_base64
       }
-      @uuid = UUID.new
 
       self
     end
@@ -99,7 +97,7 @@ module SnowplowTracker
     # Generates a type-4 UUID to identify this event
     Contract nil => String
     def get_event_id()
-      @uuid.generate
+      SecureRandom.uuid
     end
 
     # Generates the timestamp (in milliseconds) to be attached to each event
