@@ -1,3 +1,7 @@
+Version 0.5.1 (2015-xx-xx)
+--------------------------
+Started using UUID implementation from SecureRandom in the Ruby Standard Library, thanks @kazjote! (#85)
+
 Version 0.5.0 (2015-08-11)
 --------------------------
 Made tracker.flush synchronous by default (#80)
