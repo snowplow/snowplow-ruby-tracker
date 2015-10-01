@@ -1,4 +1,4 @@
-Version 0.5.1 (2015-xx-xx)
+Version 0.5.1 (2015-10-01)
 --------------------------
 Started using UUID implementation from SecureRandom in the Ruby Standard Library, thanks @kazjote! (#85)
 
