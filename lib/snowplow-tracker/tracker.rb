@@ -14,6 +14,7 @@
 # License:: Apache License Version 2.0
 
 require 'contracts'
+require 'securerandom'
 require 'set'
 
 module SnowplowTracker
