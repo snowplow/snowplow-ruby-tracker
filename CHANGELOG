@@ -1,4 +1,4 @@
-Version 0.5.2 (2015-xx-xx)
+Version 0.5.2 (2015-10-07)
 --------------------------
 Started loading SecureRandom, thanks @kazjote! (#87)
 
