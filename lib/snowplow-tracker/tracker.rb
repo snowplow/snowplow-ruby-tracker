@@ -135,7 +135,7 @@ module SnowplowTracker
 
     # Log a visit to this page
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => Tracker
+    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'pv')
