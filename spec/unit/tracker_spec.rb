@@ -40,7 +40,16 @@ describe SnowplowTracker::Tracker, 'configuration' do
   end
 
   it 'should initialise with the right configuration' do
-    @t.config.should eq({'encode_base64' => false})
+    @t.config.should eq({'encode_base64' => false, 'tstamp_type' => 'dtm'})
+  end
+
+  describe '#set_true_tstamps' do
+    it 'can enable and disable true timestamps' do
+      @t.set_true_tstamps(true)
+      @t.config['tstamp_type'].should eq('ttm')
+      @t.set_true_tstamps(false)
+      @t.config['tstamp_type'].should eq('dtm')
+    end
   end
 
 end
