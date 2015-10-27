@@ -79,7 +79,8 @@ module SnowplowTracker
         'aid' => app_id
       }
       @config = {
-        'encode_base64' => encode_base64
+        'encode_base64' => encode_base64,
+        'tstamp_type' => 'dtm'
       }
 
       self
@@ -135,7 +136,7 @@ module SnowplowTracker
 
     # Log a visit to this page
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput] => Tracker
+    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'pv')
@@ -149,7 +150,7 @@ module SnowplowTracker
       if tstamp.nil?
         tstamp = get_timestamp
       end
-      pb.add('dtm', tstamp)
+      pb.add(@config['tstamp_type'], tstamp)
       track(pb)
 
       self
@@ -172,7 +173,7 @@ module SnowplowTracker
       unless argmap['context'].nil?
         pb.add_json(build_context(argmap['context']), @config['encode_base64'], 'cx', 'co')
       end
-      pb.add('dtm', argmap['tstamp'])
+      pb.add(@config['tstamp_type'], argmap['tstamp'])
       track(pb)
 
       self
@@ -201,7 +202,7 @@ module SnowplowTracker
       if tstamp.nil?
         tstamp = get_timestamp
       end
-      pb.add('dtm', tstamp)
+      pb.add(@config['tstamp_type'], tstamp)
 
       track(pb)
 
@@ -232,7 +233,7 @@ module SnowplowTracker
       if tstamp.nil?
         tstamp = get_timestamp
       end
-      pb.add('dtm', tstamp)
+      pb.add(@config['tstamp_type'], tstamp)
       track(pb)
 
       self
@@ -243,10 +244,10 @@ module SnowplowTracker
     Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Maybe[Num] => Tracker
     def track_screen_view(name=nil, id=nil, context=nil, tstamp=nil)
       screen_view_properties = {}
-      unless name.nil? 
+      unless name.nil?
         screen_view_properties['name'] = name
       end
-      unless id.nil? 
+      unless id.nil?
         screen_view_properties['id'] = id
       end
       screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
@@ -264,7 +265,7 @@ module SnowplowTracker
     def track_unstruct_event(event_json, context=nil, tstamp=nil)
       pb = Payload.new
       pb.add('e', 'ue')
-      
+
       envelope = SelfDescribingJson.new(@@unstruct_event_schema, event_json.to_json)
 
       pb.add_json(envelope.to_json, @config['encode_base64'], 'ue_px', 'ue_pr')
@@ -276,7 +277,7 @@ module SnowplowTracker
       if tstamp.nil?
         tstamp = get_timestamp
       end
-      pb.add('dtm', tstamp)
+      pb.add(@config['tstamp_type'], tstamp)
 
       track(pb)
 
@@ -301,6 +302,19 @@ module SnowplowTracker
       @subject = subject
       self
     end
+
+    # Set the tracker to treat provided tstamps as dvce_created_tstamp or true_tstamp
+    #
+    Contract Bool => Tracker
+    def set_true_tstamps(true_tstamps)
+      if true_tstamps
+        @config['tstamp_type'] = 'ttm'
+      else
+        @config['tstamp_type'] = 'dtm'
+      end
+      self
+    end
+
 
     # Add a new emitter
     #
