@@ -258,6 +258,13 @@ module SnowplowTracker
       self
     end
 
+    # Better name for track unstruct event
+    #
+    Contract SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
+    def track_self_describing_event(event_json, context=nil, tstamp=nil)
+      track_unstruct_event(event_json, context, tstamp)
+    end
+
     # Track an unstructured event
     #
     Contract SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
