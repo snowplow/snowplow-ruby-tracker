@@ -3,7 +3,10 @@ rvm:
  - 1.9.3
  - jruby-19mode
  - 2.0.0
- - 2.1.0
+ - 2.1.10
+ - 2.2.5
+ - 2.3.1
+ - jruby-9.0.5.0
 
 install:
  - gem install contracts
@@ -23,4 +26,5 @@ deploy:
 
 env:
   global:
-    secure: T5BYUDkvC2uIStcpoyAFT8Ymy2auKRPR0z00U7B1r/jyFwTF97XV3Myod397hkS2pRHEK2kY112U9Giv8TLuA2clT6HROWRI7PqvfFWODOIUpFq7VK8udficrK/1f+Kvp/O+u2ku9xKYJbsc8wrcs6RZVivWzNO0xqiGI3+uDQw=
+     - secure: T5BYUDkvC2uIStcpoyAFT8Ymy2auKRPR0z00U7B1r/jyFwTF97XV3Myod397hkS2pRHEK2kY112U9Giv8TLuA2clT6HROWRI7PqvfFWODOIUpFq7VK8udficrK/1f+Kvp/O+u2ku9xKYJbsc8wrcs6RZVivWzNO0xqiGI3+uDQw=
+     - JRUBY_OPTS=--debug
