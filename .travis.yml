@@ -1,15 +1,26 @@
 language: ruby
 rvm:
-- 1.9.3
-- jruby-19mode
-- 2.0.0
-- 2.1.0
+ - 1.9.3
+ - jruby-19mode
+ - 2.0.0
+ - 2.1.0
+
 install:
-- gem install contracts
-- gem install rspec
-- gem install webmock
-- gem install coveralls
+ - gem install contracts
+ - gem install rspec
+ - gem install webmock
+ - gem install coveralls
+
 script: rspec
+
+deploy: 
+ provider: rubygems
+ api_key: $RUBYGEMS_SNOWPLOW_API_KEY
+ gemspec: snowplow-tracker.gemspec
+ on: 
+  tags: true
+  condition: '"$($TRAVIS_BUILD_DIR/.travis/is_valid_tag.rb $TRAVIS_TAG)" == "" && $? == 0'
+
 env:
   global:
     secure: T5BYUDkvC2uIStcpoyAFT8Ymy2auKRPR0z00U7B1r/jyFwTF97XV3Myod397hkS2pRHEK2kY112U9Giv8TLuA2clT6HROWRI7PqvfFWODOIUpFq7VK8udficrK/1f+Kvp/O+u2ku9xKYJbsc8wrcs6RZVivWzNO0xqiGI3+uDQw=
