@@ -13,11 +13,16 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'webmock/rspec'
-require 'snowplow-tracker'
 
 require 'coveralls'
 Coveralls.wear!
+
+require 'webmock/rspec'
+require 'snowplow-tracker'
+
+SimpleCov.start do
+  add_filter "/spec/"
+end
 
 WebMock.disable_net_connect!(:allow_localhost => true)
 
