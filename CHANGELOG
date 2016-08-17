@@ -1,3 +1,15 @@
+Version 0.6.0 (2016-08-18)
+--------------------------
+Support Ruby 2.2.5 and 2.3.1 (#100)
+Require Ruby >= 2.0.0 (#99)	
+Fix track_page_view_contract bug (#98)
+Fix coveralls test coverage report (#97)	
+Add RubyGems credentials to .travis.yml (#96)
+Add CI/CD to project (#95)	
+Add support for attaching true timestamp to events (#94)
+Add track_self_describing_event (#93)
+Add support for dvce_sent_tstamp (#92)
+
 Version 0.5.2 (2015-10-07)
 --------------------------
 Started loading SecureRandom, thanks @kazjote! (#87)
