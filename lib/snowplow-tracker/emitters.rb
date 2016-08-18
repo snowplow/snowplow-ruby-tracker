@@ -113,6 +113,10 @@ module SnowplowTracker
       end
       LOGGER.info("Attempting to send #{evts.size} request#{evts.size == 1 ? '' : 's'}")
 
+      evts.each do |event|
+        event['stm'] = (Time.now.to_f * 1000).to_i # add the sent timestamp, overwrite if already exists
+      end
+
       if @method == 'post'
         post_succeeded = false
         begin

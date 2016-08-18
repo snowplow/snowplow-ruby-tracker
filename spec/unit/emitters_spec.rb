@@ -13,7 +13,7 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'spec_helper'
+#require 'spec_helper'
 require 'cgi'
 require 'json'
 
@@ -61,11 +61,9 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     emitter = SnowplowTracker::Emitter.new('localhost')
     emitter.input({'key' => 'value'})
     param_hash = CGI.parse(emitter.get_last_querystring)
-    expected_fields = {
-      'key' => 'value'}
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    puts param_hash
+    expect(param_hash['key'][0]).to eq('value')
+    expect(param_hash['stm'][0].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4))
   end
 
   it 'executes a callback on success' do
@@ -99,16 +97,19 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     emitter.input({"key2" => "value2"})
     emitter.input({"key3" => "value3"})
 
-    expect(JSON.parse(emitter.get_last_body(1))).to eq({
-      "schema" => "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2",
-      "data" => [
-        {"key1" => "value1"},
-        {"key2"=>"value2"},
-        {"key3"=>"value3"}
-      ]
-    })
+    sent = JSON.parse(emitter.get_last_body(1))
 
+    puts sent
+    expect(sent['schema']).to eq("iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2")
 
+    expect(sent['data'][0]['key1']).to eq("value1")
+    expect(sent['data'][0]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+
+    expect(sent['data'][1]['key2']).to eq("value2") 
+    expect(sent['data'][1]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+
+    expect(sent['data'][2]['key3']).to eq("value3") 
+    expect(sent['data'][2]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
   end
 
 end

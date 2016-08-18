@@ -24,43 +24,47 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks a page view' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
-    t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com')
+    t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com', nil, 123)
     param_hash = CGI.parse(e.get_last_querystring)
     expected_fields = {
       'e' => 'pv', 
       'page' => 'Two words', 
-      'refr' => 'http://www.referrer.com'}
+      'refr' => 'http://www.referrer.com',
+      'dtm' => '123'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
   end
-    
+ 
   it 'tracks an ecommerce transaction' do
     e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e)
-    t.track_ecommerce_transaction({
-      'order_id' => '12345',
-      'total_value' => 35,
-      'affiliation' => 'my_company',
-      'tax_value' => 0,
-      'shipping' => 0,
-      'city' => 'Phoenix',
-      'state' => 'Arizona',
-      'country' => 'USA',
-      'currency' => 'GBP'
-      },
-      [ {
-      'sku' => 'pbz0026',
-      'price' => 20,
-      'quantity' => 1
-      },
+    t.track_ecommerce_transaction(
       {
-      'sku' => 'pbz0038',
-      'price' => 15,
-      'quantity' => 1,
-      'name' => 'crystals',
-      'category' => 'magic'
-  }])
+        'order_id' => '12345',
+        'total_value' => 35,
+        'affiliation' => 'my_company',
+        'tax_value' => 0,
+        'shipping' => 0,
+        'city' => 'Phoenix',
+        'state' => 'Arizona',
+        'country' => 'USA',
+        'currency' => 'GBP'
+      },
+      [ 
+        {
+          'sku' => 'pbz0026',
+          'price' => 20,
+          'quantity' => 1
+        },
+        {
+          'sku' => 'pbz0038',
+          'price' => 15,
+          'quantity' => 1,
+          'name' => 'crystals',
+          'category' => 'magic'
+        }
+      ])
 
     param_hash = CGI.parse(e.get_last_querystring(3))
     expected_fields = {
@@ -128,6 +132,48 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
 
+  end
+
+  it 'tracks a (non base64) self describing event in the same way as an unstructured event' do 
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
+    t.track_self_describing_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    ))
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+    }
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+  end
+
+  it 'tracks a base64 encoded self describing event in the same way as an unstructured_event' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e)
+    t.track_self_describing_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    ))
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ue',
+      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ==',
+    }
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
   end
 
   it 'tracks an unstructured event (no base64)' do
@@ -341,6 +387,147 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expect(payload_data[1]['page']).to eq('fifth')
     expect(payload_data[2]['page']).to eq('sixth')
     
+  end
+
+   it 'supports true timestamps on page view tracking' do 
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e)
+
+    t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com', nil, SnowplowTracker::TrueTimestamp.new(123))
+
+    param_hash = CGI.parse(e.get_last_querystring)
+    expected_fields = {
+      'e' => 'pv', 
+      'page' => 'Two words', 
+      'refr' => 'http://www.referrer.com',
+      'ttm' => '123'}
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+  end
+
+  it 'supports true timestamps on ecommerce transactions' do 
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e)
+
+    t.track_ecommerce_transaction(
+      {
+        'order_id' => '12345',
+        'total_value' => 35,
+        'affiliation' => 'my_company',
+        'tax_value' => 0,
+        'shipping' => 0,
+        'city' => 'Phoenix',
+        'state' => 'Arizona',
+        'country' => 'USA',
+        'currency' => 'GBP'
+      },
+      [ 
+        {
+          'sku' => 'pbz0026',
+          'price' => 20,
+          'quantity' => 1
+        },
+        {
+          'sku' => 'pbz0038',
+          'price' => 15,
+          'quantity' => 1,
+          'name' => 'crystals',
+          'category' => 'magic'
+        }
+      ], 
+      nil,
+      SnowplowTracker::TrueTimestamp.new(123456))
+
+   ['ttm', 'tid'].each do |field|
+      expect(CGI.parse(e.get_last_querystring(1))[field]).to eq(CGI.parse(e.get_last_querystring(3))[field])
+    end
+
+  end
+
+  it 'tracks a structured event with a true timestamp' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e)
+    t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99, nil, SnowplowTracker::TrueTimestamp.new(123))
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'se',
+      'se_ca' => 'Ecomm',
+      'se_ac' => 'add-to-basket',
+      'se_pr' => 'hd',
+      'se_va' => '13.99',
+      'ttm' => '123'
+    }
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+  it 'tracks a screen view unstructured event with a true timestamp' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
+    t.track_screen_view('Game HUD 2', 'e89a34b2f', nil, SnowplowTracker::TrueTimestamp.new(123))
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}}",
+      'ttm' => '123'
+    }
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+  it 'tracks a self describing event with a true timestamp' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
+    t.track_self_describing_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    ), nil, SnowplowTracker::TrueTimestamp.new(1234))
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'ttm' => '1234'
+    }
+
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
+  end
+
+  it 'tracks a self describing event with a device timestamp' do
+    e = SnowplowTracker::Emitter.new('localhost')
+    t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
+    t.track_self_describing_event(SelfDescribingJson.new(
+      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+      {
+        'product_id' => 'ASO01043', 
+        'price' => 49.95
+      }
+    ), nil, 555)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ue',
+      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'dtm' => '555'
+    }
+
+    for pair in expected_fields
+      expect(param_hash[pair[0]][0]).to eq(pair[1])
+    end
+
   end
 
 end

@@ -19,4 +19,6 @@ require 'snowplow-tracker/self_describing_json.rb'
 require 'snowplow-tracker/payload.rb'
 require 'snowplow-tracker/subject.rb'
 require 'snowplow-tracker/emitters.rb'
+require 'snowplow-tracker/timestamp.rb'
 require 'snowplow-tracker/tracker.rb'
+
