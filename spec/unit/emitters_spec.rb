@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2014 Snowplow Analytics Ltd. All rights reserved.
+# Copyright (c) 2013-2016 Snowplow Analytics Ltd. All rights reserved.
 #
 # This program is licensed to you under the Apache License Version 2.0,
 # and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,7 +10,7 @@
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
 # Author:: Alex Dean, Fred Blundun (mailto:support@snowplowanalytics.com)
-# Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
+# Copyright:: Copyright (c) 2013-2016 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
 #require 'spec_helper'
@@ -100,16 +100,16 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     sent = JSON.parse(emitter.get_last_body(1))
 
     puts sent
-    expect(sent['schema']).to eq("iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2")
+    expect(sent['schema']).to eq("iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4")
 
     expect(sent['data'][0]['key1']).to eq("value1")
-    expect(sent['data'][0]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][0]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
 
     expect(sent['data'][1]['key2']).to eq("value2") 
-    expect(sent['data'][1]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][1]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
 
     expect(sent['data'][2]['key3']).to eq("value3") 
-    expect(sent['data'][2]['stm'].round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][2]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
   end
 
 end
