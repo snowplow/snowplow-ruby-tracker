@@ -114,14 +114,14 @@ module SnowplowTracker
       LOGGER.info("Attempting to send #{evts.size} request#{evts.size == 1 ? '' : 's'}")
 
       evts.each do |event|
-        event['stm'] = (Time.now.to_f * 1000).to_i # add the sent timestamp, overwrite if already exists
+        event['stm'] = (Time.now.to_f * 1000).to_i.to_s # add the sent timestamp, overwrite if already exists
       end
 
       if @method == 'post'
         post_succeeded = false
         begin
           request = http_post(SelfDescribingJson.new(
-            'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-2',
+            'iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4',
             evts
           ).to_json)
           post_succeeded = is_good_status_code(request.code)
