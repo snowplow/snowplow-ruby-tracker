@@ -1,3 +1,5 @@
+Relax the dependency on the "contracts" gem to "< 1.0"
+
 Version 0.6.1 (2016-12-26)
 --------------------------
 Update payload_data schema to 1-0-4 (#102)
