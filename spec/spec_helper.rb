@@ -80,3 +80,5 @@ module SnowplowTracker
 
   end
 end
+
+NULL_LOGGER = Logger.new(IO::NULL).freeze

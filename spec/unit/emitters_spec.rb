@@ -30,8 +30,10 @@ end
 
 describe SnowplowTracker::Emitter, 'configuration' do
 
+  let(:default_opts) { { logger: NULL_LOGGER } }
+
   it 'should initialise correctly using default settings' do
-    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net')
+    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', default_opts)
     expect(e.collector_uri).to eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
     expect(e.buffer_size).to eq(1)
   end
@@ -39,14 +41,14 @@ describe SnowplowTracker::Emitter, 'configuration' do
   it 'should initialise correctly using custom settings' do
     on_success = lambda{ |x| puts x}
     on_failure = lambda{ |x,y| puts y}
-    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', {
+    e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', default_opts.merge({
       :protocol => 'https',
       :port => 80,
       :method => 'post',
       :buffer_size => 7,
       :on_success => on_success,
       :on_failure => on_failure
-    })
+    }))
     expect(e.collector_uri).to eq('https://d3rkrsqld9gmqf.cloudfront.net:80/com.snowplowanalytics.snowplow/tp2')
     expect(e.buffer_size).to eq(7)
     expect(e.on_success).to eq(on_success)
@@ -57,8 +59,10 @@ end
 
 describe SnowplowTracker::Emitter, 'Sending requests' do
 
+  let(:default_opts) { { logger: NULL_LOGGER } }
+
   it 'sends a payload' do
-    emitter = SnowplowTracker::Emitter.new('localhost')
+    emitter = SnowplowTracker::Emitter.new('localhost', default_opts)
     emitter.input({'key' => 'value'})
     param_hash = CGI.parse(emitter.get_last_querystring)
     puts param_hash
@@ -68,31 +72,33 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
 
   it 'executes a callback on success' do
     callback_executed = false
-    emitter = SnowplowTracker::Emitter.new('localhost', {
+    emitter = SnowplowTracker::Emitter.new('localhost', default_opts.merge({
       :on_success => lambda { |successes|
         expect(successes).to eq(1)
         callback_executed = true
       }
-    })
+    }))
     emitter.input({'success' => 'good'})
     expect(callback_executed).to eq(true)
   end
 
   it 'executes a callback on failure' do
     callback_executed = false
-    emitter = SnowplowTracker::Emitter.new('nonexistent', {
+    emitter = SnowplowTracker::Emitter.new('nonexistent', default_opts.merge({
       :on_failure => lambda { |successes, failures|
         expect(successes).to eq(0)
         expect(failures[0]['failure']).to eq('bad')
         callback_executed = true
       }
-    })
+    }))
     emitter.input({'failure' => 'bad'})
     expect(callback_executed).to eq(true)
   end
 
   it 'correctly batches multiple events' do
-    emitter = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 3})
+    emitter = SnowplowTracker::Emitter.new('localhost', default_opts.merge({
+      :method => 'post', :buffer_size => 3
+    }))
     emitter.input({"key1" => "value1"})
     emitter.input({"key2" => "value2"})
     emitter.input({"key3" => "value3"})
@@ -103,21 +109,23 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     expect(sent['schema']).to eq("iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4")
 
     expect(sent['data'][0]['key1']).to eq("value1")
-    expect(sent['data'][0]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][0]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4))
 
-    expect(sent['data'][1]['key2']).to eq("value2") 
-    expect(sent['data'][1]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][1]['key2']).to eq("value2")
+    expect(sent['data'][1]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4))
 
-    expect(sent['data'][2]['key3']).to eq("value3") 
-    expect(sent['data'][2]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4)) 
+    expect(sent['data'][2]['key3']).to eq("value3")
+    expect(sent['data'][2]['stm'].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4))
   end
 
 end
 
 describe SnowplowTracker::AsyncEmitter, 'Synchronous flush' do
 
+  let(:default_opts) { { logger: NULL_LOGGER } }
+
   it 'sends all events synchronously' do
-    emitter = SnowplowTracker::AsyncEmitter.new('localhost',{:buffer_size => 6})
+    emitter = SnowplowTracker::AsyncEmitter.new('localhost', default_opts.merge({:buffer_size => 6}))
     emitter.input({'key' => 'value'})
     emitter.flush(false)
     param_hash = CGI.parse(emitter.get_last_querystring)

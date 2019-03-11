@@ -34,7 +34,8 @@ module SnowplowTracker
       :buffer_size => Maybe[Num],
       :on_success => Maybe[Func[Num => Any]],
       :on_failure => Maybe[Func[Num, Hash => Any]],
-      :thread_count => Maybe[Num]
+      :thread_count => Maybe[Num],
+      :logger => Maybe[Logger]
     })
 
     @@StrictConfigHash = And[@@ConfigHash, lambda { |x|
@@ -45,6 +46,8 @@ module SnowplowTracker
       :protocol => 'http',
       :method => 'get'
     }
+
+    attr_reader :logger
 
     Contract String, @@StrictConfigHash => lambda { |x| x.is_a? Emitter }
     def initialize(endpoint, config={})
@@ -62,7 +65,8 @@ module SnowplowTracker
       @method = config[:method]
       @on_success = config[:on_success]
       @on_failure = config[:on_failure]
-      LOGGER.info("#{self.class} initialized with endpoint #{@collector_uri}")
+      @logger = config[:logger] || LOGGER
+      logger.info("#{self.class} initialized with endpoint #{@collector_uri}")
 
       self
     end
@@ -108,10 +112,10 @@ module SnowplowTracker
     Contract ArrayOf[Hash] => nil
     def send_requests(evts)
       if evts.size < 1
-        LOGGER.info("Skipping sending events since buffer is empty")
+        logger.info("Skipping sending events since buffer is empty")
         return
       end
-      LOGGER.info("Attempting to send #{evts.size} request#{evts.size == 1 ? '' : 's'}")
+      logger.info("Attempting to send #{evts.size} request#{evts.size == 1 ? '' : 's'}")
 
       evts.each do |event|
         event['stm'] = (Time.now.to_f * 1000).to_i.to_s # add the sent timestamp, overwrite if already exists
@@ -126,7 +130,7 @@ module SnowplowTracker
           ).to_json)
           post_succeeded = is_good_status_code(request.code)
         rescue StandardError => se
-          LOGGER.warn(se)
+          logger.warn(se)
         end
         if post_succeeded
           unless @on_success.nil?
@@ -147,7 +151,7 @@ module SnowplowTracker
             request = http_get(evt)
             get_succeeded = is_good_status_code(request.code)
           rescue StandardError => se
-            LOGGER.warn(se)
+            logger.warn(se)
           end
           if get_succeeded
             success_count += 1
@@ -174,15 +178,15 @@ module SnowplowTracker
     Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_get(payload)
       destination = URI(@collector_uri + '?' + URI.encode_www_form(payload))
-      LOGGER.info("Sending GET request to #{@collector_uri}...")
-      LOGGER.debug("Payload: #{payload}")
+      logger.info("Sending GET request to #{@collector_uri}...")
+      logger.debug("Payload: #{payload}")
       http = Net::HTTP.new(destination.host, destination.port)
       request = Net::HTTP::Get.new(destination.request_uri)
       if destination.scheme == 'https'
         http.use_ssl = true
       end
       response = http.request(request)
-      LOGGER.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
+      logger.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
         "GET request to #{@collector_uri} finished with status code #{response.code}"
       }
 
@@ -193,8 +197,8 @@ module SnowplowTracker
     #
     Contract Hash => lambda { |x| x.is_a? Net::HTTPResponse }
     def http_post(payload)
-      LOGGER.info("Sending POST request to #{@collector_uri}...")
-      LOGGER.debug("Payload: #{payload}")
+      logger.info("Sending POST request to #{@collector_uri}...")
+      logger.debug("Payload: #{payload}")
       destination = URI(@collector_uri)
       http = Net::HTTP.new(destination.host, destination.port)
       request = Net::HTTP::Post.new(destination.request_uri)
@@ -204,7 +208,7 @@ module SnowplowTracker
       request.body = payload.to_json
       request.set_content_type('application/json; charset=utf-8')
       response = http.request(request)
-      LOGGER.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
+      logger.add(is_good_status_code(response.code) ? Logger::INFO : Logger::WARN) {
         "POST request to #{@collector_uri} finished with status code #{response.code}"
       }
 
@@ -266,10 +270,10 @@ module SnowplowTracker
           @buffer = []
         end
         if not async
-          LOGGER.info('Starting synchronous flush')
+          logger.info('Starting synchronous flush')
           @queue.synchronize do
             @all_processed_condition.wait_while { @results_unprocessed > 0 }
-            LOGGER.info('Finished synchronous flush')
+            logger.info('Finished synchronous flush')
           end
         end
         break if @buffer.size < 1
