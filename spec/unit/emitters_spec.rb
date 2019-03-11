@@ -39,8 +39,8 @@ describe SnowplowTracker::Emitter, 'configuration' do
   end
 
   it 'should initialise correctly using custom settings' do
-    on_success = lambda{ |x| puts x}
-    on_failure = lambda{ |x,y| puts y}
+    on_success = lambda { |x| x }
+    on_failure = lambda { |x, y| y }
     e = SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', default_opts.merge({
       :protocol => 'https',
       :port => 80,
@@ -65,7 +65,6 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
     emitter = SnowplowTracker::Emitter.new('localhost', default_opts)
     emitter.input({'key' => 'value'})
     param_hash = CGI.parse(emitter.get_last_querystring)
-    puts param_hash
     expect(param_hash['key'][0]).to eq('value')
     expect(param_hash['stm'][0].to_i.round(-4)).to eq((Time.now.to_f * 1000).to_i.round(-4))
   end
@@ -105,7 +104,6 @@ describe SnowplowTracker::Emitter, 'Sending requests' do
 
     sent = JSON.parse(emitter.get_last_body(1))
 
-    puts sent
     expect(sent['schema']).to eq("iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4")
 
     expect(sent['data'][0]['key1']).to eq("value1")
