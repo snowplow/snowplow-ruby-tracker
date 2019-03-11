@@ -27,8 +27,14 @@ end
 
 describe SnowplowTracker::Tracker, 'configuration' do
 
+  let(:emitter) {
+    SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net', {
+      logger: NULL_LOGGER,
+    })
+  }
+
   before(:each) do
-    @t = SnowplowTracker::Tracker.new(SnowplowTracker::Emitter.new('d3rkrsqld9gmqf.cloudfront.net'), nil, 'cloudfront', "AF003", false)
+    @t = SnowplowTracker::Tracker.new(emitter, nil, 'cloudfront', "AF003", false)
   end
 
   it 'should initialise standard name-value pairs' do

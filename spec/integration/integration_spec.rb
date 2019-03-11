@@ -19,26 +19,26 @@ require 'json'
 
 describe SnowplowTracker::Tracker, 'Querystring construction' do
 
+  let(:emitter_opts) { { logger: NULL_LOGGER } }
+  let(:e) { SnowplowTracker::Emitter.new('localhost', emitter_opts) }
+  let(:t) { SnowplowTracker::Tracker.new(e) }
+
   SelfDescribingJson = SnowplowTracker::SelfDescribingJson
 
   it 'tracks a page view' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com', nil, 123)
     param_hash = CGI.parse(e.get_last_querystring)
     expected_fields = {
-      'e' => 'pv', 
-      'page' => 'Two words', 
+      'e' => 'pv',
+      'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
       'dtm' => '123'}
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
     end
   end
- 
+
   it 'tracks an ecommerce transaction' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_ecommerce_transaction(
       {
         'order_id' => '12345',
@@ -51,7 +51,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
         'country' => 'USA',
         'currency' => 'GBP'
       },
-      [ 
+      [
         {
           'sku' => 'pbz0026',
           'price' => 20,
@@ -68,41 +68,41 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(e.get_last_querystring(3))
     expected_fields = {
-      'e' => 'tr', 
-      'tr_id' => '12345', 
-      'tr_tt' => '35', 
-      'tr_af' => 'my_company', 
-      'tr_tx' => '0', 
-      'tr_sh' => '0', 
-      'tr_ci' => 'Phoenix', 
-      'tr_st' => 'Arizona', 
-      'tr_co' => 'USA', 
+      'e' => 'tr',
+      'tr_id' => '12345',
+      'tr_tt' => '35',
+      'tr_af' => 'my_company',
+      'tr_tx' => '0',
+      'tr_sh' => '0',
+      'tr_ci' => 'Phoenix',
+      'tr_st' => 'Arizona',
+      'tr_co' => 'USA',
       'tr_cu' => 'GBP'
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end    
+    end
 
     param_hash = CGI.parse(e.get_last_querystring(2))
     expected_fields = {
-      'e' => 'ti', 
-      'ti_id' => '12345', 
-      'ti_sk' => 'pbz0026', 
-      'ti_cu' => 'GBP', 
+      'e' => 'ti',
+      'ti_id' => '12345',
+      'ti_sk' => 'pbz0026',
+      'ti_cu' => 'GBP',
       'ti_pr' => '20'
     }
     for pair in expected_fields
       expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end    
+    end
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
-      'e' => 'ti', 
-      'ti_id' => '12345', 
-      'ti_sk' => 'pbz0038', 
-      'ti_nm' => 'crystals', 
-      'ti_ca' => 'magic', 
-      'ti_cu' => 'GBP', 
+      'e' => 'ti',
+      'ti_id' => '12345',
+      'ti_sk' => 'pbz0038',
+      'ti_nm' => 'crystals',
+      'ti_ca' => 'magic',
+      'ti_cu' => 'GBP',
       'ti_pr' => '15'
     }
     for pair in expected_fields
@@ -116,8 +116,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a structured event' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99)
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -134,13 +132,12 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   end
 
-  it 'tracks a (non base64) self describing event in the same way as an unstructured event' do 
-    e = SnowplowTracker::Emitter.new('localhost')
+  it 'tracks a (non base64) self describing event in the same way as an unstructured event' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ))
@@ -156,12 +153,10 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a base64 encoded self describing event in the same way as an unstructured_event' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_self_describing_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ))
@@ -177,12 +172,11 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (no base64)' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_unstruct_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ))
@@ -199,12 +193,10 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks an unstructured event (base64)' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_unstruct_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ))
@@ -221,7 +213,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f')
 
@@ -237,7 +228,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'adds standard name-value pairs to the payload' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, 'cf', 'angry-birds-android')
     t.set_platform('mob')
     t.set_user_id('user12345')
@@ -251,14 +241,14 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
-      'tna' => 'cf', 
+      'tna' => 'cf',
       'res' => '400x200',
       'vp' => '100x80',
-      'lang' => 'en', 
-      'aid' => 'angry-birds-android', 
-      'cd' => '24', 
-      'tz' => 'Europe London', 
-      'p' => 'mob', 
+      'lang' => 'en',
+      'aid' => 'angry-birds-android',
+      'cd' => '24',
+      'tz' => 'Europe London',
+      'p' => 'mob',
       'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
@@ -269,7 +259,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'can have more than one Subject' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, SnowplowTracker::Subject.new, 'cf', 'angry-birds-android')
     t.set_platform('mob')
     t.set_user_id('user12345')
@@ -288,14 +277,14 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
-      'tna' => 'cf', 
+      'tna' => 'cf',
       'res' => '400x200',
       'vp' => '100x80',
-      'lang' => 'en', 
-      'aid' => 'angry-birds-android', 
-      'cd' => '24', 
-      'tz' => 'Europe London', 
-      'p' => 'mob', 
+      'lang' => 'en',
+      'aid' => 'angry-birds-android',
+      'cd' => '24',
+      'tz' => 'Europe London',
+      'p' => 'mob',
       'duid' => 'aeb1691c5a0ee5a6',
       'ua' => 'Mozilla/5.0',
       'ip' => '255.255.255.255',
@@ -314,14 +303,14 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
     param_hash_2 = CGI.parse(e.get_last_querystring(1))
     expected_fields_2 = {
-      'tna' => 'cf', 
+      'tna' => 'cf',
       'res' => nil,
       'vp' => '100x100',
-      'lang' => 'fr', 
-      'aid' => 'angry-birds-android', 
-      'cd' => nil, 
-      'tz' => nil, 
-      'p' => 'srv', 
+      'lang' => 'fr',
+      'aid' => 'angry-birds-android',
+      'cd' => nil,
+      'tz' => nil,
+      'p' => 'srv',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
     for pair in expected_fields_2
@@ -332,7 +321,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
 
   it 'adds a custom context to the payload' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_page_view('http://www.example.com', nil, nil, [
       SelfDescribingJson.new(
@@ -359,7 +347,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using GET' do
-    e = SnowplowTracker::Emitter.new('localhost', {:buffer_size => 3})
+    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(:buffer_size => 3))
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'first')
     t.track_page_view('http://www.example.com', 'second')
@@ -376,7 +364,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'batches and sends multiple events using POST' do
-    e = SnowplowTracker::Emitter.new('localhost', {:method => 'post', :buffer_size => 3})
+    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(:method => 'post', :buffer_size => 3))
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'fourth')
     t.track_page_view('http://www.example.com', 'fifth')
@@ -386,19 +374,16 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expect(payload_data[0]['page']).to eq('fourth')
     expect(payload_data[1]['page']).to eq('fifth')
     expect(payload_data[2]['page']).to eq('sixth')
-    
+
   end
 
-   it 'supports true timestamps on page view tracking' do 
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
-
+   it 'supports true timestamps on page view tracking' do
     t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com', nil, SnowplowTracker::TrueTimestamp.new(123))
 
     param_hash = CGI.parse(e.get_last_querystring)
     expected_fields = {
-      'e' => 'pv', 
-      'page' => 'Two words', 
+      'e' => 'pv',
+      'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
       'ttm' => '123'}
     for pair in expected_fields
@@ -406,10 +391,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     end
   end
 
-  it 'supports true timestamps on ecommerce transactions' do 
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
-
+  it 'supports true timestamps on ecommerce transactions' do
     t.track_ecommerce_transaction(
       {
         'order_id' => '12345',
@@ -422,7 +404,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
         'country' => 'USA',
         'currency' => 'GBP'
       },
-      [ 
+      [
         {
           'sku' => 'pbz0026',
           'price' => 20,
@@ -435,7 +417,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
           'name' => 'crystals',
           'category' => 'magic'
         }
-      ], 
+      ],
       nil,
       SnowplowTracker::TrueTimestamp.new(123456))
 
@@ -446,8 +428,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a structured event with a true timestamp' do
-    e = SnowplowTracker::Emitter.new('localhost')
-    t = SnowplowTracker::Tracker.new(e)
     t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99, nil, SnowplowTracker::TrueTimestamp.new(123))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -466,7 +446,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a screen view unstructured event with a true timestamp' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_screen_view('Game HUD 2', 'e89a34b2f', nil, SnowplowTracker::TrueTimestamp.new(123))
 
@@ -483,12 +462,11 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a self describing event with a true timestamp' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ), nil, SnowplowTracker::TrueTimestamp.new(1234))
@@ -507,12 +485,11 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   end
 
   it 'tracks a self describing event with a device timestamp' do
-    e = SnowplowTracker::Emitter.new('localhost')
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       {
-        'product_id' => 'ASO01043', 
+        'product_id' => 'ASO01043',
         'price' => 49.95
       }
     ), nil, 555)
