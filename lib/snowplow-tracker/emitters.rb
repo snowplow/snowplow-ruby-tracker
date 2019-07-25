@@ -28,6 +28,7 @@ module SnowplowTracker
     include Contracts
 
     @@ConfigHash = ({
+      :path => Maybe[String],
       :protocol => Maybe[Or['http', 'https']],
       :port => Maybe[Num],
       :method => Maybe[Or['get', 'post']],
@@ -50,7 +51,8 @@ module SnowplowTracker
     def initialize(endpoint, config={})
       config = @@DefaultConfig.merge(config)
       @lock = Monitor.new
-      @collector_uri = as_collector_uri(endpoint, config[:protocol], config[:port], config[:method])
+      path = config[:path].nil? ? config[:method] == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2' : config[:path]
+      @collector_uri = as_collector_uri(endpoint, config[:protocol], config[:port], path)
       @buffer = []
       if not config[:buffer_size].nil?
         @buffer_size = config[:buffer_size]
@@ -70,9 +72,8 @@ module SnowplowTracker
     # Build the collector URI from the configuration hash
     #
     Contract String, String, Maybe[Num], String => String
-    def as_collector_uri(endpoint, protocol, port, method)
+    def as_collector_uri(endpoint, protocol, port, path)
       port_string = port == nil ? '' : ":#{port.to_s}"
-      path = method == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2'
 
       "#{protocol}://#{endpoint}#{port_string}#{path}"
     end
