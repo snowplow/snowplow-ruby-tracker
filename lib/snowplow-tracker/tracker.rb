@@ -10,7 +10,7 @@
 # See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
 # Author:: Alex Dean, Fred Blundun (mailto:support@snowplowanalytics.com)
-# Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
+# Copyright:: Copyright (c) 2013-2020 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
 require 'contracts'
@@ -238,18 +238,18 @@ module SnowplowTracker
 
     # Track a structured event
     # set the timestamp to the device timestamp
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num], Maybe[String] => Tracker
+    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil, page_url=nil)
       if tstamp.nil?
         tstamp = get_timestamp
       end
 
-      track_struct_event(category, action, label, property, value, context, DeviceTimestamp.new(tstamp))
+      track_struct_event(category, action, label, property, value, context, DeviceTimestamp.new(tstamp), page_url)
     end
     # Track a structured event
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Timestamp => Tracker
-    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Timestamp, Maybe[String] => Tracker
+    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil, page_url=nil)
       pb = Payload.new
       pb.add('e', 'se')
       pb.add('se_ca', category)
@@ -257,8 +257,13 @@ module SnowplowTracker
       pb.add('se_la', label)
       pb.add('se_pr', property)
       pb.add('se_va', value)
+
       unless context.nil?
         pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+      end
+
+      unless page_url.nil?
+        pb.add('url', page_url)
       end
 
       pb.add(tstamp.type, tstamp.value)
