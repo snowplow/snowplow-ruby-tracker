@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  prepare-to-publish:
+    runs-on: ubuntu-latest
+    outputs:
+      gem-version: ${{ steps.gem-version.outputs.gem-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Save gem version
+        id: gem-version
+        run: echo "::set-output name=gem-version::$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*\.?[0-9]*" lib/snowplow-tracker/version.rb)"
+
+      - name: Save tag version
+        id: tag-version
+        run: echo "::set-output name=tag-version::${GITHUB_REF#refs/*/}"
+
+      - name: Exit on tag version mismatch
+        if: ${{ steps.tag-version.outputs.tag-version != steps.gem-version.outputs.gem-version }}
+        run: |
+          echo "Tag version (${{ steps.tag-version.outputs.tag-version }}) doesn't match project version (${{ steps.gem-version.outputs.gem-version }})"
+          exit 1
+
+  publish:
+    needs: prepare-to-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+
+      - name: Publish to RubyGems
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          gem build *.gemspec
+          gem push *.gem
+        env:
+          GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_API_KEY}}"
+
+      - name: Release on GitHub
+        uses: softprops/action-gh-release@v0.1.12
+        with:
+          name: Version ${{ needs.prepare-to-publish.outputs.gem-version }}
+          prerelease: ${{ contains(needs.prepare-to-publish.outputs.gem-version, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
