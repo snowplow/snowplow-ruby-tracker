@@ -13,16 +13,37 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
+require 'simplecov'
+require 'simplecov-lcov'
 
-require 'coveralls'
-Coveralls.wear!
+# Fix incompatibility of simplecov-lcov with older versions of simplecov that are not expressed in its gemspec.
+# https://github.com/fortissimo1997/simplecov-lcov/pull/25
+if !SimpleCov.respond_to?(:branch_coverage)
+  module SimpleCov
+    def self.branch_coverage?
+      false
+    end
+  end
+end
+
+SimpleCov::Formatter::LcovFormatter.config do |c|
+  c.report_with_single_file = true
+  c.single_report_path = 'coverage/lcov.info'
+end
+
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::LcovFormatter,
+  ]
+)
+
+SimpleCov.start do
+  add_filter 'spec/'
+end
 
 require 'webmock/rspec'
 require 'snowplow-tracker'
-
-SimpleCov.start do
-  add_filter "/spec/"
-end
 
 WebMock.disable_net_connect!(:allow_localhost => true)
 
