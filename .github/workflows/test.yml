@@ -1,0 +1,29 @@
+name: Test
+
+on: pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["2.1", "2.3", "2.6", "2.7", "3.0", "jruby-9.1"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # runs ‘bundle install’ and caches installed gems automatically
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Coveralls
+        if: matrix.ruby-version == '2.6'
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
