@@ -1,6 +1,6 @@
 # Ruby Analytics for Snowplow
 
-[![early-release]][tracker-classificiation]
+[![early-release]][tracker-classification]
 [![Gem Version](https://badge.fury.io/rb/snowplow-tracker.svg)](https://badge.fury.io/rb/snowplow-tracker)
 [![Build Status](https://travis-ci.org/snowplow/snowplow-ruby-tracker.png?branch=master)](https://travis-ci.org/snowplow/snowplow-ruby-tracker)
 [![Code Climate](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker.png)](https://codeclimate.com/github/snowplow/snowplow-ruby-tracker)
@@ -13,32 +13,34 @@ Add analytics to your Ruby and Rails apps and gems with the **[Snowplow][snowplo
 
 With this tracker you can collect event data from your **[Ruby][ruby]** applications, **[Ruby on Rails][rails]** web applications and **[Ruby gems][rubygems]**.
 
-## Quickstart
+## Maintainer Quickstart
 
-Assuming git, **[Vagrant][vagrant-install]** and **[VirtualBox][virtualbox-install]** installed:
-
-```bash
- host$ git clone https://github.com/snowplow/snowplow-ruby-tracker.git
- host$ cd snowplow-ruby-tracker
- host$ vagrant up && vagrant ssh
-guest$ cd /vagrant
-guest$ gem install bundler
-guest$ bundle install
-guest$ rspec
-```
-
-## Publishing
+Clone this repo and navigate into the cloned folder. To run the tests locally, you will need [Docker][docker] installed.
 
 ```bash
- host$ vagrant push
+docker build . -t ruby-tracker
+docker run -v "$(pwd)":"/code" ruby-tracker
 ```
+
+The `-v` flag for `docker run` creates a bind mount for the project directory. This means that changes to the files will be automatically applied within the Docker image. However, if you modify the `Gemfile` or `snowplow-tracker.gemspec` files, the image must be rebuilt.
+
+Alternatively, test directly by installing Ruby 2.6+ and [Bundler][bundler]. Then run:
+
+```
+bundle install
+rspec
+```
+
+## Contributing
+
+Feedback and contributions are welcome - if you have identified a bug, please log an issue on this repo. For all other feedback, discussion or questions please open a thread on our [Discourse forum][discourse].
 
 ## Find out more
 
-| Technical Docs                  | Setup Guide               | Roadmap                 | Contributing                      |
-|---------------------------------|---------------------------|-------------------------|-----------------------------------|
-| ![i1][techdocs-image]          | ![i2][setup-image]       | ![i3][roadmap-image]   | ![i4][contributing-image]        |
-| **[Technical Docs][techdocs]** | **[Setup Guide][setup]** | **[Roadmap][roadmap]** | **[Contributing](Contributing.md)** |
+| Technical Docs                 | Contributing                        |
+| ------------------------------ | ----------------------------------- |
+| ![i1][techdocs-image]          | ![i4][contributing-image]           |
+| **[Technical Docs][techdocs]** | **[Contributing](Contributing.md)** |
 
 ## Copyright and license
 
@@ -55,24 +57,15 @@ limitations under the License.
 
 [license-image]: https://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
 [license]: https://www.apache.org/licenses/LICENSE-2.0
-
 [ruby]: https://www.ruby-lang.org/en/
 [rails]: https://rubyonrails.org/
 [rubygems]: https://rubygems.org/
-
+[docker]: https://www.docker.com/
+[bundler]: https://bundler.io/
 [snowplow]: httpd://snowplowanalytics.com
-
-[vagrant-install]: https://docs.vagrantup.com/v2/installation
-[virtualbox-install]: https://www.virtualbox.org/wiki/Downloads
-
+[discourse]: https://discourse.snowplowanalytics.com
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
-[setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
-[roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
 [contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
-
-[techdocs]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker
-[setup]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker-Setup
-[roadmap]: https://github.com/snowplow/snowplow/wiki/Ruby-Tracker-Roadmap
-
-[tracker-classificiation]: https://github.com/snowplow/snowplow/wiki/Tracker-Maintenance-Classification
+[techdocs]: https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/ruby-tracker/
+[tracker-classification]: https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/tracker-maintenance-classification/
 [early-release]: https://img.shields.io/static/v1?style=flat&label=Snowplow&message=Early%20Release&color=014477&labelColor=9ba0aa&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAeFBMVEVMaXGXANeYANeXANZbAJmXANeUANSQAM+XANeMAMpaAJhZAJeZANiXANaXANaOAM2WANVnAKWXANZ9ALtmAKVaAJmXANZaAJlXAJZdAJxaAJlZAJdbAJlbAJmQAM+UANKZANhhAJ+EAL+BAL9oAKZnAKVjAKF1ALNBd8J1AAAAKHRSTlMAa1hWXyteBTQJIEwRgUh2JjJon21wcBgNfmc+JlOBQjwezWF2l5dXzkW3/wAAAHpJREFUeNokhQOCA1EAxTL85hi7dXv/E5YPCYBq5DeN4pcqV1XbtW/xTVMIMAZE0cBHEaZhBmIQwCFofeprPUHqjmD/+7peztd62dWQRkvrQayXkn01f/gWp2CrxfjY7rcZ5V7DEMDQgmEozFpZqLUYDsNwOqbnMLwPAJEwCopZxKttAAAAAElFTkSuQmCC
