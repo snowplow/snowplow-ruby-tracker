@@ -14,33 +14,29 @@
 # License:: Apache License Version 2.0
 
 module SnowplowTracker
+  class Timestamp
+    attr_reader :type
+    attr_reader :value
 
-    class Timestamp
-
-        attr_reader :type
-        attr_reader :value
-
-        def initialize(type, value)
-            @type = type
-            @value = value
-        end
-
+    def initialize(type, value)
+      @type = type
+      @value = value
     end
 
-    class TrueTimestamp < Timestamp
-
-        def initialize(value) 
-            super 'ttm', value
-        end
-
+    def self.create
+      (Time.now.to_f * 1000).to_i
     end
+  end
 
-    class DeviceTimestamp < Timestamp
-
-        def initialize(value) 
-            super 'dtm', value
-        end
-
+  class TrueTimestamp < Timestamp
+    def initialize(value)
+      super 'ttm', value
     end
+  end
 
+  class DeviceTimestamp < Timestamp
+    def initialize(value)
+      super 'dtm', value
+    end
+  end
 end

@@ -18,7 +18,7 @@ require 'simplecov-lcov'
 
 # Fix incompatibility of simplecov-lcov with older versions of simplecov that are not expressed in its gemspec.
 # https://github.com/fortissimo1997/simplecov-lcov/pull/25
-if !SimpleCov.respond_to?(:branch_coverage)
+unless SimpleCov.respond_to?(:branch_coverage)
   module SimpleCov
     def self.branch_coverage?
       false
@@ -34,7 +34,7 @@ end
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
   [
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::LcovFormatter,
+    SimpleCov::Formatter::LcovFormatter
   ]
 )
 
@@ -45,22 +45,23 @@ end
 require 'webmock/rspec'
 require 'snowplow-tracker'
 
-WebMock.disable_net_connect!(:allow_localhost => true)
+WebMock.disable_net_connect!(allow_localhost: true)
 
 RSpec.configure do |config|
+  config.color = true
+
   config.before(:each) do
-    stub_request(:any, /localhost/).
-      with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-      to_return(:status => [200], :body => 'stubbed response')
-    stub_request(:any, /nonexistent/).
-      with(:headers => {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-      to_return(:status => [404], :body => 'stubbed response')
+    stub_request(:any, /localhost/)
+      .with(headers: { 'Accept' => '*/*', 'User-Agent' => 'Ruby' })
+      .to_return(status: [200], body: 'stubbed response')
+    stub_request(:any, /nonexistent/)
+      .with(headers: { 'Accept' => '*/*', 'User-Agent' => 'Ruby' })
+      .to_return(status: [404], body: 'stubbed response')
   end
 end
 
 module SnowplowTracker
   class Emitter
-
     # Event querystrings will be added here
     @@querystrings = ['']
 
@@ -70,35 +71,32 @@ module SnowplowTracker
     old_http_get = instance_method(:http_get)
 
     define_method(:http_get) do |payload|
-
       # This additional line records event querystrings
       @@querystrings.push(URI(@collector_uri + '?' + URI.encode_www_form(payload)).query)
 
-      old_http_get.bind(self).(payload)
+      old_http_get.bind(self).call(payload)
     end
 
     old_http_post = instance_method(:http_post)
 
     define_method(:http_post) do |payload|
-
-      request = Net::HTTP::Post.new("localhost")
+      request = Net::HTTP::Post.new('localhost')
       request.body = payload.to_json
 
       # This additional line records POST request bodies
       @@post_bodies.push(request.body)
 
-      old_http_post.bind(self).(payload)
+      old_http_post.bind(self).call(payload)
     end
 
     # New method to get the n-th from last querystring
-    def get_last_querystring(n=1)
-      return @@querystrings[-n]
+    def get_last_querystring(n = 1)
+      @@querystrings[-n]
     end
 
-    def get_last_body(n=1)
-      return @@post_bodies[-n]
+    def get_last_body(n = 1)
+      @@post_bodies[-n]
     end
-
   end
 end
 

@@ -13,41 +13,34 @@
 # Copyright:: Copyright (c) 2016 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-#require 'spec_helper'
+require 'spec_helper'
 
 describe SnowplowTracker::Timestamp do
+  it 'has a type' do
+    expect(SnowplowTracker::Timestamp.new('dtm', 123456).type).to eq('dtm')
+  end
 
-    it 'has a type' do
-        SnowplowTracker::Timestamp.new('dtm', 123456).type.should eq("dtm")
-    end
-
-    it 'has a value' do 
-        SnowplowTracker::Timestamp.new('dtm', 123456).value.should eq(123456)
-    end
-
+  it 'has a value' do
+    expect(SnowplowTracker::Timestamp.new('dtm', 123456).value).to eq(123456)
+  end
 end
 
-describe SnowplowTracker::TrueTimestamp do 
+describe SnowplowTracker::TrueTimestamp do
+  it 'has type ttm' do
+    expect(SnowplowTracker::TrueTimestamp.new(1234).type).to eq('ttm')
+  end
 
-    it 'has type ttm' do 
-        SnowplowTracker::TrueTimestamp.new(1234).type.should eq('ttm')
-    end
-
-    it 'has a value' do 
-        SnowplowTracker::TrueTimestamp.new(1234).value.should eq(1234)
-    end
-
+  it 'has a value' do
+    expect(SnowplowTracker::TrueTimestamp.new(1234).value).to eq(1234)
+  end
 end
 
-describe SnowplowTracker::DeviceTimestamp do 
+describe SnowplowTracker::DeviceTimestamp do
+  it 'has type dtm' do
+    expect(SnowplowTracker::DeviceTimestamp.new(1234).type).to eq('dtm')
+  end
 
-    it 'has type dtm' do 
-        SnowplowTracker::DeviceTimestamp.new(1234).type.should eq('dtm')
-    end
-
-    it 'has a value' do 
-        SnowplowTracker::DeviceTimestamp.new(1234).value.should eq(1234)
-    end
-
+  it 'has a value' do
+    expect(SnowplowTracker::DeviceTimestamp.new(1234).value).to eq(1234)
+  end
 end
-
