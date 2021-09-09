@@ -18,5 +18,6 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'simplecov',      require: false
+gem 'rubocop', '~> 0.57.0', require: false
+gem 'simplecov', require: false
 gem 'simplecov-lcov', require: false

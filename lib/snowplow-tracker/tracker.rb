@@ -18,71 +18,69 @@ require 'securerandom'
 require 'set'
 
 module SnowplowTracker
-
   class Tracker
-
     include Contracts
 
-    @@EmitterInput = Or[lambda {|x| x.is_a? Emitter}, ArrayOf[lambda {|x| x.is_a? Emitter}]]
+    EMITTER_INPUT = Or[->(x) { x.is_a? Emitter }, ArrayOf[->(x) { x.is_a? Emitter }]]
 
-    @@required_transaction_keys =   Set.new(%w(order_id total_value))
-    @@recognised_transaction_keys = Set.new(%w(order_id total_value affiliation tax_value shipping city state country currency))
+    REQUIRED_TRANSACTION_KEYS =   Set.new(%w[order_id total_value])
+    RECOGNISED_TRANSACTION_KEYS = Set.new(%w[
+                                            order_id total_value affiliation tax_value
+                                            shipping city state country currency
+                                          ])
 
-    @@Transaction = lambda { |x|
+    TRANSACTION = ->(x) {
       return false unless x.class == Hash
       transaction_keys = Set.new(x.keys)
-      @@required_transaction_keys.subset? transaction_keys and
-        transaction_keys.subset? @@recognised_transaction_keys
+      REQUIRED_TRANSACTION_KEYS.subset?(transaction_keys) &&
+        transaction_keys.subset?(RECOGNISED_TRANSACTION_KEYS)
     }
 
-    @@required_item_keys =   Set.new(%w(sku price quantity))
-    @@recognised_item_keys = Set.new(%w(sku price quantity name category context))
+    REQUIRED_ITEM_KEYS =   Set.new(%w[sku price quantity])
+    RECOGNISED_ITEM_KEYS = Set.new(%w[sku price quantity name category context])
 
-    @@Item = lambda { |x|
+    ITEM = ->(x) {
       return false unless x.class == Hash
       item_keys = Set.new(x.keys)
-      @@required_item_keys.subset? item_keys and
-        item_keys.subset? @@recognised_item_keys
+      REQUIRED_ITEM_KEYS.subset?(item_keys) &&
+        item_keys.subset?(RECOGNISED_ITEM_KEYS)
     }
 
-    @@required_augmented_item_keys =   Set.new(%w(sku price quantity tstamp order_id))
-    @@recognised_augmented_item_keys = Set.new(%w(sku price quantity name category context tstamp order_id currency))
+    REQUIRED_AUGMENTED_ITEM_KEYS =   Set.new(%w[sku price quantity tstamp order_id])
+    RECOGNISED_AUGMENTED_ITEM_KEYS = Set.new(%w[sku price quantity name category context tstamp order_id currency])
 
-    @@AugmentedItem = lambda { |x|
+    AUGMENTED_ITEM = ->(x) {
       return false unless x.class == Hash
       augmented_item_keys = Set.new(x.keys)
-      @@required_augmented_item_keys.subset? augmented_item_keys and
-        augmented_item_keys.subset? @@recognised_augmented_item_keys
+      REQUIRED_AUGMENTED_ITEM_KEYS.subset?(augmented_item_keys) &&
+        augmented_item_keys.subset?(RECOGNISED_AUGMENTED_ITEM_KEYS)
     }
 
-    @@ContextsInput = ArrayOf[SelfDescribingJson]
+    CONTEXTS_INPUT = ArrayOf[SelfDescribingJson]
 
-    @@version = TRACKER_VERSION
-    @@default_encode_base64 = true
+    DEFAULT_ENCODE_BASE64 = true
 
-    @@base_schema_path = "iglu:com.snowplowanalytics.snowplow"
-    @@schema_tag = "jsonschema"
-    @@context_schema = "#{@@base_schema_path}/contexts/#{@@schema_tag}/1-0-1"
-    @@unstruct_event_schema = "#{@@base_schema_path}/unstruct_event/#{@@schema_tag}/1-0-0"
+    BASE_SCHEMA_PATH = 'iglu:com.snowplowanalytics.snowplow'
+    SCHEMA_TAG = 'jsonschema'
+    CONTEXT_SCHEMA = "#{BASE_SCHEMA_PATH}/contexts/#{SCHEMA_TAG}/1-0-1"
+    UNSTRUCT_EVENT_SCHEMA = "#{BASE_SCHEMA_PATH}/unstruct_event/#{SCHEMA_TAG}/1-0-0"
 
-    Contract @@EmitterInput, Maybe[Subject], Maybe[String], Maybe[String], Bool => Tracker
-    def initialize(emitters, subject=nil, namespace=nil, app_id=nil, encode_base64=@@default_encode_base64)
+    Contract EMITTER_INPUT, Maybe[Subject], Maybe[String], Maybe[String], Bool => Any
+    def initialize(emitters, subject = nil, namespace = nil, app_id = nil, encode_base64 = DEFAULT_ENCODE_BASE64)
       @emitters = Array(emitters)
-      if subject.nil?
-        @subject = Subject.new
-      else
-        @subject = subject
-      end
+      @subject = if subject.nil?
+                   Subject.new
+                 else
+                   subject
+                 end
       @standard_nv_pairs = {
         'tna' => namespace,
-        'tv'  => @@version,
+        'tv'  => TRACKER_VERSION,
         'aid' => app_id
       }
       @config = {
         'encode_base64' => encode_base64
       }
-
-      self
     end
 
     # Call subject methods from tracker instance
@@ -96,137 +94,97 @@ module SnowplowTracker
     end
 
     # Generates a type-4 UUID to identify this event
+    #
     Contract nil => String
-    def get_event_id()
+    def event_id
       SecureRandom.uuid
     end
 
-    # Generates the timestamp (in milliseconds) to be attached to each event
-    #
-    Contract nil => Num
-    def get_timestamp
-      (Time.now.to_f * 1000).to_i
-    end
+    # # Generates the timestamp (in milliseconds) to be attached to each event
+    # #
+    # Contract nil => Num
+    # def timestamp
+    #   (Time.now.to_f * 1000).to_i
+    # end
 
     # Builds a self-describing JSON from an array of custom contexts
     #
-    Contract @@ContextsInput => Hash
+    Contract CONTEXTS_INPUT => Hash
     def build_context(context)
       SelfDescribingJson.new(
-        @@context_schema,
-        context.map {|c| c.to_json}
-        ).to_json
+        CONTEXT_SCHEMA,
+        context.map(&:to_json)
+      ).to_json
     end
 
     # Tracking methods
 
     # Attaches all the fields in @standard_nv_pairs to the request
-    #  Only attaches the context vendor if the event has a custom context
+    # Only attaches the context vendor if the event has a custom context
     #
     Contract Payload => nil
-    def track(pb)
-      pb.add_dict(@subject.standard_nv_pairs)
-      pb.add_dict(@standard_nv_pairs)
-      pb.add('eid', get_event_id())
-      @emitters.each{ |emitter| emitter.input(pb.context)}
+    def track(payload)
+      payload.add_dict(@subject.standard_nv_pairs)
+      payload.add_dict(@standard_nv_pairs)
+      payload.add('eid', event_id)
+      @emitters.each { |emitter| emitter.input(payload.context) }
 
       nil
     end
 
-    # Log a visit to this page with an inserted device timestamp
+    # Log a visit to this page. Default is to insert a device timestamp
+    # Part of the public API
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
-      if tstamp.nil?
-        tstamp = get_timestamp
-      end
+    Contract String, Maybe[String], Maybe[String], Maybe[CONTEXTS_INPUT],
+             Or[Timestamp, Num, nil] => Tracker
+    def track_page_view(page_url, page_title = nil, referrer = nil, context = nil, tstamp = nil)
+      tstamp = Timestamp.create if tstamp.nil?
+      tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
-      track_page_view(page_url, page_title, referrer, context, DeviceTimestamp.new(tstamp))  
-    end
+      payload = Payload.new
+      payload.add('e', 'pv')
+      payload.add('url', page_url)
+      payload.add('page', page_title)
+      payload.add('refr', referrer)
 
-    # Log a visit to this page
-    #
-    Contract String, Maybe[String], Maybe[String], Maybe[@@ContextsInput], SnowplowTracker::Timestamp => Tracker
-    def track_page_view(page_url, page_title=nil, referrer=nil, context=nil, tstamp=nil)
-      pb = Payload.new
-      pb.add('e', 'pv')
-      pb.add('url', page_url)
-      pb.add('page', page_title)
-      pb.add('refr', referrer)
+      payload.add_json(build_context(context), @config['encode_base64'], 'cx', 'co') unless context.nil?
 
-      unless context.nil?
-        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
-      end
+      payload.add(tstamp.type, tstamp.value)
 
-      pb.add(tstamp.type, tstamp.value)
-
-      track(pb)
-
-      self
-    end
-
-    # Track a single item within an ecommerce transaction
-    #   Not part of the public API
-    #
-    Contract @@AugmentedItem => self
-    def track_ecommerce_transaction_item(argmap)
-      pb = Payload.new
-      pb.add('e', 'ti')
-      pb.add('ti_id', argmap['order_id'])
-      pb.add('ti_sk', argmap['sku'])
-      pb.add('ti_pr', argmap['price'])
-      pb.add('ti_qu', argmap['quantity'])
-      pb.add('ti_nm', argmap['name'])
-      pb.add('ti_ca', argmap['category'])
-      pb.add('ti_cu', argmap['currency'])
-      unless argmap['context'].nil?
-        pb.add_json(build_context(argmap['context']), @config['encode_base64'], 'cx', 'co')
-      end
-      pb.add(argmap['tstamp'].type, argmap['tstamp'].value)
-      track(pb)
+      track(payload)
 
       self
     end
 
     # Track an ecommerce transaction and all the items in it
-    # Set the timestamp as the device timestamp
-    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_ecommerce_transaction(transaction, 
-                                    items,
-                                    context=nil,
-                                    tstamp=nil)      
-      if tstamp.nil?
-        tstamp = get_timestamp
-      end
-
-      track_ecommerce_transaction(transaction, items, context, DeviceTimestamp.new(tstamp))
-    end
-
-    # Track an ecommerce transaction and all the items in it
+    # By default, set the timestamp as the device timestamp
+    # Part of the public API
     #
-    Contract @@Transaction, ArrayOf[@@Item], Maybe[@@ContextsInput], Timestamp => Tracker
+    Contract TRANSACTION, ArrayOf[ITEM], Maybe[CONTEXTS_INPUT],
+             Or[Timestamp, Num, nil] => Tracker
     def track_ecommerce_transaction(transaction, items,
-                                    context=nil, tstamp=nil)
-      pb = Payload.new
-      pb.add('e', 'tr')
-      pb.add('tr_id', transaction['order_id'])
-      pb.add('tr_tt', transaction['total_value'])
-      pb.add('tr_af', transaction['affiliation'])
-      pb.add('tr_tx', transaction['tax_value'])
-      pb.add('tr_sh', transaction['shipping'])
-      pb.add('tr_ci', transaction['city'])
-      pb.add('tr_st', transaction['state'])
-      pb.add('tr_co', transaction['country'])
-      pb.add('tr_cu', transaction['currency'])
-      unless context.nil?
-        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
-      end
+                                    context = nil, tstamp = nil)
+      tstamp = Timestamp.create if tstamp.nil?
+      tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
-      pb.add(tstamp.type, tstamp.value)
+      payload = Payload.new
+      payload.add('e', 'tr')
+      payload.add('tr_id', transaction['order_id'])
+      payload.add('tr_tt', transaction['total_value'])
+      payload.add('tr_af', transaction['affiliation'])
+      payload.add('tr_tx', transaction['tax_value'])
+      payload.add('tr_sh', transaction['shipping'])
+      payload.add('tr_ci', transaction['city'])
+      payload.add('tr_st', transaction['state'])
+      payload.add('tr_co', transaction['country'])
+      payload.add('tr_cu', transaction['currency'])
+      payload.add_json(build_context(context), @config['encode_base64'], 'cx', 'co') unless context.nil?
 
-      track(pb)
+      payload.add(tstamp.type, tstamp.value)
 
-      for item in items
+      track(payload)
+
+      items.each do |item|
         item['tstamp'] = tstamp
         item['order_id'] = transaction['order_id']
         item['currency'] = transaction['currency']
@@ -236,108 +194,114 @@ module SnowplowTracker
       self
     end
 
-    # Track a structured event
-    # set the timestamp to the device timestamp
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
-      if tstamp.nil?
-        tstamp = get_timestamp
-      end
-
-      track_struct_event(category, action, label, property, value, context, DeviceTimestamp.new(tstamp))
-    end
-    # Track a structured event
+    # Track a single item within an ecommerce transaction
+    # Not part of the public API
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[@@ContextsInput], Timestamp => Tracker
-    def track_struct_event(category, action, label=nil, property=nil, value=nil, context=nil, tstamp=nil)
-      pb = Payload.new
-      pb.add('e', 'se')
-      pb.add('se_ca', category)
-      pb.add('se_ac', action)
-      pb.add('se_la', label)
-      pb.add('se_pr', property)
-      pb.add('se_va', value)
-      unless context.nil?
-        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
+    Contract AUGMENTED_ITEM => self
+    def track_ecommerce_transaction_item(argmap)
+      payload = Payload.new
+      payload.add('e', 'ti')
+      payload.add('ti_id', argmap['order_id'])
+      payload.add('ti_sk', argmap['sku'])
+      payload.add('ti_pr', argmap['price'])
+      payload.add('ti_qu', argmap['quantity'])
+      payload.add('ti_nm', argmap['name'])
+      payload.add('ti_ca', argmap['category'])
+      payload.add('ti_cu', argmap['currency'])
+      unless argmap['context'].nil?
+        payload.add_json(
+          build_context(argmap['context']),
+          @config['encode_base64'],
+          'cx',
+          'co'
+        )
       end
+      payload.add(argmap['tstamp'].type, argmap['tstamp'].value)
+      track(payload)
 
-      pb.add(tstamp.type, tstamp.value)
-      track(pb)
+      self
+    end
+
+    # Track a structured event
+    # By default, set the timestamp as the device timestamp
+    # Part of the public API
+    #
+    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[CONTEXTS_INPUT],
+             Or[Timestamp, Num, nil] => Tracker
+    def track_struct_event(category, action, label = nil, property = nil, value = nil, context = nil, tstamp = nil)
+      tstamp = Timestamp.create if tstamp.nil?
+      tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
+
+      payload = Payload.new
+      payload.add('e', 'se')
+      payload.add('se_ca', category)
+      payload.add('se_ac', action)
+      payload.add('se_la', label)
+      payload.add('se_pr', property)
+      payload.add('se_va', value)
+      payload.add_json(build_context(context), @config['encode_base64'], 'cx', 'co') unless context.nil?
+
+      payload.add(tstamp.type, tstamp.value)
+      track(payload)
 
       self
     end
 
     # Track a screen view event
+    # Part of the public API
     #
-    Contract Maybe[String], Maybe[String],  Maybe[@@ContextsInput], Or[Timestamp, Num, nil] => Tracker
-    def track_screen_view(name=nil, id=nil, context=nil, tstamp=nil)
+    Contract Maybe[String], Maybe[String], Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
+    def track_screen_view(name = nil, id = nil, context = nil, tstamp = nil)
       screen_view_properties = {}
-      unless name.nil? 
-        screen_view_properties['name'] = name
-      end
-      unless id.nil? 
-        screen_view_properties['id'] = id
-      end
-      screen_view_schema = "#{@@base_schema_path}/screen_view/#{@@schema_tag}/1-0-0"
+      screen_view_properties['name'] = name unless name.nil?
+      screen_view_properties['id'] = id unless id.nil?
+      screen_view_schema = "#{BASE_SCHEMA_PATH}/screen_view/#{SCHEMA_TAG}/1-0-0"
 
       event_json = SelfDescribingJson.new(screen_view_schema, screen_view_properties)
 
-      self.track_unstruct_event(event_json, context, tstamp)
+      track_unstruct_event(event_json, context, tstamp)
 
       self
     end
 
     # Better name for track unstruct event
+    # By default, sets the timestamp to the device timestamp
+    # Part of the public API
     #
-    Contract SelfDescribingJson, Maybe[@@ContextsInput], Timestamp => Tracker
-    def track_self_describing_event(event_json, context=nil, tstamp=nil)
-      track_unstruct_event(event_json, context, tstamp)
-    end
-
-    # Better name for track unstruct event
-    # set the timestamp to the device timestamp
-    Contract SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_self_describing_event(event_json, context=nil, tstamp=nil)
+    Contract SelfDescribingJson, Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
+    def track_self_describing_event(event_json, context = nil, tstamp = nil)
       track_unstruct_event(event_json, context, tstamp)
     end
 
     # Track an unstructured event
-    # set the timestamp to the device timstamp
-    Contract SelfDescribingJson, Maybe[@@ContextsInput], Maybe[Num] => Tracker
-    def track_unstruct_event(event_json, context=nil, tstamp=nil)
-      if tstamp.nil?
-        tstamp = get_timestamp
-      end
-
-      track_unstruct_event(event_json, context, DeviceTimestamp.new(tstamp))
-    end
-
-    # Track an unstructured event
+    # By default, sets the timestamp to the device timestamp
     #
-    Contract SelfDescribingJson, Maybe[@@ContextsInput], Timestamp => Tracker
-    def track_unstruct_event(event_json, context=nil, tstamp=nil)
-      pb = Payload.new
-      pb.add('e', 'ue')
-      
-      envelope = SelfDescribingJson.new(@@unstruct_event_schema, event_json.to_json)
+    Contract SelfDescribingJson, Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
+    def track_unstruct_event(event_json, context = nil, tstamp = nil)
+      tstamp = Timestamp.create if tstamp.nil?
+      tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
-      pb.add_json(envelope.to_json, @config['encode_base64'], 'ue_px', 'ue_pr')
+      payload = Payload.new
+      payload.add('e', 'ue')
 
-      unless context.nil?
-        pb.add_json(build_context(context), @config['encode_base64'], 'cx', 'co')
-      end
+      envelope = SelfDescribingJson.new(UNSTRUCT_EVENT_SCHEMA, event_json.to_json)
 
-      pb.add(tstamp.type, tstamp.value)
+      payload.add_json(envelope.to_json, @config['encode_base64'], 'ue_px', 'ue_pr')
 
-      track(pb)
+      payload.add_json(build_context(context), @config['encode_base64'], 'cx', 'co') unless context.nil?
+
+      payload.add(tstamp.type, tstamp.value)
+
+      track(payload)
 
       self
     end
 
     # Flush all events stored in all emitters
+    # Part of the public API
     #
     Contract Bool => Tracker
-    def flush(async=false)
+    def flush(async = false)
       @emitters.each do |emitter|
         emitter.flush(async)
       end
@@ -346,6 +310,7 @@ module SnowplowTracker
     end
 
     # Set the subject of the events fired by the tracker
+    # Part of the public API
     #
     Contract Subject => Tracker
     def set_subject(subject)
@@ -354,6 +319,7 @@ module SnowplowTracker
     end
 
     # Add a new emitter
+    # Part of the public API
     #
     Contract Emitter => Tracker
     def add_emitter(emitter)
@@ -361,11 +327,8 @@ module SnowplowTracker
       self
     end
 
-    private :get_timestamp,
-            :build_context,
+    private :build_context,
             :track,
             :track_ecommerce_transaction_item
-
   end
-
 end

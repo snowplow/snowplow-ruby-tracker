@@ -14,9 +14,7 @@
 # License:: Apache License Version 2.0
 
 module SnowplowTracker
-
   class SelfDescribingJson
-
     def initialize(schema, data)
       @schema = schema
       @data = data
@@ -24,11 +22,9 @@ module SnowplowTracker
 
     def to_json
       {
-        :schema => @schema,
-        :data => @data
+        schema: @schema,
+        data: @data
       }
     end
-
   end
-
 end

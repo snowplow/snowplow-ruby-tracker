@@ -18,7 +18,6 @@ require 'cgi'
 require 'json'
 
 describe SnowplowTracker::Tracker, 'Querystring construction' do
-
   let(:emitter_opts) { { logger: NULL_LOGGER } }
   let(:e) { SnowplowTracker::Emitter.new('localhost', emitter_opts) }
   let(:t) { SnowplowTracker::Tracker.new(e) }
@@ -32,10 +31,9 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'e' => 'pv',
       'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
-      'dtm' => '123'}
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+      'dtm' => '123'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks an ecommerce transaction' do
@@ -64,7 +62,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
           'name' => 'crystals',
           'category' => 'magic'
         }
-      ])
+      ]
+    )
 
     param_hash = CGI.parse(e.get_last_querystring(3))
     expected_fields = {
@@ -79,9 +78,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'tr_co' => 'USA',
       'tr_cu' => 'GBP'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
     param_hash = CGI.parse(e.get_last_querystring(2))
     expected_fields = {
@@ -91,9 +88,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ti_cu' => 'GBP',
       'ti_pr' => '20'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -105,14 +100,11 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ti_cu' => 'GBP',
       'ti_pr' => '15'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
-    ['dtm', 'tid'].each do |field|
+    %w[dtm tid].each do |field|
       expect(CGI.parse(e.get_last_querystring(1))[field]).to eq(CGI.parse(e.get_last_querystring(3))[field])
     end
-
   end
 
   it 'tracks a structured event' do
@@ -126,90 +118,79 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'se_pr' => 'hd',
       'se_va' => '13.99'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a (non base64) self describing event in the same way as an unstructured event' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ))
+                                    'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                                    'product_id' => 'ASO01043',
+                                    'price' => 49.95
+                                  ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
+                  '"data":{"product_id":"ASO01043","price":49.95}}}'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a base64 encoded self describing event in the same way as an unstructured_event' do
     t.track_self_describing_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ))
+                                    'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                                    'product_id' => 'ASO01043',
+                                    'price' => 49.95
+                                  ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ==',
+      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjd'\
+                  'F9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY2'\
+                  '1lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQ'\
+                  'iOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ=='
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks an unstructured event (no base64)' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_unstruct_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ))
+                             'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                             'product_id' => 'ASO01043',
+                             'price' => 49.95
+                           ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
+                  '"data":{"product_id":"ASO01043","price":49.95}}}'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks an unstructured event (base64)' do
     t.track_unstruct_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ))
+                             'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                             'product_id' => 'ASO01043',
+                             'price' => 49.95
+                           ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21lL3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOiJBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ==',
+      'ue_px' =>  'eyJzY2hlbWEiOiJpZ2x1OmNvbS5zbm93cGxvd2FuYWx5dGljcy5zbm93cGxvdy91bnN0cnVjdF'\
+                  '9ldmVudC9qc29uc2NoZW1hLzEtMC0wIiwiZGF0YSI6eyJzY2hlbWEiOiJpZ2x1OmNvbS5hY21l'\
+                  'L3ZpZXdlZF9wcm9kdWN0L2pzb25zY2hlbWEvMS0wLTAiLCJkYXRhIjp7InByb2R1Y3RfaWQiOi'\
+                  'JBU08wMTA0MyIsInByaWNlIjo0OS45NX19fQ=='
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a screen view unstructured event' do
@@ -219,12 +200,11 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0",'\
+                  '"data":{"name":"Game HUD 2","id":"e89a34b2f"}}}'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'adds standard name-value pairs to the payload' do
@@ -252,10 +232,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'can have more than one Subject' do
@@ -274,7 +251,6 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_fingerprint(987654321)
     t.track_page_view('http://www.example.com', 'title page')
 
-
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'tna' => 'cf',
@@ -292,17 +268,15 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
-    s = SnowplowTracker::Subject.new.set_viewport(100,100).set_lang('fr')
+    s = SnowplowTracker::Subject.new.set_viewport(100, 100).set_lang('fr')
     t.set_subject(s)
     t.set_user_id('another_user')
     t.track_page_view('http://www.example.com', 'title page')
 
-    param_hash_2 = CGI.parse(e.get_last_querystring(1))
-    expected_fields_2 = {
+    param_hash2 = CGI.parse(e.get_last_querystring(1))
+    expected_fields2 = {
       'tna' => 'cf',
       'res' => nil,
       'vp' => '100x100',
@@ -313,58 +287,50 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'p' => 'srv',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
-    for pair in expected_fields_2
-      expect(param_hash_2[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields2.each { |pair| expect(param_hash2[pair[0]][0]).to eq(pair[1]) }
   end
-
 
   it 'adds a custom context to the payload' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_page_view('http://www.example.com', nil, nil, [
-      SelfDescribingJson.new(
-        'iglu:com.acme/page/jsonschema/1-0-0',
-        {
-          'page_type' => 'test'
-        }
-      ),
-      SelfDescribingJson.new(
-        'iglu:com.acme/user/jsonschema/1-0-0',
-        {
-          'user_type' => 'tester'
-        }
-      )])
+                        SelfDescribingJson.new(
+                          'iglu:com.acme/page/jsonschema/1-0-0',
+                          'page_type' => 'test'
+                        ),
+                        SelfDescribingJson.new(
+                          'iglu:com.acme/user/jsonschema/1-0-0',
+                          'user_type' => 'tester'
+                        )
+                      ])
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
-      'co' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1\",\"data\":[{\"schema\":\"iglu:com.acme/page/jsonschema/1-0-0\",\"data\":{\"page_type\":\"test\"}},{\"schema\":\"iglu:com.acme/user/jsonschema/1-0-0\",\"data\":{\"user_type\":\"tester\"}}]}"
+      'co' => '{"schema":"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1",'\
+              '"data":[{"schema":"iglu:com.acme/page/jsonschema/1-0-0","data":{"page_type":"test"}},'\
+              '{"schema":"iglu:com.acme/user/jsonschema/1-0-0","data":{"user_type":"tester"}}]}'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'batches and sends multiple events using GET' do
-    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(:buffer_size => 3))
+    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(buffer_size: 3))
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'first')
     t.track_page_view('http://www.example.com', 'second')
     t.track_page_view('http://www.example.com', 'third')
 
-    param_hash_1 = CGI.parse(e.get_last_querystring(1))
-    expect(param_hash_1['page'][0]).to eq('third')
+    param_hash1 = CGI.parse(e.get_last_querystring(1))
+    expect(param_hash1['page'][0]).to eq('third')
 
-    param_hash_2 = CGI.parse(e.get_last_querystring(2))
-    expect(param_hash_2['page'][0]).to eq('second')
+    param_hash2 = CGI.parse(e.get_last_querystring(2))
+    expect(param_hash2['page'][0]).to eq('second')
 
-    param_hash_3 = CGI.parse(e.get_last_querystring(3))
-    expect(param_hash_3['page'][0]).to eq('first')
+    param_hash3 = CGI.parse(e.get_last_querystring(3))
+    expect(param_hash3['page'][0]).to eq('first')
   end
 
   it 'batches and sends multiple events using POST' do
-    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(:method => 'post', :buffer_size => 3))
+    e = SnowplowTracker::Emitter.new('localhost', emitter_opts.merge(method: 'post', buffer_size: 3))
     t = SnowplowTracker::Tracker.new(e)
     t.track_page_view('http://www.example.com', 'fourth')
     t.track_page_view('http://www.example.com', 'fifth')
@@ -374,21 +340,25 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expect(payload_data[0]['page']).to eq('fourth')
     expect(payload_data[1]['page']).to eq('fifth')
     expect(payload_data[2]['page']).to eq('sixth')
-
   end
 
-   it 'supports true timestamps on page view tracking' do
-    t.track_page_view('http://example.com', 'Two words', 'http://www.referrer.com', nil, SnowplowTracker::TrueTimestamp.new(123))
+  it 'supports true timestamps on page view tracking' do
+    t.track_page_view(
+      'http://example.com',
+      'Two words',
+      'http://www.referrer.com',
+      nil,
+      SnowplowTracker::TrueTimestamp.new(123)
+    )
 
     param_hash = CGI.parse(e.get_last_querystring)
     expected_fields = {
       'e' => 'pv',
       'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
-      'ttm' => '123'}
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
+      'ttm' => '123'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'supports true timestamps on ecommerce transactions' do
@@ -419,16 +389,24 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
         }
       ],
       nil,
-      SnowplowTracker::TrueTimestamp.new(123456))
+      SnowplowTracker::TrueTimestamp.new(123456)
+    )
 
-   ['ttm', 'tid'].each do |field|
+    %w[ttm tid].each do |field|
       expect(CGI.parse(e.get_last_querystring(1))[field]).to eq(CGI.parse(e.get_last_querystring(3))[field])
     end
-
   end
 
   it 'tracks a structured event with a true timestamp' do
-    t.track_struct_event('Ecomm', 'add-to-basket', 'dog-skateboarding-video', 'hd', 13.99, nil, SnowplowTracker::TrueTimestamp.new(123))
+    t.track_struct_event(
+      'Ecomm',
+      'add-to-basket',
+      'dog-skateboarding-video',
+      'hd',
+      13.99,
+      nil,
+      SnowplowTracker::TrueTimestamp.new(123)
+    )
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -439,10 +417,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'se_va' => '13.99',
       'ttm' => '123'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a screen view unstructured event with a true timestamp' do
@@ -452,59 +427,51 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0\",\"data\":{\"name\":\"Game HUD 2\",\"id\":\"e89a34b2f\"}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0",'\
+                  '"data":{"name":"Game HUD 2","id":"e89a34b2f"}}}',
       'ttm' => '123'
     }
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a self describing event with a true timestamp' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ), nil, SnowplowTracker::TrueTimestamp.new(1234))
+                                    'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                                    'product_id' => 'ASO01043',
+                                    'price' => 49.95
+                                  ), nil, SnowplowTracker::TrueTimestamp.new(1234))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
+                  '"data":{"product_id":"ASO01043","price":49.95}}}',
       'ttm' => '1234'
     }
 
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a self describing event with a device timestamp' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
-      'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-      {
-        'product_id' => 'ASO01043',
-        'price' => 49.95
-      }
-    ), nil, 555)
+                                    'iglu:com.acme/viewed_product/jsonschema/1-0-0',
+                                    'product_id' => 'ASO01043',
+                                    'price' => 49.95
+                                  ), nil, 555)
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
       'e' => 'ue',
-      'ue_pr' => "{\"schema\":\"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0\",\"data\":{\"schema\":\"iglu:com.acme/viewed_product/jsonschema/1-0-0\",\"data\":{\"product_id\":\"ASO01043\",\"price\":49.95}}}",
+      'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
+                  '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
+                  '"data":{"product_id":"ASO01043","price":49.95}}}',
       'dtm' => '555'
     }
 
-    for pair in expected_fields
-      expect(param_hash[pair[0]][0]).to eq(pair[1])
-    end
-
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
-
 end
