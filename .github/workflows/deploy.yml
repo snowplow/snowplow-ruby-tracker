@@ -50,4 +50,5 @@ jobs:
         with:
           name: Version ${{ needs.prepare-to-publish.outputs.gem-version }}
           prerelease: ${{ contains(needs.prepare-to-publish.outputs.gem-version, '-') }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
