@@ -47,7 +47,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
         'city' => 'Phoenix',
         'state' => 'Arizona',
         'country' => 'USA',
-        'currency' => 'GBP'
+        'currency' => 'USD'
       },
       [
         {
@@ -76,7 +76,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'tr_ci' => 'Phoenix',
       'tr_st' => 'Arizona',
       'tr_co' => 'USA',
-      'tr_cu' => 'GBP'
+      'tr_cu' => 'USD'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
@@ -85,7 +85,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'e' => 'ti',
       'ti_id' => '12345',
       'ti_sk' => 'pbz0026',
-      'ti_cu' => 'GBP',
+      'ti_cu' => 'USD',
       'ti_pr' => '20'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
@@ -97,13 +97,59 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ti_sk' => 'pbz0038',
       'ti_nm' => 'crystals',
       'ti_ca' => 'magic',
-      'ti_cu' => 'GBP',
+      'ti_cu' => 'USD',
       'ti_pr' => '15'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
 
     %w[dtm tid].each do |field|
       expect(CGI.parse(e.get_last_querystring(1))[field]).to eq(CGI.parse(e.get_last_querystring(3))[field])
+    end
+  end
+
+  it 'tracks an ecommerce transaction where the input has symbol keys' do
+    t.track_ecommerce_transaction(
+      {
+        order_id: 'abc567',
+        total_value: 59.99,
+        affiliation: 'my_company',
+        city: 'Oxford',
+        country: 'UK',
+        currency: 'GBP'
+      },
+      [
+        {
+          sku: 'jan21abc',
+          price: 59.99,
+          quantity: 1
+        }
+
+      ]
+    )
+    param_hash = CGI.parse(e.get_last_querystring(2))
+    expected_fields = {
+      'e' => 'tr',
+      'tr_id' => 'abc567',
+      'tr_tt' => '59.99',
+      'tr_af' => 'my_company',
+      'tr_ci' => 'Oxford',
+      'tr_co' => 'UK',
+      'tr_cu' => 'GBP'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ti',
+      'ti_id' => 'abc567',
+      'ti_sk' => 'jan21abc',
+      'ti_cu' => 'GBP',
+      'ti_pr' => '59.99'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+
+    %w[dtm tid].each do |field|
+      expect(CGI.parse(e.get_last_querystring(1))[field]).to eq(CGI.parse(e.get_last_querystring(2))[field])
     end
   end
 
@@ -125,8 +171,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t = SnowplowTracker::Tracker.new(e, nil, nil, nil, false)
     t.track_self_describing_event(SelfDescribingJson.new(
                                     'iglu:com.acme/viewed_product/jsonschema/1-0-0',
-                                    'product_id' => 'ASO01043',
-                                    'price' => 49.95
+                                    product_id: 'ASO01043',
+                                    price: 49.95
                                   ))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -295,7 +341,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.track_page_view('http://www.example.com', nil, nil, [
                         SelfDescribingJson.new(
                           'iglu:com.acme/page/jsonschema/1-0-0',
-                          'page_type' => 'test'
+                          page_type: 'test'
                         ),
                         SelfDescribingJson.new(
                           'iglu:com.acme/user/jsonschema/1-0-0',
