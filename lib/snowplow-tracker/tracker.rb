@@ -31,7 +31,7 @@ module SnowplowTracker
 
     TRANSACTION = ->(x) {
       return false unless x.class == Hash
-      transaction_keys = Set.new(x.keys)
+      transaction_keys = Set.new(x.keys.map(&:to_s))
       REQUIRED_TRANSACTION_KEYS.subset?(transaction_keys) &&
         transaction_keys.subset?(RECOGNISED_TRANSACTION_KEYS)
     }
@@ -41,7 +41,7 @@ module SnowplowTracker
 
     ITEM = ->(x) {
       return false unless x.class == Hash
-      item_keys = Set.new(x.keys)
+      item_keys = Set.new(x.keys.map(&:to_s))
       REQUIRED_ITEM_KEYS.subset?(item_keys) &&
         item_keys.subset?(RECOGNISED_ITEM_KEYS)
     }
@@ -167,6 +167,8 @@ module SnowplowTracker
       tstamp = Timestamp.create if tstamp.nil?
       tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
+      transform_keys(transaction)
+
       payload = Payload.new
       payload.add('e', 'tr')
       payload.add('tr_id', transaction['order_id'])
@@ -185,6 +187,7 @@ module SnowplowTracker
       track(payload)
 
       items.each do |item|
+        transform_keys(item)
         item['tstamp'] = tstamp
         item['order_id'] = transaction['order_id']
         item['currency'] = transaction['currency']
@@ -192,6 +195,12 @@ module SnowplowTracker
       end
 
       self
+    end
+
+    # The Ruby core language added a method for this in Ruby 2.5
+    #
+    def transform_keys(hash)
+      hash.keys.each { |key| hash[key.to_s] = hash.delete key }
     end
 
     # Track a single item within an ecommerce transaction
