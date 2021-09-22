@@ -13,7 +13,6 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License::   Apache License Version 2.0
 
-require 'snowplow-tracker/contracts.rb'
 require 'snowplow-tracker/version.rb'
 require 'snowplow-tracker/self_describing_json.rb'
 require 'snowplow-tracker/payload.rb'
