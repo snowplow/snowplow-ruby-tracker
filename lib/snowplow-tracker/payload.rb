@@ -36,25 +36,25 @@ module SnowplowTracker
       @context[name] = value if (value != '') && !value.nil?
     end
 
-    # Add each name-value pair in dict to @context
+    # Add each name-value pair in hash to @context
     #
     Contract Hash => Hash
-    def add_dict(dict)
-      dict.each { |key, value| add(key, value) }
+    def add_hash(hash)
+      hash.each { |key, value| add(key, value) }
     end
 
     # Stringify a JSON and add it to @context
     #
     Contract Maybe[Hash], Bool, String, String => Maybe[String]
-    def add_json(dict, encode_base64, type_when_encoded, type_when_not_encoded)
-      return if dict.nil?
+    def add_json(hash, encode_base64, type_when_encoded, type_when_not_encoded)
+      return if hash.nil?
 
-      dict_string = JSON.generate(dict)
+      hash_string = JSON.generate(hash)
 
       if encode_base64
-        add(type_when_encoded, Base64.strict_encode64(dict_string))
+        add(type_when_encoded, Base64.strict_encode64(hash_string))
       else
-        add(type_when_not_encoded, dict_string)
+        add(type_when_not_encoded, hash_string)
       end
     end
   end

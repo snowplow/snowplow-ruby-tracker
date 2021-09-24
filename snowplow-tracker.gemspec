@@ -32,7 +32,11 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.required_ruby_version = '>= 2.1'
 
-  s.add_runtime_dependency "contracts", "~> 0.7", "< 0.17"
-  s.add_development_dependency "rspec", "~> 3.10"
-  s.add_development_dependency "webmock", "~> 3.14"
+  if RUBY_VERSION >= '3.0.0'
+    s.add_runtime_dependency 'contracts', '~> 0.17'
+  else
+    s.add_runtime_dependency 'contracts', '~> 0.7', '< 0.17'
+  end
+  s.add_development_dependency 'rspec', '~> 3.10'
+  s.add_development_dependency 'webmock', '~> 3.14'
 end

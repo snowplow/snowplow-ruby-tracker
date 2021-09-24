@@ -61,8 +61,8 @@ module SnowplowTracker
     # Set the screen resolution for a device
     # Part of the public API
     #
-    Contract Num, Num => Subject
-    def set_screen_resolution(width, height)
+    Contract KeywordArgs[width: Num, height: Num] => Subject
+    def set_screen_resolution(width:, height:)
       @standard_nv_pairs['res'] = "#{width}x#{height}"
       self
     end
@@ -70,8 +70,8 @@ module SnowplowTracker
     # Set the dimensions of the current viewport
     # Part of the public API
     #
-    Contract Num, Num => Subject
-    def set_viewport(width, height)
+    Contract KeywordArgs[width: Num, height: Num] => Subject
+    def set_viewport(width:, height:)
       @standard_nv_pairs['vp'] = "#{width}x#{height}"
       self
     end

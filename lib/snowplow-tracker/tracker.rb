@@ -21,6 +21,7 @@ module SnowplowTracker
   class Tracker
     include Contracts
 
+    # Contract types
     EMITTER_INPUT = Or[->(x) { x.is_a? Emitter }, ArrayOf[->(x) { x.is_a? Emitter }]]
 
     REQUIRED_TRANSACTION_KEYS =   Set.new(%w[order_id total_value])
@@ -58,15 +59,16 @@ module SnowplowTracker
 
     CONTEXTS_INPUT = ArrayOf[SelfDescribingJson]
 
+    # Other constants
     DEFAULT_ENCODE_BASE64 = true
-
     BASE_SCHEMA_PATH = 'iglu:com.snowplowanalytics.snowplow'
     SCHEMA_TAG = 'jsonschema'
     CONTEXT_SCHEMA = "#{BASE_SCHEMA_PATH}/contexts/#{SCHEMA_TAG}/1-0-1"
     UNSTRUCT_EVENT_SCHEMA = "#{BASE_SCHEMA_PATH}/unstruct_event/#{SCHEMA_TAG}/1-0-0"
 
-    Contract EMITTER_INPUT, Maybe[Subject], Maybe[String], Maybe[String], Bool => Any
-    def initialize(emitters, subject = nil, namespace = nil, app_id = nil, encode_base64 = DEFAULT_ENCODE_BASE64)
+    Contract KeywordArgs[emitters: EMITTER_INPUT, subject: Maybe[Subject], namespace: Maybe[String],
+                         app_id: Maybe[String], encode_base64: Optional[Bool]] => Any
+    def initialize(emitters:, subject: nil, namespace: nil, app_id: nil, encode_base64: DEFAULT_ENCODE_BASE64)
       @emitters = Array(emitters)
       @subject = if subject.nil?
                    Subject.new
@@ -86,10 +88,18 @@ module SnowplowTracker
     # Call subject methods from tracker instance
     #
     Subject.instance_methods(false).each do |name|
-      define_method name, ->(*splat) do
-        @subject.method(name.to_sym).call(*splat)
+      if RUBY_VERSION >= '3.0.0'
+        define_method name, ->(*args, **kwargs) do
+          @subject.method(name.to_sym).call(*args, **kwargs)
 
-        self
+          self
+        end
+      else
+        define_method name, ->(*args) do
+          @subject.method(name.to_sym).call(*args)
+
+          self
+        end
       end
     end
 
@@ -99,13 +109,6 @@ module SnowplowTracker
     def event_id
       SecureRandom.uuid
     end
-
-    # # Generates the timestamp (in milliseconds) to be attached to each event
-    # #
-    # Contract nil => Num
-    # def timestamp
-    #   (Time.now.to_f * 1000).to_i
-    # end
 
     # Builds a self-describing JSON from an array of custom contexts
     #
@@ -124,8 +127,8 @@ module SnowplowTracker
     #
     Contract Payload => nil
     def track(payload)
-      payload.add_dict(@subject.standard_nv_pairs)
-      payload.add_dict(@standard_nv_pairs)
+      payload.add_hash(@subject.standard_nv_pairs)
+      payload.add_hash(@standard_nv_pairs)
       payload.add('eid', event_id)
       @emitters.each { |emitter| emitter.input(payload.context) }
 
@@ -135,9 +138,9 @@ module SnowplowTracker
     # Log a visit to this page. Default is to insert a device timestamp
     # Part of the public API
     #
-    Contract String, Maybe[String], Maybe[String], Maybe[CONTEXTS_INPUT],
-             Or[Timestamp, Num, nil] => Tracker
-    def track_page_view(page_url, page_title = nil, referrer = nil, context = nil, tstamp = nil)
+    Contract KeywordArgs[page_url: String, page_title: Maybe[String], referrer: Maybe[String],
+                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_page_view(page_url:, page_title: nil, referrer: nil, context: nil, tstamp: nil)
       tstamp = Timestamp.create if tstamp.nil?
       tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
@@ -160,10 +163,10 @@ module SnowplowTracker
     # By default, set the timestamp as the device timestamp
     # Part of the public API
     #
-    Contract TRANSACTION, ArrayOf[ITEM], Maybe[CONTEXTS_INPUT],
-             Or[Timestamp, Num, nil] => Tracker
-    def track_ecommerce_transaction(transaction, items,
-                                    context = nil, tstamp = nil)
+    Contract KeywordArgs[transaction: TRANSACTION, items: ArrayOf[ITEM],
+                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_ecommerce_transaction(transaction:, items:,
+                                    context: nil, tstamp: nil)
       tstamp = Timestamp.create if tstamp.nil?
       tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
@@ -198,6 +201,7 @@ module SnowplowTracker
     end
 
     # The Ruby core language added a method for this in Ruby 2.5
+    # Makes sure all hash keys are strings rather than symbols
     #
     def transform_keys(hash)
       hash.keys.each { |key| hash[key.to_s] = hash.delete key }
@@ -235,9 +239,10 @@ module SnowplowTracker
     # By default, set the timestamp as the device timestamp
     # Part of the public API
     #
-    Contract String, String, Maybe[String], Maybe[String], Maybe[Num], Maybe[CONTEXTS_INPUT],
-             Or[Timestamp, Num, nil] => Tracker
-    def track_struct_event(category, action, label = nil, property = nil, value = nil, context = nil, tstamp = nil)
+    Contract KeywordArgs[category: String, action: String, label: Maybe[String], property: Maybe[String],
+                         value: Maybe[Num], context: Maybe[CONTEXTS_INPUT],
+                         tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_struct_event(category:, action:, label: nil, property: nil, value: nil, context: nil, tstamp: nil)
       tstamp = Timestamp.create if tstamp.nil?
       tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
@@ -259,8 +264,9 @@ module SnowplowTracker
     # Track a screen view event
     # Part of the public API
     #
-    Contract Maybe[String], Maybe[String], Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
-    def track_screen_view(name = nil, id = nil, context = nil, tstamp = nil)
+    Contract KeywordArgs[name: Maybe[String], id: Maybe[String], context: Maybe[CONTEXTS_INPUT],
+                         tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_screen_view(name: nil, id: nil, context: nil, tstamp: nil)
       screen_view_properties = {}
       screen_view_properties['name'] = name unless name.nil?
       screen_view_properties['id'] = id unless id.nil?
@@ -268,7 +274,7 @@ module SnowplowTracker
 
       event_json = SelfDescribingJson.new(screen_view_schema, screen_view_properties)
 
-      track_unstruct_event(event_json, context, tstamp)
+      track_unstruct_event(event_json: event_json, context: context, tstamp: tstamp)
 
       self
     end
@@ -277,16 +283,18 @@ module SnowplowTracker
     # By default, sets the timestamp to the device timestamp
     # Part of the public API
     #
-    Contract SelfDescribingJson, Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
-    def track_self_describing_event(event_json, context = nil, tstamp = nil)
-      track_unstruct_event(event_json, context, tstamp)
+    Contract KeywordArgs[event_json: SelfDescribingJson, context: Maybe[CONTEXTS_INPUT],
+                         tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_self_describing_event(event_json:, context: nil, tstamp: nil)
+      track_unstruct_event(event_json: event_json, context: context, tstamp: tstamp)
     end
 
     # Track an unstructured event
     # By default, sets the timestamp to the device timestamp
     #
-    Contract SelfDescribingJson, Maybe[CONTEXTS_INPUT], Or[Timestamp, Num, nil] => Tracker
-    def track_unstruct_event(event_json, context = nil, tstamp = nil)
+    Contract KeywordArgs[event_json: SelfDescribingJson, context: Maybe[CONTEXTS_INPUT],
+                         tstamp: Or[Timestamp, Num, nil]] => Tracker
+    def track_unstruct_event(event_json:, context: nil, tstamp: nil)
       tstamp = Timestamp.create if tstamp.nil?
       tstamp = DeviceTimestamp.new(tstamp) if tstamp.is_a? Numeric
 
@@ -309,8 +317,8 @@ module SnowplowTracker
     # Flush all events stored in all emitters
     # Part of the public API
     #
-    Contract Bool => Tracker
-    def flush(async = false)
+    Contract KeywordArgs[async: Optional[Bool]] => Tracker
+    def flush(async: false)
       @emitters.each do |emitter|
         emitter.flush(async)
       end

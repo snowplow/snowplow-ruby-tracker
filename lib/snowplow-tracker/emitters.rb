@@ -25,6 +25,7 @@ module SnowplowTracker
   class Emitter
     include Contracts
 
+    # Contract types
     CONFIG_HASH = {
       protocol: Maybe[Or['http', 'https']],
       port: Maybe[Num],
@@ -47,11 +48,11 @@ module SnowplowTracker
 
     attr_reader :logger
 
-    Contract String, STRICT_CONFIG_HASH => Any
-    def initialize(endpoint, start_config = {})
-      config = DEFAULT_CONFIG.merge(start_config)
+    Contract KeywordArgs[endpoint: String, options: Optional[STRICT_CONFIG_HASH]] => Any
+    def initialize(endpoint:, options: {})
+      config = DEFAULT_CONFIG.merge(options)
       @lock = Monitor.new
-      @collector_uri = as_collector_uri(endpoint, config[:protocol], config[:port], config[:method])
+      @collector_uri = create_collector_uri(endpoint, config[:protocol], config[:port], config[:method])
       @buffer = []
       @buffer_size = confirm_buffer_size(config)
       @method = config[:method]
@@ -71,7 +72,7 @@ module SnowplowTracker
     # Build the collector URI from the configuration hash
     #
     Contract String, String, Maybe[Num], String => String
-    def as_collector_uri(endpoint, protocol, port, method)
+    def create_collector_uri(endpoint, protocol, port, method)
       port_string = port.nil? ? '' : ":#{port}"
       path = method == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2'
 
@@ -227,21 +228,21 @@ module SnowplowTracker
       status_code.to_i >= 200 && status_code.to_i < 400
     end
 
-    private :as_collector_uri,
+    private :create_collector_uri,
             :http_get,
             :http_post
   end
 
   class AsyncEmitter < Emitter
-    Contract String, STRICT_CONFIG_HASH => Any
-    def initialize(endpoint, config = {})
+    Contract KeywordArgs[endpoint: String, options: Optional[STRICT_CONFIG_HASH]] => Any
+    def initialize(endpoint:, options: {})
       @queue = Queue.new
       # @all_processed_condition and @results_unprocessed are used to emulate Python's Queue.task_done()
       @queue.extend(MonitorMixin)
       @all_processed_condition = @queue.new_cond
       @results_unprocessed = 0
-      (config[:thread_count] || 1).times { Thread.new { consume } }
-      super(endpoint, config)
+      (options[:thread_count] || 1).times { Thread.new { consume } }
+      super(endpoint: endpoint, options: options)
     end
 
     def consume
