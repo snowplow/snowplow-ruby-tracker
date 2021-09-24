@@ -31,7 +31,7 @@ describe SnowplowTracker::Payload, 'context' do
   end
 
   it 'adds a dictionary of key-value pairs to the context' do
-    @payload.add_dict(
+    @payload.add_hash(
       'p' => 'mob',
       'tna' => 'cf',
       'aid' => 'cd767ae'
