@@ -37,6 +37,38 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
+  it 'tracks a page view with a single context entity' do
+    t = SnowplowTracker::Tracker.new(emitters: e, encode_base64: false)
+    t.track_page_view(page_url: 'http://example.com', context: [SelfDescribingJson.new(
+      'iglu:com.acme/page/jsonschema/1-0-0',
+      page_type: 'test'
+    )])
+    param_hash = CGI.parse(e.get_last_querystring)
+    expected_fields = {
+      'e' => 'pv',
+      'co' => '{"schema":"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1",'\
+              '"data":[{"schema":"iglu:com.acme/page/jsonschema/1-0-0","data":{"page_type":"test"}}]}'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it 'tracks a page view with custom subject' do
+    event_subject = SnowplowTracker::Subject.new
+    event_subject.set_screen_resolution(width: 100, height: 400)
+    event_subject.set_timezone('Europe%2FLondon')
+
+    t.track_page_view(page_url: 'http://example.com', subject: event_subject)
+    param_hash = CGI.parse(e.get_last_querystring)
+
+    expected_fields = {
+      'e' => 'pv',
+      'url' => 'http://example.com',
+      'res' => '100x400',
+      'tz' => 'Europe%2FLondon'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
   it 'tracks an ecommerce transaction' do
     t.track_ecommerce_transaction(
       transaction: {
@@ -154,6 +186,59 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     end
   end
 
+  it 'tracks an ecommerce transaction where the order and items have context' do
+    t = SnowplowTracker::Tracker.new(emitters: e, encode_base64: false)
+    page = SnowplowTracker::Page.new(page_url: 'http://www.hello.there')
+    order_entity = SelfDescribingJson.new(
+      'iglu:com.example/campaign/jsonschema/1-0-3',
+      banner: '2021-march12345'
+    )
+    item_entity = SelfDescribingJson.new(
+      'iglu:com.example/product_view/jsonschema/1-0-0',
+      main_image: 'a1b2c3-img5.jpg'
+    )
+
+    t.track_ecommerce_transaction(
+      transaction: {
+        'order_id' => 'abcde',
+        'total_value' => 999
+      },
+      items: [
+        {
+          'sku' => 'a1b2c3',
+          'price' => 4.99,
+          'quantity' => 2,
+          'context' => [item_entity]
+        }
+      ], context: [order_entity], page: page
+    )
+
+    param_hash = CGI.parse(e.get_last_querystring(2))
+    expected_fields = {
+      'e' => 'tr',
+      'tr_id' => 'abcde',
+      'tr_tt' => '999',
+      'co' => '{"schema":"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1",'\
+              '"data":[{"schema":"iglu:com.example/campaign/jsonschema/1-0-3",'\
+                  '"data":{"banner":"2021-march12345"}}]}',
+      'url' => 'http://www.hello.there'
+    }
+
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'ti',
+      'ti_id' => 'abcde',
+      'ti_sk' => 'a1b2c3',
+      'co' => '{"schema":"iglu:com.snowplowanalytics.snowplow/contexts/jsonschema/1-0-1",'\
+              '"data":[{"schema":"iglu:com.example/product_view/jsonschema/1-0-0",'\
+                  '"data":{"main_image":"a1b2c3-img5.jpg"}}]}',
+      'url' => 'http://www.hello.there'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
   it 'tracks a structured event' do
     t.track_struct_event(category: 'Ecomm', action: 'add-to-basket', label: 'dog-skateboarding-video',
                          property: 'hd', value: 13.99)
@@ -165,6 +250,50 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'se_ac' => 'add-to-basket',
       'se_pr' => 'hd',
       'se_va' => '13.99'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it 'tracks a structured event with custom page object' do
+    event_page = SnowplowTracker::Page.new(page_url: 'http://www.example.com', page_title: 'A lovely page',
+                                           referrer: 'http://www.referrer.com')
+
+    t.track_struct_event(category: 'Ecomm', action: 'add-to-basket', label: 'dog-skateboarding-video',
+                         property: 'hd', value: 13.99, page: event_page)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'se',
+      'se_ca' => 'Ecomm',
+      'se_ac' => 'add-to-basket',
+      'se_pr' => 'hd',
+      'se_va' => '13.99',
+      'url' => 'http://www.example.com',
+      'page' => 'A lovely page',
+      'refr' => 'http://www.referrer.com'
+    }
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it 'tracks a structured event with custom page and subject' do
+    event_page = SnowplowTracker::Page.new(page_url: 'http://www.example.com', page_title: 'A lovely page',
+                                           referrer: 'http://www.referrer.com')
+    event_subject = SnowplowTracker::Subject.new.set_lang('en-US')
+
+    t.track_struct_event(category: 'Ecomm', action: 'add-to-basket', label: 'dog-skateboarding-video',
+                         property: 'hd', value: 13.99, page: event_page, subject: event_subject)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'se',
+      'se_ca' => 'Ecomm',
+      'se_ac' => 'add-to-basket',
+      'se_pr' => 'hd',
+      'se_va' => '13.99',
+      'url' => 'http://www.example.com',
+      'page' => 'A lovely page',
+      'refr' => 'http://www.referrer.com',
+      'lang' => 'en-US'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
@@ -522,5 +651,50 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     }
 
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it 'gets settings from tracker Subject and event Subject' do
+    subject1 = SnowplowTracker::Subject.new.set_platform('pc').set_user_id('12345').set_lang('fr')
+    subject2 = SnowplowTracker::Subject.new.set_lang('es').set_useragent('Mozilla/5.0')
+
+    t = SnowplowTracker::Tracker.new(emitters: e, subject: subject1)
+    t.track_struct_event(category: 'a category', action: 'an action', subject: subject2)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'se',
+      'se_ca' => 'a category',
+      'se_ac' => 'an action',
+      'p' => 'srv',
+      'uid' => '12345',
+      'lang' => 'es',
+      'ua' => 'Mozilla/5.0'
+    }
+
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it "overwrites page view's page_url with Page data" do
+    event_page = SnowplowTracker::Page.new(page_url: 'www.override.url')
+    t.track_page_view(page_url: 'www.replaced.url', page: event_page)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'pv',
+      'url' => 'www.override.url'
+    }
+
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it 'allows multiple emitters' do
+    e1 = SnowplowTracker::Emitter.new(endpoint: 'localhost', options: emitter_opts)
+    e2 = SnowplowTracker::Emitter.new(endpoint: 'localhost', options: emitter_opts)
+
+    t = SnowplowTracker::Tracker.new(emitters: [e1, e2])
+    t.track_page_view(page_url: 'http://www.example.com')
+
+    expect(CGI.parse(e1.get_last_querystring)['url'].first).to eq 'http://www.example.com'
+    expect(CGI.parse(e2.get_last_querystring)['url'].first).to eq 'http://www.example.com'
   end
 end
