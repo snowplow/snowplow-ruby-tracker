@@ -15,44 +15,44 @@
 
 require 'spec_helper'
 
-describe SnowplowTracker::Payload, 'context' do
+describe SnowplowTracker::Payload, 'data' do
   before(:each) do
     @payload = SnowplowTracker::Payload.new
   end
 
-  it 'initializes with an empty context hash' do
-    expect(@payload.context).to eq({})
+  it 'initializes with an empty data hash' do
+    expect(@payload.data).to eq({})
   end
 
-  it 'adds single key-value pairs to the context' do
+  it 'adds single key-value pairs to the data' do
     @payload.add('key1', 'value1')
     @payload.add('key2', 'value2')
-    expect(@payload.context).to eq('key1' => 'value1', 'key2' => 'value2')
+    expect(@payload.data).to eq('key1' => 'value1', 'key2' => 'value2')
   end
 
-  it 'adds a dictionary of key-value pairs to the context' do
+  it 'adds a dictionary of key-value pairs to the data' do
     @payload.add_hash(
       'p' => 'mob',
       'tna' => 'cf',
       'aid' => 'cd767ae'
     )
-    expect(@payload.context).to eq(
+    expect(@payload.data).to eq(
       'p' => 'mob',
       'tna' => 'cf',
       'aid' => 'cd767ae'
     )
   end
 
-  it 'turns a JSON into a string and adds it to the context' do
+  it 'turns a JSON into a string and adds it to the data' do
     @payload.add_json({ 'a' => { 'b' => [23, 54] } }, false, 'cx', 'co')
-    expect(@payload.context).to eq(
+    expect(@payload.data).to eq(
       'co' => '{"a":{"b":[23,54]}}'
     )
   end
 
   it 'base64-encodes a JSON string' do
     @payload.add_json({ 'a' => { 'b' => [23, 54] } }, true, 'cx', 'co')
-    expect(@payload.context).to eq(
+    expect(@payload.data).to eq(
       'cx' => 'eyJhIjp7ImIiOlsyMyw1NF19fQ=='
     )
   end

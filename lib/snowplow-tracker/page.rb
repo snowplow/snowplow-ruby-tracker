@@ -13,35 +13,19 @@
 # Copyright:: Copyright (c) 2013-2014 Snowplow Analytics Ltd
 # License:: Apache License Version 2.0
 
-require 'spec_helper'
+require 'contracts'
 
 module SnowplowTracker
-  class Tracker
-    attr_reader :collector_uri,
-                :settings,
-                :encode_base64
-  end
-end
+  class Page
+    include Contracts
 
-describe SnowplowTracker::Tracker, 'configuration' do
-  let(:emitter) do
-    SnowplowTracker::Emitter.new(endpoint: 'd3rkrsqld9gmqf.cloudfront.net',
-                                 options: { logger: NULL_LOGGER })
-  end
+    attr_reader :details
 
-  before(:each) do
-    @t = SnowplowTracker::Tracker.new(emitters: emitter, namespace: 'cloudfront', app_id: 'AF003', encode_base64: false)
-  end
-
-  it 'should initialise standard name-value pairs' do
-    expect(@t.settings).to eq(
-      'tna' => 'cloudfront',
-      'tv' => SnowplowTracker::TRACKER_VERSION,
-      'aid' => 'AF003'
-    )
-  end
-
-  it 'should initialise with the right configuration' do
-    expect(@t.encode_base64).to eq false
+    Contract KeywordArgs[page_url: Maybe[String], page_title: Maybe[String], referrer: Maybe[String]] => Any
+    def initialize(page_url: nil, page_title: nil, referrer: nil)
+      @details = { 'url' => page_url,
+                   'page' => page_title,
+                   'refr' => referrer }
+    end
   end
 end

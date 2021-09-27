@@ -22,11 +22,11 @@ module SnowplowTracker
     DEFAULT_PLATFORM = 'srv'
     SUPPORTED_PLATFORMS = %w[web app pc tv mob cnsl iot srv]
 
-    attr_reader :standard_nv_pairs
+    attr_reader :details
 
     Contract None => Any
     def initialize
-      @standard_nv_pairs = { 'p' => DEFAULT_PLATFORM }
+      @details = { 'p' => DEFAULT_PLATFORM }
     end
 
     # Specify the platform
@@ -36,7 +36,7 @@ module SnowplowTracker
     def set_platform(platform)
       raise "#{platform} is not a supported platform" unless SUPPORTED_PLATFORMS.include?(platform)
 
-      @standard_nv_pairs['p'] = platform
+      @details['p'] = platform
       self
     end
 
@@ -45,7 +45,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_user_id(user_id)
-      @standard_nv_pairs['uid'] = user_id
+      @details['uid'] = user_id
       self
     end
 
@@ -54,7 +54,7 @@ module SnowplowTracker
     #
     Contract Num => Subject
     def set_fingerprint(fingerprint)
-      @standard_nv_pairs['fp'] = fingerprint
+      @details['fp'] = fingerprint
       self
     end
 
@@ -63,7 +63,7 @@ module SnowplowTracker
     #
     Contract KeywordArgs[width: Num, height: Num] => Subject
     def set_screen_resolution(width:, height:)
-      @standard_nv_pairs['res'] = "#{width}x#{height}"
+      @details['res'] = "#{width}x#{height}"
       self
     end
 
@@ -72,7 +72,7 @@ module SnowplowTracker
     #
     Contract KeywordArgs[width: Num, height: Num] => Subject
     def set_viewport(width:, height:)
-      @standard_nv_pairs['vp'] = "#{width}x#{height}"
+      @details['vp'] = "#{width}x#{height}"
       self
     end
 
@@ -81,7 +81,7 @@ module SnowplowTracker
     #
     Contract Num => Subject
     def set_color_depth(depth)
-      @standard_nv_pairs['cd'] = depth
+      @details['cd'] = depth
       self
     end
 
@@ -90,7 +90,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_timezone(timezone)
-      @standard_nv_pairs['tz'] = timezone
+      @details['tz'] = timezone
       self
     end
 
@@ -99,7 +99,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_lang(lang)
-      @standard_nv_pairs['lang'] = lang
+      @details['lang'] = lang
       self
     end
 
@@ -108,7 +108,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_domain_user_id(duid)
-      @standard_nv_pairs['duid'] = duid
+      @details['duid'] = duid
       self
     end
 
@@ -117,7 +117,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_ip_address(ip)
-      @standard_nv_pairs['ip'] = ip
+      @details['ip'] = ip
       self
     end
 
@@ -126,7 +126,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_useragent(useragent)
-      @standard_nv_pairs['ua'] = useragent
+      @details['ua'] = useragent
       self
     end
 
@@ -136,7 +136,7 @@ module SnowplowTracker
     #
     Contract String => Subject
     def set_network_user_id(nuid)
-      @standard_nv_pairs['tnuid'] = nuid
+      @details['tnuid'] = nuid
       self
     end
   end

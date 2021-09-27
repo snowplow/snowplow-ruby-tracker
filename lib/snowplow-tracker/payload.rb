@@ -22,28 +22,28 @@ module SnowplowTracker
   class Payload
     include Contracts
 
-    attr_reader :context
+    attr_reader :data
 
     Contract nil => Any
     def initialize
-      @context = {}
+      @data = {}
     end
 
-    # Add a single name-value pair to @context
+    # Add a single name-value pair to @data
     #
     Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
     def add(name, value)
-      @context[name] = value if (value != '') && !value.nil?
+      @data[name] = value if (value != '') && !value.nil?
     end
 
-    # Add each name-value pair in hash to @context
+    # Add each name-value pair in hash to @data
     #
     Contract Hash => Hash
     def add_hash(hash)
       hash.each { |key, value| add(key, value) }
     end
 
-    # Stringify a JSON and add it to @context
+    # Stringify a JSON and add it to @data
     #
     Contract Maybe[Hash], Bool, String, String => Maybe[String]
     def add_json(hash, encode_base64, type_when_encoded, type_when_not_encoded)
