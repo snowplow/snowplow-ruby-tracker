@@ -20,7 +20,7 @@ module SnowplowTracker
     include Contracts
 
     DEFAULT_PLATFORM = 'srv'
-    SUPPORTED_PLATFORMS = %w[pc tv mob cnsl iot]
+    SUPPORTED_PLATFORMS = %w[web app pc tv mob cnsl iot srv]
 
     attr_reader :standard_nv_pairs
 

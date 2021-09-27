@@ -257,7 +257,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'adds standard name-value pairs to the payload' do
     t = SnowplowTracker::Tracker.new(emitters: e, namespace: 'cf', app_id: 'angry-birds-android')
-    t.set_platform('mob')
+    t.set_platform('app')
     t.set_user_id('user12345')
     t.set_screen_resolution(width: 400, height: 200)
     t.set_viewport(width: 100, height: 80)
@@ -276,7 +276,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'aid' => 'angry-birds-android',
       'cd' => '24',
       'tz' => 'Europe London',
-      'p' => 'mob',
+      'p' => 'app',
       'fp' => '987654321',
       'tv' => SnowplowTracker::TRACKER_VERSION
     }
