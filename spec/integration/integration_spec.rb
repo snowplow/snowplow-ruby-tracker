@@ -431,6 +431,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     t.set_timezone('Europe London')
     t.set_lang('en')
     t.set_domain_user_id('aeb1691c5a0ee5a6')
+    t.set_domain_session_id('9c65e7f3-8e8e-470d-b243-910b5b300da0')
+    t.set_domain_session_idx(2)
     t.set_ip_address('255.255.255.255')
     t.set_useragent('Mozilla/5.0')
     t.set_network_user_id('ecdff4d0-9175-40ac-a8bb-325c49733607')
@@ -448,6 +450,8 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'tz' => 'Europe London',
       'p' => 'mob',
       'duid' => 'aeb1691c5a0ee5a6',
+      'sid' => '9c65e7f3-8e8e-470d-b243-910b5b300da0',
+      'vid' => '2',
       'ua' => 'Mozilla/5.0',
       'ip' => '255.255.255.255',
       'tnuid' => 'ecdff4d0-9175-40ac-a8bb-325c49733607',

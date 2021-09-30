@@ -112,6 +112,24 @@ module SnowplowTracker
       self
     end
 
+    # Set the domain session ID
+    # Part of the public API
+    #
+    Contract String => Subject
+    def set_domain_session_id(sid)
+      @details['sid'] = sid
+      self
+    end
+
+    # Set the domain session index
+    # Part of the public API
+    #
+    Contract Num => Subject
+    def set_domain_session_idx(vid)
+      @details['vid'] = vid
+      self
+    end
+
     # Set the IP address field
     # Part of the public API
     #
