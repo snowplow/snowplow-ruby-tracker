@@ -138,7 +138,7 @@ module SnowplowTracker
 
     Contract Payload, Maybe[CONTEXTS_INPUT], Timestamp, Maybe[Subject], Maybe[Page] => nil
     def finalise_payload(payload, context, tstamp, event_subject, page)
-      payload.add_json(build_context(context), @encode_base64, 'cx', 'co') unless context.nil?
+      payload.add_json(build_context(context), @encode_base64, 'cx', 'co') unless context.nil? || context.empty?
       payload.add_hash(page.details) unless page.nil?
 
       if event_subject.nil?
