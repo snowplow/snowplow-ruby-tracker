@@ -21,3 +21,6 @@ gemspec
 gem 'rubocop', '~> 0.57.0', require: false
 gem 'simplecov', require: false
 gem 'simplecov-lcov', require: false
+
+# To generate the YARD documentation, install yard and redcarpet gems locally.
+# They are not included in this Gemfile to reduce the number of dependencies.

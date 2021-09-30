@@ -46,3 +46,7 @@ Metrics/ClassLength:
 
 Metrics/AbcSize:
   Enabled: false
+
+# For YARD, two empty lines below the copyright notice are required to ignore it
+Layout/EmptyLines:
+  Enabled: false

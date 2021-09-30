@@ -22,6 +22,9 @@ jobs:
       - name: Run tests
         run: bundle exec rspec
 
+      - name: Run Rubocop with autocorrect
+        run: bundle exec rubocop -a
+
       - name: Coveralls
         if: matrix.ruby-version == '2.6'
         uses: coverallsapp/github-action@master

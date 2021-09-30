@@ -25,17 +25,17 @@ end
 
 describe SnowplowTracker::Tracker, 'configuration' do
   let(:emitter) do
-    SnowplowTracker::Emitter.new(endpoint: 'd3rkrsqld9gmqf.cloudfront.net',
+    SnowplowTracker::Emitter.new(endpoint: 'collector.example.com',
                                  options: { logger: NULL_LOGGER })
   end
 
   before(:each) do
-    @t = SnowplowTracker::Tracker.new(emitters: emitter, namespace: 'cloudfront', app_id: 'AF003', encode_base64: false)
+    @t = SnowplowTracker::Tracker.new(emitters: emitter, namespace: 'example', app_id: 'AF003', encode_base64: false)
   end
 
   it 'should initialise standard name-value pairs' do
     expect(@t.settings).to eq(
-      'tna' => 'cloudfront',
+      'tna' => 'example',
       'tv' => SnowplowTracker::TRACKER_VERSION,
       'aid' => 'AF003'
     )

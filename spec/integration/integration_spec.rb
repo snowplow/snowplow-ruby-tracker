@@ -26,13 +26,13 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
 
   it 'tracks a page view' do
     t.track_page_view(page_url: 'http://example.com', page_title: 'Two words',
-                      referrer: 'http://www.referrer.com', tstamp: 123)
+                      referrer: 'http://www.referrer.com', tstamp: 1633596346786)
     param_hash = CGI.parse(e.get_last_querystring)
     expected_fields = {
       'e' => 'pv',
       'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
-      'dtm' => '123'
+      'dtm' => '1633596346786'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
@@ -61,7 +61,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
   it 'tracks a page view with custom subject' do
     event_subject = SnowplowTracker::Subject.new
     event_subject.set_screen_resolution(width: 100, height: 400)
-    event_subject.set_timezone('Europe%2FLondon')
+    event_subject.set_timezone('Europe/London')
 
     t.track_page_view(page_url: 'http://example.com', subject: event_subject)
     param_hash = CGI.parse(e.get_last_querystring)
@@ -70,7 +70,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'e' => 'pv',
       'url' => 'http://example.com',
       'res' => '100x400',
-      'tz' => 'Europe%2FLondon'
+      'tz' => 'Europe/London'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
@@ -537,7 +537,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       page_url: 'http://example.com',
       page_title: 'Two words',
       referrer: 'http://www.referrer.com',
-      tstamp: SnowplowTracker::TrueTimestamp.new(123)
+      tstamp: SnowplowTracker::TrueTimestamp.new(1633596346786)
     )
 
     param_hash = CGI.parse(e.get_last_querystring)
@@ -545,7 +545,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'e' => 'pv',
       'page' => 'Two words',
       'refr' => 'http://www.referrer.com',
-      'ttm' => '123'
+      'ttm' => '1633596346786'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
@@ -577,7 +577,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
           'category' => 'magic'
         }
       ],
-      tstamp: SnowplowTracker::TrueTimestamp.new(123456)
+      tstamp: SnowplowTracker::TrueTimestamp.new(1633596346786)
     )
 
     %w[ttm tid].each do |field|
@@ -593,7 +593,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       property: 'hd',
       value: 13.99,
       context: nil,
-      tstamp: SnowplowTracker::TrueTimestamp.new(123)
+      tstamp: SnowplowTracker::TrueTimestamp.new(1633596346786)
     )
 
     param_hash = CGI.parse(e.get_last_querystring(1))
@@ -603,14 +603,14 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'se_ac' => 'add-to-basket',
       'se_pr' => 'hd',
       'se_va' => '13.99',
-      'ttm' => '123'
+      'ttm' => '1633596346786'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
   it 'tracks a screen view unstructured event with a true timestamp' do
     t = SnowplowTracker::Tracker.new(emitters: e, encode_base64: false)
-    t.track_screen_view(name: 'Game HUD 2', id: 'e89a34b2f', tstamp: SnowplowTracker::TrueTimestamp.new(123))
+    t.track_screen_view(name: 'Game HUD 2', id: 'e89a34b2f', tstamp: SnowplowTracker::TrueTimestamp.new(1633596346786))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -618,7 +618,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
                   '"data":{"schema":"iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0",'\
                   '"data":{"name":"Game HUD 2","id":"e89a34b2f"}}}',
-      'ttm' => '123'
+      'ttm' => '1633596346786'
     }
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
@@ -629,7 +629,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       'product_id' => 'ASO01043',
       'price' => 49.95
-    ), context: nil, tstamp: SnowplowTracker::TrueTimestamp.new(1234))
+    ), context: nil, tstamp: SnowplowTracker::TrueTimestamp.new(1633596346786))
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -637,7 +637,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
                   '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
                   '"data":{"product_id":"ASO01043","price":49.95}}}',
-      'ttm' => '1234'
+      'ttm' => '1633596346786'
     }
 
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
@@ -649,7 +649,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'iglu:com.acme/viewed_product/jsonschema/1-0-0',
       'product_id' => 'ASO01043',
       'price' => 49.95
-    ), tstamp: 555)
+    ), tstamp: 1633596346786)
 
     param_hash = CGI.parse(e.get_last_querystring(1))
     expected_fields = {
@@ -657,7 +657,7 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
       'ue_pr' => '{"schema":"iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",'\
                   '"data":{"schema":"iglu:com.acme/viewed_product/jsonschema/1-0-0",'\
                   '"data":{"product_id":"ASO01043","price":49.95}}}',
-      'dtm' => '555'
+      'dtm' => '1633596346786'
     }
 
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
@@ -692,6 +692,20 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expected_fields = {
       'e' => 'pv',
       'url' => 'www.override.url'
+    }
+
+    expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
+  end
+
+  it "doesn't overwrite page view's page_url with nils from Page" do
+    event_page = SnowplowTracker::Page.new(referrer: 'goodbye')
+    t.track_page_view(page_url: 'www.keep-this.url', referrer: 'hello', page: event_page)
+
+    param_hash = CGI.parse(e.get_last_querystring(1))
+    expected_fields = {
+      'e' => 'pv',
+      'url' => 'www.keep-this.url',
+      'refr' => 'goodbye'
     }
 
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
