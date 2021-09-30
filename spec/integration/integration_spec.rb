@@ -52,6 +52,12 @@ describe SnowplowTracker::Tracker, 'Querystring construction' do
     expected_fields.each { |pair| expect(param_hash[pair[0]][0]).to eq(pair[1]) }
   end
 
+  it 'removes an empty context array' do
+    t.track_page_view(page_url: 'http://example.com', context: [])
+    param_hash = CGI.parse(e.get_last_querystring)
+    expect(param_hash).not_to have_key('cx')
+  end
+
   it 'tracks a page view with custom subject' do
     event_subject = SnowplowTracker::Subject.new
     event_subject.set_screen_resolution(width: 100, height: 400)
