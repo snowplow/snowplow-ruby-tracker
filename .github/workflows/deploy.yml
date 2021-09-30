@@ -60,3 +60,30 @@ jobs:
           prerelease: ${{ contains(needs.prepare-to-publish.outputs.gem-version, '-') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  documentation:
+    needs: prepare-to-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+
+      - name: Install required gems
+        run: |
+          gem install yard --no-document
+          gem install redcarpet --no-document
+
+      - name: Build YARD documentation
+        run: yard doc
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs

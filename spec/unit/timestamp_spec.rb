@@ -17,30 +17,30 @@ require 'spec_helper'
 
 describe SnowplowTracker::Timestamp do
   it 'has a type' do
-    expect(SnowplowTracker::Timestamp.new('dtm', 123456).type).to eq('dtm')
+    expect(SnowplowTracker::Timestamp.new('dtm', 1633599642991).type).to eq('dtm')
   end
 
   it 'has a value' do
-    expect(SnowplowTracker::Timestamp.new('dtm', 123456).value).to eq(123456)
+    expect(SnowplowTracker::Timestamp.new('dtm', 1633599642991).value).to eq(1633599642991)
   end
 end
 
 describe SnowplowTracker::TrueTimestamp do
   it 'has type ttm' do
-    expect(SnowplowTracker::TrueTimestamp.new(1234).type).to eq('ttm')
+    expect(SnowplowTracker::TrueTimestamp.new(1633599642991).type).to eq('ttm')
   end
 
   it 'has a value' do
-    expect(SnowplowTracker::TrueTimestamp.new(1234).value).to eq(1234)
+    expect(SnowplowTracker::TrueTimestamp.new(1633599642991).value).to eq(1633599642991)
   end
 end
 
 describe SnowplowTracker::DeviceTimestamp do
   it 'has type dtm' do
-    expect(SnowplowTracker::DeviceTimestamp.new(1234).type).to eq('dtm')
+    expect(SnowplowTracker::DeviceTimestamp.new(1234567890123).type).to eq('dtm')
   end
 
   it 'has a value' do
-    expect(SnowplowTracker::DeviceTimestamp.new(1234).value).to eq(1234)
+    expect(SnowplowTracker::DeviceTimestamp.new(1234567890123).value).to eq(1234567890123)
   end
 end

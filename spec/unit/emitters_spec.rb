@@ -30,23 +30,24 @@ describe SnowplowTracker::Emitter, 'configuration' do
   let(:default_opts) { { logger: NULL_LOGGER } }
 
   it 'should initialise correctly using default settings' do
-    e = SnowplowTracker::Emitter.new(endpoint: 'd3rkrsqld9gmqf.cloudfront.net', options: default_opts)
-    expect(e.collector_uri).to eq('http://d3rkrsqld9gmqf.cloudfront.net/i')
+    e = SnowplowTracker::Emitter.new(endpoint: 'collector.example.com', options: default_opts)
+    expect(e.collector_uri).to eq('http://collector.example.com/i')
     expect(e.buffer_size).to eq(1)
   end
 
   it 'should initialise correctly using custom settings' do
     on_success = ->(x) { x }
     on_failure = ->(_x, y) { y }
-    e = SnowplowTracker::Emitter.new(endpoint: 'd3rkrsqld9gmqf.cloudfront.net', options: default_opts.merge(
+    e = SnowplowTracker::Emitter.new(endpoint: 'collector.example.com', options: default_opts.merge(
       protocol: 'https',
       port: 80,
+      path: '/specific-path',
       method: 'post',
       buffer_size: 7,
       on_success: on_success,
       on_failure: on_failure
     ))
-    expect(e.collector_uri).to eq('https://d3rkrsqld9gmqf.cloudfront.net:80/com.snowplowanalytics.snowplow/tp2')
+    expect(e.collector_uri).to eq('https://collector.example.com:80/specific-path')
     expect(e.buffer_size).to eq(7)
     expect(e.on_success).to eq(on_success)
     expect(e.on_failure).to eq(on_failure)
