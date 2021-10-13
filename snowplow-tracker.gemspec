@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.description = 'With this tracker you can collect event data '\
                   'from your Ruby applications, Ruby on Rails web'\
                   ' applications and Ruby gems.'
-  s.authors     = ['Alexander Dean', 'Fred Blundun']
+  s.author      = 'Snowplow Analytics Ltd'
   s.email       = 'support@snowplowanalytics.com'
   s.files       = %w[LICENSE-2.0.txt README.md] + Dir.glob('lib/**/*.rb')
   s.platform    = Gem::Platform::RUBY

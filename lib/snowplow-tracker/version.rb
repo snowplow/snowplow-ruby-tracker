@@ -41,7 +41,7 @@
 # @api public
 module SnowplowTracker
   # The version of Ruby Snowplow tracker you are using
-  VERSION = '0.7.0-alpha.2'
+  VERSION = '0.7.0'
 
   # All events from this tracker will have this string
   TRACKER_VERSION = "rb-#{VERSION}"
