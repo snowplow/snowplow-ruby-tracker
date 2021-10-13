@@ -44,7 +44,7 @@ Feedback and contributions are welcome - if you have identified a bug, please lo
 
 ## Copyright and license
 
-The Snowplow Ruby Tracker is copyright 2013-2016 Snowplow Analytics Ltd.
+The Snowplow Ruby Tracker is copyright 2013-2021 Snowplow Analytics Ltd.
 
 Licensed under the **[Apache License, Version 2.0][license]** (the "License");
 you may not use this software except in compliance with the License.
