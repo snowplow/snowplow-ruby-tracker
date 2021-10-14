@@ -37,7 +37,7 @@
         <div id="menu">
   
     <a href="../_index.html">Index (T)</a> &raquo;
-    <span class='title'><span class='object_link'>SnowplowTracker</span></span>
+    <span class='title'><span class='object_link'><a href="../SnowplowTracker.html" title="SnowplowTracker (module)">SnowplowTracker</a></span></span>
      &raquo; 
     <span class="title">Tracker</span>
   
@@ -112,12 +112,12 @@ This payload is passed to one or more Emitters for sending to the event
 collector.</p>
 
 <p>A Tracker is always associated with one <span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span>, and one or more
-<span class='object_link'>Emitter</span>. The Subject object stores information about the user, and will be
+<span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span>. The Subject object stores information about the user, and will be
 generated automatically if one is not provided during initialization. It can
 be swapped out for another Subject using <span class='object_link'><a href="#set_subject-instance_method" title="SnowplowTracker::Tracker#set_subject (method)">#set_subject</a></span>.</p>
 
 <p>Tracker objects can access the methods of their associated <span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span>, e.g.
-<span class='object_link'>#set_user_id</span>.</p>
+<span class='object_link'><a href="#set_user_id-instance_method" title="SnowplowTracker::Tracker#set_user_id (method)">#set_user_id</a></span>.</p>
 
 <p>The Emitter, or an array of Emitters, must be given during initialization.
 They will send the prepared events to the event collector. It&#39;s possible to
@@ -144,9 +144,10 @@ instantiated, it is not possible to change this setting.</p>
 <h1 id="tracking-events">Tracking events</h1>
 
 <p>The Tracker <code>#track_x_event</code> methods all work similarly. An event payload is
-created containing the relevant properties, which is passed to an <span class='object_link'>Emitter</span>
+created containing the relevant properties, which is passed to an <span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span>
 for sending. All payloads have a unique event ID (<code>event_id</code>) added to them
-(type-4 UUID). This is sent as the <code>eid</code> field in the raw event.</p>
+(a type-4 UUID created using the SecureRandom module). This is sent as the
+<code>eid</code> field in the raw event.</p>
 
 <p>The Ruby tracker provides the ability to track multiple types of events
 out-of-the-box. The <code>#track_x_event</code> methods range from single purpose
@@ -201,14 +202,14 @@ scenes, resulting in a <code>ue</code> event type.</p>
 
 <p>The name <code>ue</code>, &quot;unstructured event&quot;, is partially depreciated. This event
 type was originally created as a counterpart to &quot;structured event&quot;, but the
-name is misleading. An <code>unstruct_event</code> requires a schema ruleset and
-therefore can be considered more structured than a <code>struct_event</code>. We prefer
+name is misleading. An <code>unstruct</code> event requires a schema ruleset and
+therefore can be considered more structured than a <code>struct</code> event. We prefer
 the name &quot;self-describing event&quot;, after the <span class='object_link'><a href="SelfDescribingJson.html" title="SnowplowTracker::SelfDescribingJson (class)">SelfDescribingJson</a></span> schema.
 Changing the event name in the Tracker Protocol would be a breaking change,
 so for now the self-describing events are still sent as &quot;unstruct&quot;.</p>
 
 <p>All the <code>#track_x_event</code> methods share common features and parameters. Every
-type of event can have an optional context, <span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span>, and <span class='object_link'>Page</span> added. A
+type of event can have an optional context, <span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span>, and <span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span> added. A
 <span class='object_link'><a href="Timestamp.html" title="SnowplowTracker::Timestamp (class)">Timestamp</a></span> can also be provided for all event types to override the default
 event timestamp.</p>
 
@@ -235,7 +236,7 @@ containing a unique ID for that loaded page.</p>
     
       <li><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></li>
     
-      <li><span class='object_link'>Emitter</span></li>
+      <li><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></li>
     
       <li><a href="https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/snowplow-tracker-protocol" target="_parent" title="the Snowplow Tracker Protocol">the Snowplow Tracker Protocol</a></li>
     
@@ -358,6 +359,236 @@ containing a unique ID for that loaded page.</p>
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#set_color_depth-instance_method" title="#set_color_depth (instance method)">#<strong>set_color_depth</strong>(depth)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_color_depth-instance_method" title="SnowplowTracker::Subject#set_color_depth (method)">Subject#set_color_depth</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_domain_session_id-instance_method" title="#set_domain_session_id (instance method)">#<strong>set_domain_session_id</strong>(sid)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_domain_session_id-instance_method" title="SnowplowTracker::Subject#set_domain_session_id (method)">Subject#set_domain_session_id</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_domain_session_idx-instance_method" title="#set_domain_session_idx (instance method)">#<strong>set_domain_session_idx</strong>(vid)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_domain_session_idx-instance_method" title="SnowplowTracker::Subject#set_domain_session_idx (method)">Subject#set_domain_session_idx</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_domain_user_id-instance_method" title="#set_domain_user_id (instance method)">#<strong>set_domain_user_id</strong>(duid)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_domain_user_id-instance_method" title="SnowplowTracker::Subject#set_domain_user_id (method)">Subject#set_domain_user_id</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_fingerprint-instance_method" title="#set_fingerprint (instance method)">#<strong>set_fingerprint</strong>(fingerprint)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_fingerprint-instance_method" title="SnowplowTracker::Subject#set_fingerprint (method)">Subject#set_fingerprint</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_ip_address-instance_method" title="#set_ip_address (instance method)">#<strong>set_ip_address</strong>(ip)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_ip_address-instance_method" title="SnowplowTracker::Subject#set_ip_address (method)">Subject#set_ip_address</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_lang-instance_method" title="#set_lang (instance method)">#<strong>set_lang</strong>(lang)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_lang-instance_method" title="SnowplowTracker::Subject#set_lang (method)">Subject#set_lang</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_network_user_id-instance_method" title="#set_network_user_id (instance method)">#<strong>set_network_user_id</strong>(nuid)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_network_user_id-instance_method" title="SnowplowTracker::Subject#set_network_user_id (method)">Subject#set_network_user_id</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_platform-instance_method" title="#set_platform (instance method)">#<strong>set_platform</strong>(platform)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_platform-instance_method" title="SnowplowTracker::Subject#set_platform (method)">Subject#set_platform</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_screen_resolution-instance_method" title="#set_screen_resolution (instance method)">#<strong>set_screen_resolution</strong>(width: , height: )  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_screen_resolution-instance_method" title="SnowplowTracker::Subject#set_screen_resolution (method)">Subject#set_screen_resolution</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#set_subject-instance_method" title="#set_subject (instance method)">#<strong>set_subject</strong>(subject)  &#x21d2; Object </a>
     
 
@@ -373,6 +604,98 @@ containing a unique ID for that loaded page.</p>
 
   
     <span class="summary_desc"><div class='inline'><p>Replace the existing Tracker-associated Subject with the provided one.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_timezone-instance_method" title="#set_timezone (instance method)">#<strong>set_timezone</strong>(timezone)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_timezone-instance_method" title="SnowplowTracker::Subject#set_timezone (method)">Subject#set_timezone</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_user_id-instance_method" title="#set_user_id (instance method)">#<strong>set_user_id</strong>(user_id)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_user_id-instance_method" title="SnowplowTracker::Subject#set_user_id (method)">Subject#set_user_id</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_useragent-instance_method" title="#set_useragent (instance method)">#<strong>set_useragent</strong>(useragent)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_useragent-instance_method" title="SnowplowTracker::Subject#set_useragent (method)">Subject#set_useragent</a></span>.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#set_viewport-instance_method" title="#set_viewport (instance method)">#<strong>set_viewport</strong>(width: , height: )  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>call <span class='object_link'><a href="Subject.html#set_viewport-instance_method" title="SnowplowTracker::Subject#set_viewport (method)">Subject#set_viewport</a></span>.</p>
 </div></span>
   
 </li>
@@ -549,7 +872,7 @@ containing a unique ID for that loaded page.</p>
 </div></p>
       
       <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SnowplowTracker::Tracker (class)">Tracker</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-            <span class='label'>emitters:</span> <span class='const'>Emitter</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>d3rkrsqld9gmqf.cloudfront.net</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span>
+            <span class='label'>emitters:</span> <span class='const'><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Emitter.html#initialize-instance_method" title="SnowplowTracker::Emitter#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>collector.example.com</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span>
             <span class='label'>subject:</span> <span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Subject.html#initialize-instance_method" title="SnowplowTracker::Subject#initialize (method)">new</a></span></span><span class='comma'>,</span>
             <span class='label'>namespace:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tracker_no_encode</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
             <span class='label'>app_id:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>rails_main</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
@@ -565,7 +888,7 @@ containing a unique ID for that loaded page.</p>
         <span class='name'>emitters</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Emitter</span></tt>, <tt>Array&lt;<span class='object_link'>Emitter</span>&gt;</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></tt>, <tt>Array&lt;<span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span>&gt;</tt>)</span>
       
       
       
@@ -652,8 +975,6 @@ containing a unique ID for that loaded page.</p>
       <pre class="lines">
 
 
-211
-212
 213
 214
 215
@@ -665,10 +986,12 @@ containing a unique ID for that loaded page.</p>
 221
 222
 223
-224</pre>
+224
+225
+226</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 211</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 213</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>emitters:</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>namespace:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>app_id:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>encode_base64:</span> <span class='const'><span class='object_link'><a href="#DEFAULT_ENCODE_BASE64-constant" title="SnowplowTracker::Tracker::DEFAULT_ENCODE_BASE64 (constant)">DEFAULT_ENCODE_BASE64</a></span></span><span class='rparen'>)</span>
   <span class='ivar'>@emitters</span> <span class='op'>=</span> <span class='const'>Array</span><span class='lparen'>(</span><span class='id identifier rubyid_emitters'>emitters</span><span class='rparen'>)</span>
@@ -679,7 +1002,7 @@ containing a unique ID for that loaded page.</p>
              <span class='kw'>end</span>
   <span class='ivar'>@settings</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tna</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_namespace'>namespace</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tv</span><span class='tstring_end'>&#39;</span></span>  <span class='op'>=&gt;</span> <span class='const'>TRACKER_VERSION</span><span class='comma'>,</span>
+    <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>tv</span><span class='tstring_end'>&#39;</span></span>  <span class='op'>=&gt;</span> <span class='const'><span class='object_link'><a href="../SnowplowTracker.html#TRACKER_VERSION-constant" title="SnowplowTracker::TRACKER_VERSION (constant)">TRACKER_VERSION</a></span></span><span class='comma'>,</span>
     <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>aid</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_app_id'>app_id</span>
   <span class='rbrace'>}</span>
   <span class='ivar'>@encode_base64</span> <span class='op'>=</span> <span class='id identifier rubyid_encode_base64'>encode_base64</span>
@@ -721,7 +1044,7 @@ containing a unique ID for that loaded page.</p>
         <span class='name'>emitter</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Emitter</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></tt>)</span>
       
       
       
@@ -740,13 +1063,13 @@ containing a unique ID for that loaded page.</p>
       <pre class="lines">
 
 
-665
-666
 667
-668</pre>
+668
+669
+670</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 665</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 667</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_emitter'>add_emitter</span><span class='lparen'>(</span><span class='id identifier rubyid_emitter'>emitter</span><span class='rparen'>)</span>
   <span class='ivar'>@emitters</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='id identifier rubyid_emitter'>emitter</span><span class='rparen'>)</span>
@@ -769,7 +1092,7 @@ containing a unique ID for that loaded page.</p>
 </h3><div class="docstring">
   <div class="discussion">
     <p>Manually flush all events stored in all Tracker-associated Emitters. By
-default, this happens synchronously. <span class='object_link'>Emitter</span>s can only send events
+default, this happens synchronously. <span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span>s can only send events
 synchronously, while <span class='object_link'><a href="AsyncEmitter.html" title="SnowplowTracker::AsyncEmitter (class)">AsyncEmitter</a></span>s can send either synchronously or
 asynchronously.</p>
 
@@ -806,16 +1129,16 @@ asynchronously.</p>
       <pre class="lines">
 
 
-638
-639
 640
 641
 642
 643
-644</pre>
+644
+645
+646</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 638</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 640</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_flush'>flush</span><span class='lparen'>(</span><span class='label'>async:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='ivar'>@emitters</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_emitter'>emitter</span><span class='op'>|</span>
@@ -823,6 +1146,646 @@ asynchronously.</p>
   <span class='kw'>end</span>
 
   <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_color_depth-instance_method">
+  
+    #<strong>set_color_depth</strong>(depth)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_color_depth-instance_method" title="SnowplowTracker::Subject#set_color_depth (method)">Subject#set_color_depth</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_domain_session_id-instance_method">
+  
+    #<strong>set_domain_session_id</strong>(sid)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_domain_session_id-instance_method" title="SnowplowTracker::Subject#set_domain_session_id (method)">Subject#set_domain_session_id</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_domain_session_idx-instance_method">
+  
+    #<strong>set_domain_session_idx</strong>(vid)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_domain_session_idx-instance_method" title="SnowplowTracker::Subject#set_domain_session_idx (method)">Subject#set_domain_session_idx</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_domain_user_id-instance_method">
+  
+    #<strong>set_domain_user_id</strong>(duid)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_domain_user_id-instance_method" title="SnowplowTracker::Subject#set_domain_user_id (method)">Subject#set_domain_user_id</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_fingerprint-instance_method">
+  
+    #<strong>set_fingerprint</strong>(fingerprint)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_fingerprint-instance_method" title="SnowplowTracker::Subject#set_fingerprint (method)">Subject#set_fingerprint</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_ip_address-instance_method">
+  
+    #<strong>set_ip_address</strong>(ip)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_ip_address-instance_method" title="SnowplowTracker::Subject#set_ip_address (method)">Subject#set_ip_address</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_lang-instance_method">
+  
+    #<strong>set_lang</strong>(lang)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_lang-instance_method" title="SnowplowTracker::Subject#set_lang (method)">Subject#set_lang</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_network_user_id-instance_method">
+  
+    #<strong>set_network_user_id</strong>(nuid)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_network_user_id-instance_method" title="SnowplowTracker::Subject#set_network_user_id (method)">Subject#set_network_user_id</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_platform-instance_method">
+  
+    #<strong>set_platform</strong>(platform)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_platform-instance_method" title="SnowplowTracker::Subject#set_platform (method)">Subject#set_platform</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_screen_resolution-instance_method">
+  
+    #<strong>set_screen_resolution</strong>(width: , height: )  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_screen_resolution-instance_method" title="SnowplowTracker::Subject#set_screen_resolution (method)">Subject#set_screen_resolution</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -875,17 +1838,273 @@ are overriden by event-specific Subject parameters.</p>
       <pre class="lines">
 
 
-654
-655
 656
-657</pre>
+657
+658
+659</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 654</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 656</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_subject'>set_subject</span><span class='lparen'>(</span><span class='id identifier rubyid_subject'>subject</span><span class='rparen'>)</span>
   <span class='ivar'>@subject</span> <span class='op'>=</span> <span class='id identifier rubyid_subject'>subject</span>
   <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_timezone-instance_method">
+  
+    #<strong>set_timezone</strong>(timezone)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_timezone-instance_method" title="SnowplowTracker::Subject#set_timezone (method)">Subject#set_timezone</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_user_id-instance_method">
+  
+    #<strong>set_user_id</strong>(user_id)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_user_id-instance_method" title="SnowplowTracker::Subject#set_user_id (method)">Subject#set_user_id</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_useragent-instance_method">
+  
+    #<strong>set_useragent</strong>(useragent)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_useragent-instance_method" title="SnowplowTracker::Subject#set_useragent (method)">Subject#set_useragent</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="set_viewport-instance_method">
+  
+    #<strong>set_viewport</strong>(width: , height: )  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p>call <span class='object_link'><a href="Subject.html#set_viewport-instance_method" title="SnowplowTracker::Subject#set_viewport (method)">Subject#set_viewport</a></span></p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 256</span>
+
+<span class='const'><span class='object_link'><a href="Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance_methods'>instance_methods</span><span class='lparen'>(</span><span class='kw'>false</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
+  <span class='kw'>if</span> <span class='const'>RUBY_VERSION</span> <span class='op'>&gt;=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>3.0.0</span><span class='tstring_end'>&#39;</span></span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='comma'>,</span> <span class='op'>**</span><span class='id identifier rubyid_kwargs'>kwargs</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_define_method'>define_method</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <span class='ivar'>@subject</span><span class='period'>.</span><span class='id identifier rubyid_method'>method</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
+
+      <span class='kw'>self</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1046,7 +2265,7 @@ shown in the tables below.</p>
         <p class="example_title"><div class='inline'><p>Tracking a transaction containing two items</p>
 </div></p>
       
-      <pre class="example code"><code><span class='const'>SnowplowTracker</span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SnowplowTracker::Tracker (class)">Tracker</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="SnowplowTracker::Tracker#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_track_ecommerce_transaction'>track_ecommerce_transaction</span><span class='lparen'>(</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="../SnowplowTracker.html" title="SnowplowTracker (module)">SnowplowTracker</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SnowplowTracker::Tracker (class)">Tracker</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="SnowplowTracker::Tracker#initialize (method)">new</a></span></span><span class='period'>.</span><span class='id identifier rubyid_track_ecommerce_transaction'>track_ecommerce_transaction</span><span class='lparen'>(</span>
   <span class='label'>transaction:</span> <span class='lbrace'>{</span>
     <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>order_id</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>12345</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
     <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>total_value</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='float'>49.99</span><span class='comma'>,</span>
@@ -1130,7 +2349,7 @@ shown in the tables below.</p>
         <span class='name'>tstamp</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>DeviceTimestamp</span></tt>, <tt><span class='object_link'>TrueTimestamp</span></tt>, <tt>Num</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span></tt>, <tt><span class='object_link'><a href="TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span></tt>, <tt>Num</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1164,7 +2383,7 @@ shown in the tables below.</p>
         <span class='name'>page</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Page</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1185,8 +2404,6 @@ shown in the tables below.</p>
       <pre class="lines">
 
 
-442
-443
 444
 445
 446
@@ -1217,10 +2434,12 @@ shown in the tables below.</p>
 471
 472
 473
-474</pre>
+474
+475
+476</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 442</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 444</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_ecommerce_transaction'>track_ecommerce_transaction</span><span class='lparen'>(</span><span class='label'>transaction:</span><span class='comma'>,</span> <span class='label'>items:</span><span class='comma'>,</span>
                                 <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span>
@@ -1351,7 +2570,7 @@ shown in the tables below.</p>
         <span class='name'>tstamp</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>DeviceTimestamp</span></tt>, <tt><span class='object_link'>TrueTimestamp</span></tt>, <tt>Num</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span></tt>, <tt><span class='object_link'><a href="TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span></tt>, <tt>Num</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1385,7 +2604,7 @@ shown in the tables below.</p>
         <span class='name'>page</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Page</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1406,8 +2625,6 @@ shown in the tables below.</p>
       <pre class="lines">
 
 
-344
-345
 346
 347
 348
@@ -1420,10 +2637,12 @@ shown in the tables below.</p>
 355
 356
 357
-358</pre>
+358
+359
+360</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 344</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 346</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_page_view'>track_page_view</span><span class='lparen'>(</span><span class='label'>page_url:</span><span class='comma'>,</span> <span class='label'>page_title:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>referrer:</span> <span class='kw'>nil</span><span class='comma'>,</span>
                     <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>page:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
@@ -1529,7 +2748,7 @@ the data field will contain the name and/or ID.</p>
         <span class='name'>tstamp</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>DeviceTimestamp</span></tt>, <tt><span class='object_link'>TrueTimestamp</span></tt>, <tt>Num</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span></tt>, <tt><span class='object_link'><a href="TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span></tt>, <tt>Num</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1563,7 +2782,7 @@ the data field will contain the name and/or ID.</p>
         <span class='name'>page</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Page</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1593,8 +2812,6 @@ the data field will contain the name and/or ID.</p>
       <pre class="lines">
 
 
-572
-573
 574
 575
 576
@@ -1603,10 +2820,12 @@ the data field will contain the name and/or ID.</p>
 579
 580
 581
-582</pre>
+582
+583
+584</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 572</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 574</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_screen_view'>track_screen_view</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>id:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>page:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_screen_view_properties'>screen_view_properties</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -1641,7 +2860,7 @@ the data field will contain the name and/or ID.</p>
 <p>This is useful for tracking specific or proprietary event types, or events
 with unpredicable or frequently changing properties.</p>
 
-<p>This method creates an <code>unstruct_event</code> type. It is actually an alias for
+<p>This method creates an <code>unstruct</code> event type. It is actually an alias for
 <span class='object_link'><a href="#track_unstruct_event-instance_method" title="SnowplowTracker::Tracker#track_unstruct_event (method)">#track_unstruct_event</a></span>, which is depreciated due to its unhelpful name.</p>
 
 
@@ -1688,7 +2907,7 @@ with unpredicable or frequently changing properties.</p>
         <span class='name'>tstamp</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>DeviceTimestamp</span></tt>, <tt><span class='object_link'>TrueTimestamp</span></tt>, <tt>Num</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span></tt>, <tt><span class='object_link'><a href="TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span></tt>, <tt>Num</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1722,7 +2941,7 @@ with unpredicable or frequently changing properties.</p>
         <span class='name'>page</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Page</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1743,13 +2962,13 @@ with unpredicable or frequently changing properties.</p>
       <pre class="lines">
 
 
-603
-604
 605
-606</pre>
+606
+607
+608</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 603</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 605</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_self_describing_event'>track_self_describing_event</span><span class='lparen'>(</span><span class='label'>event_json:</span><span class='comma'>,</span> <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>page:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_track_unstruct_event'>track_unstruct_event</span><span class='lparen'>(</span><span class='label'>event_json:</span> <span class='id identifier rubyid_event_json'>event_json</span><span class='comma'>,</span> <span class='label'>context:</span> <span class='id identifier rubyid_context'>context</span><span class='comma'>,</span>
@@ -1891,7 +3110,7 @@ self-describing events.</p>
         <span class='name'>tstamp</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>DeviceTimestamp</span></tt>, <tt><span class='object_link'>TrueTimestamp</span></tt>, <tt>Num</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span></tt>, <tt><span class='object_link'><a href="TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span></tt>, <tt>Num</tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1925,7 +3144,7 @@ self-describing events.</p>
         <span class='name'>page</span>
       
       
-        <span class='type'>(<tt><span class='object_link'>Page</span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Page.html" title="SnowplowTracker::Page (class)">Page</a></span></tt>)</span>
       
       
         <em class="default">(defaults to: <tt>nil</tt>)</em>
@@ -1953,8 +3172,6 @@ self-describing events.</p>
       <pre class="lines">
 
 
-530
-531
 532
 533
 534
@@ -1969,10 +3186,12 @@ self-describing events.</p>
 543
 544
 545
-546</pre>
+546
+547
+548</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 530</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 532</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_struct_event'>track_struct_event</span><span class='lparen'>(</span><span class='label'>category:</span><span class='comma'>,</span> <span class='label'>action:</span><span class='comma'>,</span> <span class='label'>label:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>property:</span> <span class='kw'>nil</span><span class='comma'>,</span>
                        <span class='label'>value:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>page:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
@@ -2022,8 +3241,6 @@ self-describing events.</p>
       <pre class="lines">
 
 
-614
-615
 616
 617
 618
@@ -2035,10 +3252,12 @@ self-describing events.</p>
 624
 625
 626
-627</pre>
+627
+628
+629</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 614</span>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/tracker.rb', line 616</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_track_unstruct_event'>track_unstruct_event</span><span class='lparen'>(</span><span class='label'>event_json:</span><span class='comma'>,</span> <span class='label'>context:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tstamp:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>subject:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>page:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_tstamp'>tstamp</span> <span class='op'>=</span> <span class='id identifier rubyid_process_tstamp'>process_tstamp</span><span class='lparen'>(</span><span class='id identifier rubyid_tstamp'>tstamp</span><span class='rparen'>)</span>
@@ -2064,7 +3283,7 @@ self-describing events.</p>
 </div>
 
       <div id="footer">
-  Generated on Tue Oct 12 16:50:57 2021 by
+  Generated on Thu Oct 14 11:51:45 2021 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.26 (ruby-2.6.8).
 </div>
