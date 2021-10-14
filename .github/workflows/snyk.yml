@@ -1,0 +1,26 @@
+name: Snyk
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        bundler-cache: true # runs ‘bundle install’ and caches installed gems automatically
+      
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/ruby@master
+      with:
+        command: monitor
+        args: --project-name=snowplow-ruby-tracker
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
