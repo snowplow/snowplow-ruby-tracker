@@ -17,7 +17,6 @@
 require 'net/https'
 require 'set'
 require 'logger'
-require 'contracts'
 
 module SnowplowTracker
   # @see Emitter
@@ -61,30 +60,6 @@ module SnowplowTracker
   #   require 'logger'
   #   SnowplowTracker::LOGGER.level = Logger::DEBUG
   class Emitter
-    include Contracts
-
-    # Contract types
-
-    # @private
-    CONFIG_HASH = {
-      path: Maybe[String],
-      protocol: Maybe[Or['http', 'https']],
-      port: Maybe[Num],
-      method: Maybe[Or['get', 'post']],
-      buffer_size: Maybe[Num],
-      on_success: Maybe[Func[Num => Any]],
-      on_failure: Maybe[Func[Num, Hash => Any]],
-      thread_count: Maybe[Num],
-      logger: Maybe[Logger]
-    }
-
-    # @private
-    STRICT_CONFIG_HASH = And[CONFIG_HASH, ->(x) {
-                                            (x.class == Hash) && Set.new(x.keys).subset?(Set.new(CONFIG_HASH.keys))
-                                          }]
-
-    # @!group Public constants
-
     # Default Emitter settings
     DEFAULT_CONFIG = {
       protocol: 'http',
@@ -96,7 +71,6 @@ module SnowplowTracker
     # @private
     attr_reader :logger
 
-    Contract KeywordArgs[endpoint: String, options: Optional[STRICT_CONFIG_HASH]] => Any
     # Create a new Emitter instance. The endpoint is required.
     #
     # @example Initializing an Emitter with all the possible extra configuration.
@@ -153,7 +127,6 @@ module SnowplowTracker
       logger.info("#{self.class} initialized with endpoint #{@collector_uri}")
     end
 
-    Contract Hash => Num
     # Creates the `@buffer_size` variable during initialization. Unless
     # otherwise defined, it's 1 for Emitters using GET and 10 for Emitters using
     # POST requests.
@@ -164,7 +137,6 @@ module SnowplowTracker
       config[:method] == 'get' ? 1 : 10
     end
 
-    Contract Hash => String
     # Creates the `@path` variable during initialization. Allows a non-standard
     # path to be provided.
     # @private
@@ -174,9 +146,6 @@ module SnowplowTracker
       config[:method] == 'get' ? '/i' : '/com.snowplowanalytics.snowplow/tp2'
     end
 
-    # Build the collector URI from the configuration hash
-    #
-    Contract String, String, Maybe[Num], String => String
     # Creates the `@collector_uri` variable during initialization.
     # The default is "http://{endpoint}/i".
     # @private
@@ -186,7 +155,6 @@ module SnowplowTracker
       "#{protocol}://#{endpoint}#{port_string}#{path}"
     end
 
-    Contract Hash => nil
     # Add an event to the buffer and flush it if maximum size has been reached.
     # This method is not required for standard Ruby tracker usage. A {Tracker}
     # privately calls this method once the event payload is ready to send.
@@ -216,7 +184,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract Bool => nil
     # Flush the Emitter, forcing it to send all the events in its
     # buffer, even if the buffer is not full. {Emitter} objects, unlike
     # {AsyncEmitter}s, can only `flush` synchronously. A {Tracker} can manually flush all
@@ -237,7 +204,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract ArrayOf[Hash] => nil
     # Send all events in the buffer to the collector
     # @private
     def send_requests(events)
@@ -262,7 +228,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract ArrayOf[Hash] => nil
     # Part of {#send_requests}.
     # @private
     def send_requests_with_post(events)
@@ -286,7 +251,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract ArrayOf[Hash] => nil
     # Part of {#send_requests}.
     # @private
     def send_requests_with_get(events)
@@ -307,7 +271,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract Hash => Bool
     # Part of {#send_requests_with_get}.
     # @private
     def process_get_event(event)
@@ -321,7 +284,6 @@ module SnowplowTracker
       get_succeeded
     end
 
-    Contract Hash => ->(x) { x.is_a? Net::HTTPResponse }
     # Part of {#process_get_event}. This sends a GET request.
     # @private
     def http_get(payload)
@@ -339,7 +301,6 @@ module SnowplowTracker
       response
     end
 
-    Contract Hash => ->(x) { x.is_a? Net::HTTPResponse }
     # Part of {#send_requests_with_post}. This sends a POST request.
     # @private
     def http_post(payload)
@@ -359,7 +320,6 @@ module SnowplowTracker
       response
     end
 
-    Contract String => Bool
     # Check if the response is good.
     # Only 2xx and 3xx status codes are considered successes.
     # @private
@@ -381,7 +341,6 @@ module SnowplowTracker
   # @see Emitter
   # @api public
   class AsyncEmitter < Emitter
-    Contract KeywordArgs[endpoint: String, options: Optional[STRICT_CONFIG_HASH]] => Any
     # Create a new AsyncEmitter object. The endpoint is required.
     #
     # @example Initializing an AsyncEmitter with all the possible extra configuration.

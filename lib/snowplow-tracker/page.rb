@@ -14,8 +14,6 @@
 # License:: Apache License Version 2.0
 
 
-require 'contracts'
-
 module SnowplowTracker
   # If the Ruby tracker is incorporated into a website server, the events
   # tracked will describe user activity on specific webpages. Knowing on which
@@ -33,12 +31,9 @@ module SnowplowTracker
   # @note For {Tracker#track_page_view}, properties set in the Page object will
   #   override those properties given as arguments.
   class Page
-    include Contracts
-
     # @return [Hash] the stored page properties
     attr_reader :details
 
-    Contract KeywordArgs[page_url: Maybe[String], page_title: Maybe[String], referrer: Maybe[String]] => Any
     # Create a Page object for attaching page properties to events.
     #
     # Page properties will directly populate the event's `page_url`, `page_title` and `referrer` parameters.

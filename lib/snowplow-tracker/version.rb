@@ -24,13 +24,6 @@
 # see an example of how to incorporate the Snowplow Ruby tracker in Ruby on
 # Rails app.
 #
-# # Type checking
-#
-# This gem uses the [Contracts](https://github.com/egonSchiele/contracts.ruby)
-# gem for typechecking. This cannot be disabled. The {Tracker} `track_x_event`
-# methods expect arguments of a certain type. If a check fails, a runtime error
-# is thrown.
-#
 # @see https://github.com/snowplow/snowplow-ruby-tracker
 #   Ruby tracker on Github
 # @see https://github.com/snowplow-incubator/snowplow-ruby-tracker-examples
@@ -41,7 +34,7 @@
 # @api public
 module SnowplowTracker
   # The version of Ruby Snowplow tracker you are using
-  VERSION = '0.7.0'
+  VERSION = '0.8.0-alpha.0'
 
   # All events from this tracker will have this string
   TRACKER_VERSION = "rb-#{VERSION}"

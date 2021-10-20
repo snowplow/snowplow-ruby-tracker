@@ -14,7 +14,6 @@
 # License:: Apache License Version 2.0
 
 
-require 'contracts'
 require 'securerandom'
 require 'set'
 
@@ -122,58 +121,6 @@ module SnowplowTracker
   #   introduction to Snowplow tracking design
   # @api public
   class Tracker
-    include Contracts
-
-    # Contract types
-
-    # @private
-    EMITTER_INPUT = Or[->(x) { x.is_a? Emitter }, ArrayOf[->(x) { x.is_a? Emitter }]]
-
-    # @private
-    REQUIRED_TRANSACTION_KEYS =   Set.new(%w[order_id total_value])
-    # @private
-    RECOGNISED_TRANSACTION_KEYS = Set.new(%w[
-                                            order_id total_value affiliation tax_value
-                                            shipping city state country currency
-                                          ])
-
-    # @private
-    TRANSACTION = ->(x) {
-      return false unless x.class == Hash
-      transaction_keys = Set.new(x.keys.map(&:to_s))
-      REQUIRED_TRANSACTION_KEYS.subset?(transaction_keys) &&
-        transaction_keys.subset?(RECOGNISED_TRANSACTION_KEYS)
-    }
-    # @private
-    REQUIRED_ITEM_KEYS =   Set.new(%w[sku price quantity])
-    # @private
-    RECOGNISED_ITEM_KEYS = Set.new(%w[sku price quantity name category context])
-
-    # @private
-    ITEM = ->(x) {
-      return false unless x.class == Hash
-      item_keys = Set.new(x.keys.map(&:to_s))
-      REQUIRED_ITEM_KEYS.subset?(item_keys) &&
-        item_keys.subset?(RECOGNISED_ITEM_KEYS)
-    }
-    # @private
-    REQUIRED_AUGMENTED_ITEM_KEYS =   Set.new(%w[sku price quantity tstamp order_id])
-    # @private
-    RECOGNISED_AUGMENTED_ITEM_KEYS = Set.new(%w[sku price quantity name category context tstamp order_id currency])
-
-    # @private
-    AUGMENTED_ITEM = ->(x) {
-      return false unless x.class == Hash
-      augmented_item_keys = Set.new(x.keys)
-      REQUIRED_AUGMENTED_ITEM_KEYS.subset?(augmented_item_keys) &&
-        augmented_item_keys.subset?(RECOGNISED_AUGMENTED_ITEM_KEYS)
-    }
-
-    # @private
-    CONTEXTS_INPUT = ArrayOf[SelfDescribingJson]
-
-    # Other constants
-
     # @!group Public constants
 
     # SelfDescribingJson objects are sent encoded by default
@@ -192,8 +139,6 @@ module SnowplowTracker
 
     # @!endgroup
 
-    Contract KeywordArgs[emitters: EMITTER_INPUT, subject: Maybe[Subject], namespace: Maybe[String],
-                         app_id: Maybe[String], encode_base64: Optional[Bool]] => Any
     # Create a new Tracker. `emitters` is the only strictly required parameter.
     #
     # @param emitters [Emitter, Array<Emitter>] one or more Emitter objects
@@ -269,14 +214,12 @@ module SnowplowTracker
       end
     end
 
-    Contract nil => String
     # Generates a type-4 UUID to identify this event
     # @private
     def event_id
       SecureRandom.uuid
     end
 
-    Contract CONTEXTS_INPUT => Hash
     # Builds a single self-describing JSON from an array of custom contexts
     # @private
     def build_context(context)
@@ -286,7 +229,6 @@ module SnowplowTracker
       ).to_json
     end
 
-    Contract Payload => nil
     # Sends the payload hash as a request to the Emitter(s)
     # @private
     def track(payload)
@@ -295,7 +237,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract Or[Timestamp, Num, nil] => Timestamp
     # Ensures that either a DeviceTimestamp or TrueTimestamp is associated with
     # every event.
     # @private
@@ -305,7 +246,6 @@ module SnowplowTracker
       tstamp
     end
 
-    Contract Payload, Maybe[CONTEXTS_INPUT], Timestamp, Maybe[Subject], Maybe[Page] => nil
     # Attaches the more generic fields to the event payload. This includes
     # context, Subject, and Page if they are present. The timestamp is added, as
     # well as all fields from `@settings`.
@@ -329,9 +269,6 @@ module SnowplowTracker
       nil
     end
 
-    Contract KeywordArgs[page_url: String, page_title: Maybe[String], referrer: Maybe[String],
-                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil],
-                         subject: Maybe[Subject], page: Maybe[Page]] => Tracker
     # Track a visit to a page.
     #
     # @param page_url [String] the URL of the page
@@ -359,9 +296,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[transaction: TRANSACTION, items: ArrayOf[ITEM],
-                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil],
-                         subject: Maybe[Subject], page: Maybe[Page]] => Tracker
     # Track an eCommerce transaction, and all the items in it.
     #
     # This method is unique in sending multiple events: one `transaction` event,
@@ -482,7 +416,6 @@ module SnowplowTracker
       hash.keys.each { |key| hash[key.to_s] = hash.delete key }
     end
 
-    Contract AUGMENTED_ITEM, Maybe[Subject], Maybe[Page] => self
     # Track a single item within an ecommerce transaction.
     # @private
     def track_ecommerce_transaction_item(details, subject, page)
@@ -502,10 +435,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[category: String, action: String, label: Maybe[String],
-                         property: Maybe[String], value: Maybe[Num],
-                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil],
-                         subject: Maybe[Subject], page: Maybe[Page]] => Tracker
     # Track a structured event. `category` and `action` are required.
     #
     # This event type can be used to track many types of user activity, as it is
@@ -547,9 +476,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[name: Maybe[String], id: Maybe[String],
-                         context: Maybe[CONTEXTS_INPUT], tstamp: Or[Timestamp, Num, nil],
-                         subject: Maybe[Subject], page: Maybe[Page]] => Tracker
     # Track a screen view event. Note that while the `name` and `id` parameters
     # are both optional, you must provided at least one of them to create a
     # valid event.
@@ -583,9 +509,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[event_json: SelfDescribingJson, context: Maybe[CONTEXTS_INPUT],
-                         tstamp: Or[Timestamp, Num, nil], subject: Maybe[Subject],
-                         page: Maybe[Page]] => Tracker
     # Track a self-describing event. These are custom events based on
     # {SelfDescribingJson}, i.e. a JSON schema and a defined set of properties.
     #
@@ -607,9 +530,6 @@ module SnowplowTracker
                            tstamp: tstamp, subject: subject, page: page)
     end
 
-    Contract KeywordArgs[event_json: SelfDescribingJson, context: Maybe[CONTEXTS_INPUT],
-                         tstamp: Or[Timestamp, Num, nil], subject: Maybe[Subject],
-                         page: Maybe[Page]] => Tracker
     # @deprecated Use {#track_self_describing_event} instead.
     #
     # @api public
@@ -628,7 +548,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[async: Optional[Bool]] => Tracker
     # Manually flush all events stored in all Tracker-associated Emitters. By
     # default, this happens synchronously. {Emitter}s can only send events
     # synchronously, while {AsyncEmitter}s can send either synchronously or
@@ -645,7 +564,6 @@ module SnowplowTracker
       self
     end
 
-    Contract Subject => Tracker
     # Replace the existing Tracker-associated Subject with the provided one. All
     # subsequent events will have the properties of the new Subject, unless they
     # are overriden by event-specific Subject parameters.
@@ -658,7 +576,6 @@ module SnowplowTracker
       self
     end
 
-    Contract Emitter => Tracker
     # Add a new Emitter to the internal array of Tracker-associated Emitters.
     #
     # @param emitter [Emitter] an Emitter object

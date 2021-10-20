@@ -14,8 +14,6 @@
 # License:: Apache License Version 2.0
 
 
-require 'contracts'
-
 module SnowplowTracker
   # Subject objects store information about the user associated with the event,
   # such as their `user_id`, what type of device they used, or what size screen
@@ -87,8 +85,6 @@ module SnowplowTracker
   #   method chaining, e.g.
   #   `Subject.new.set_timezone('Europe/London').set_user_id('12345')`
   class Subject
-    include Contracts
-
     # @private
     DEFAULT_PLATFORM = 'srv'
 
@@ -113,13 +109,11 @@ module SnowplowTracker
     # @api public
     attr_reader :details
 
-    Contract None => Any
     # @api public
     def initialize
       @details = { 'p' => DEFAULT_PLATFORM }
     end
 
-    Contract String => Subject
     # Set the platform to one of the supported platform values.
     # @note Value is sent in the event as `p` (raw event) or `platform` (processed event).
     # @see Subject::SUPPORTED_PLATFORMS
@@ -133,7 +127,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the unique business-defined user ID for a user.
     # @note Value is sent in the event as `uid` (raw event) or `user_id` (processed event).
     # For example, an email address.
@@ -152,7 +145,6 @@ module SnowplowTracker
       self
     end
 
-    Contract Num => Subject
     # Set a business-defined fingerprint for a user.
     # @note Value is sent in the event as `fp` (raw event) or `user_fingerprint` (processed event).
     # @param [Num] fingerprint a user fingerprint
@@ -163,7 +155,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[width: Num, height: Num] => Subject
     # Set the device screen resolution.
     # @note Value is sent in the event as `res` (raw event) or `dvce_screenheight` and `dvce_screenwidth` (processed event).
     # @param [Num] width the screen width, in pixels (must be a positive integer)
@@ -175,7 +166,6 @@ module SnowplowTracker
       self
     end
 
-    Contract KeywordArgs[width: Num, height: Num] => Subject
     # Set the dimensions of the current viewport.
     # @note Value is sent in the event as `vp` (raw event) or `br_viewwidth` and `br_viewheight` (processed event).
     # @param [Num] width the viewport width, in pixels (must be a positive integer)
@@ -187,7 +177,6 @@ module SnowplowTracker
       self
     end
 
-    Contract Num => Subject
     # Set the color depth of the device, in bits per pixel.
     # @note Value is sent in the event as `cd` (raw event) or `br_colordepth` (processed event).
     # @param [Num] depth the colour depth
@@ -198,7 +187,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the timezone to that of the user's OS.
     # @note Value is sent in the event as `tz` (raw event) or `os_timezone` (processed event).
     # @example
@@ -211,7 +199,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the language.
     # @note Value is sent in the event as `lang` (raw event) or `br_lang` (processed event).
     # @example Setting the language to Spanish
@@ -224,7 +211,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the domain user ID.
     # @note Value is sent in the event as `duid` (raw event) or `domain_userid` (processed event).
     # @see Subject#set_network_user_id
@@ -260,7 +246,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the domain session ID.
     # @note Value is sent in the event as `sid` (raw event) or `domain_sessionid` (processed event).
     # @see Subject#set_network_user_id
@@ -283,7 +268,6 @@ module SnowplowTracker
       self
     end
 
-    Contract Num => Subject
     # Set the domain session index.
     # @note Value is sent in the event as `vid` (raw event) or `domain_sessionidx` (processed event).
     # @see Subject#set_network_user_id
@@ -307,7 +291,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the user's IP address.
     # @note Value is sent in the event as `ip` (raw event) or `user_ipaddress` (processed event).
     # @param [String] ip the IP address
@@ -318,7 +301,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the browser user agent.
     # @note Value is sent in the event as `ua` (raw event) or `useragent` (processed event).
     # @example
@@ -331,7 +313,6 @@ module SnowplowTracker
       self
     end
 
-    Contract String => Subject
     # Set the network user ID.
     # @note Value is sent in the event as `tnuid` (raw event) and `network_userid` (processed event).
     # @see Subject#set_domain_user_id

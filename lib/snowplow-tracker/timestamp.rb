@@ -58,20 +58,11 @@ module SnowplowTracker
   #   the Snowplow Tracker Protocol
   # @api public
   class Timestamp
-    include Contracts
-
     # @private
     attr_reader :type
 
     # @private
     attr_reader :value
-
-    # @private
-    # Contract type
-    TIMESTAMP = ->(x) {
-      return false unless x.is_a? Integer
-      x.to_s.length == 13
-    }
 
     # @private
     def initialize(type, value)
@@ -92,7 +83,6 @@ module SnowplowTracker
   # it is, namely `ttm`. This raw event `ttm` field will be processed into
   # `true_tstamp` in the completed event.
   class TrueTimestamp < Timestamp
-    Contract TIMESTAMP => Any
     # @param [Num] value timestamp in milliseconds since the Unix epoch
     # @example
     #   TrueTimestamp.new(1633596346786)
@@ -107,7 +97,6 @@ module SnowplowTracker
   # it is, namely `dtm`. This raw event `dtm` field will be processed into
   # `dvce_created_tstamp` in the completed event.
   class DeviceTimestamp < Timestamp
-    Contract TIMESTAMP => Any
     # @param [Num] value timestamp in milliseconds since the Unix epoch
     # @example
     #   DeviceTimestamp.new(1633596346786)
