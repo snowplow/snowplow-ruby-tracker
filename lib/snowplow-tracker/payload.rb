@@ -17,7 +17,6 @@
 require 'base64'
 require 'json'
 require 'net/http'
-require 'contracts'
 
 module SnowplowTracker
   # @private
@@ -26,28 +25,22 @@ module SnowplowTracker
   # hash. These properties form the raw event, after the completed hash is
   # given to the Emitter.
   class Payload
-    include Contracts
-
     attr_reader :data
 
-    Contract nil => Any
     def initialize
       @data = {}
     end
 
-    Contract String, Or[String, Bool, Num, nil] => Or[String, Bool, Num, nil]
     # Add a single name-value pair to @data.
     def add(name, value)
       @data[name] = value if (value != '') && !value.nil?
     end
 
-    Contract Hash => Hash
     # Add each name-value pair in a hash to @data.
     def add_hash(hash)
       hash.each { |key, value| add(key, value) }
     end
 
-    Contract Maybe[Hash], Bool, String, String => Maybe[String]
     # Stringify a JSON and add it to @data.
     #
     # In practice, the JSON provided will be a SelfDescribingJson. This method
