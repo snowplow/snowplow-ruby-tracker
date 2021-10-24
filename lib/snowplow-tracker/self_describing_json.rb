@@ -77,7 +77,7 @@ module SnowplowTracker
   #   # Creating the SelfDescribingJson
   #   schema_name = "iglu:com.snowplowanalytics/ad_click/jsonschema/1-0-0"
   #   event_data = { bannerId: "4acd518feb82" }
-  #   SelfDescribingJson.new(schema_name, event_data)
+  #   SnowplowTracker::SelfDescribingJson.new(schema_name, event_data)
   #
   #   # The self-describing JSON that will be sent (stringified) with the event
   #   {

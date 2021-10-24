@@ -9,13 +9,11 @@
 
 ## Overview
 
-Add analytics to your Ruby and Rails apps and gems with the **[Snowplow][snowplow]** event tracker for **[Ruby][ruby]**.
+Add analytics to your **[Ruby][ruby]** and **[Ruby on Rails][rails]** apps and **[gems][rubygems]** with the **[Snowplow][snowplow]** event tracker for **[Ruby][ruby]**.
 
 Snowplow is a scalable open-source platform for rich, high quality, low-latency data collection. It is designed to collect high quality, complete behavioral data for enterprise business.
 
 **To find out more, please check out the [Snowplow website][snowplow] and our [documentation][docs].**
-
-With this tracker you can collect event data from your **[Ruby][ruby]** applications, **[Ruby on Rails][rails]** web applications and **[Ruby gems][rubygems]**.
 
 ## Quickstart
 
@@ -47,9 +45,14 @@ The `-v` flag for `docker run` creates a bind mount for the project directory. T
 
 Alternatively, test directly by installing Ruby 2.1+ and [Bundler][bundler]. Then run:
 
-```
+```bash
 bundle install
 rspec
+```
+
+To generate documentation using YARD, make sure the YARD and redcarpet gems are installed locally. Then run:
+```bash
+yard doc
 ```
 
 ## Contributing

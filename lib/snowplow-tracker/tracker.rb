@@ -117,6 +117,12 @@ module SnowplowTracker
   #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/snowplow-tracker-protocol
   #   the Snowplow Tracker Protocol
   # @see
+  #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/ruby-tracker/tracking-events/
+  #   the Snowplow docs page about tracking events
+  # @see
+  #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/ruby-tracker/enriching-your-events/
+  #   the Snowplow docs page about adding context and other extra data to events
+  # @see
   #   https://docs.snowplowanalytics.com/docs/understanding-tracking-design/introduction-to-tracking-design/
   #   introduction to Snowplow tracking design
   # @api public
@@ -147,14 +153,18 @@ module SnowplowTracker
     # @param app_id [String] the app ID
     # @param encode_base64 [Bool] whether JSONs will be base64-encoded or not
     # @example Initializing a Tracker with all possible options
-    #   Tracker.new(
-    #               emitters: Emitter.new('collector.example.com'),
-    #               subject: Subject.new,
+    #   SnowplowTracker::Tracker.new(
+    #               emitters: SnowplowTracker::Emitter.new(endpoint: 'collector.example.com'),
+    #               subject: SnowplowTracker::Subject.new,
     #               namespace: 'tracker_no_encode',
     #               app_id: 'rails_main',
     #               encode_base64: false
     #              )
     # @api public
+    #
+    # @note All the Tracker instance methods return the Tracker object, allowing
+    #   method chaining, e.g.
+    #   `SnowplowTracker::Tracker.new.set_user_id('12345').track_page_view(page_url: 'www.example.com`
     def initialize(emitters:, subject: nil, namespace: nil, app_id: nil, encode_base64: DEFAULT_ENCODE_BASE64)
       @emitters = Array(emitters)
       @subject = if subject.nil?
@@ -270,6 +280,10 @@ module SnowplowTracker
     end
 
     # Track a visit to a page.
+    # @example
+    #   SnowplowTracker::Tracker.new.track_page_view(page_url: 'www.example.com',
+    #                                                page_title: 'example',
+    #                                                referrer: 'www.referrer.com')
     #
     # @param page_url [String] the URL of the page
     # @param page_title [String] the page title
@@ -445,6 +459,15 @@ module SnowplowTracker
     # For fully customizable event tracking, we recommend you use
     # self-describing events.
     #
+    # @example
+    #   SnowplowTracker::Tracker.new.track_struct_event(
+    #     category: 'shop',
+    #     action: 'add-to-basket',
+    #     property: 'pcs',
+    #     value: 2
+    #   )
+    #
+    #
     # @see #track_self_describing_event
     #
     # @param category [String] the event category
@@ -486,6 +509,11 @@ module SnowplowTracker
     # "iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0", and
     # the data field will contain the name and/or ID.
     #
+    # @example
+    #   SnowplowTracker::Tracker.new.track_screen_view(name: 'HUD > Save Game',
+    #                                                  id: 'screen23')
+    #
+    #
     # @see #track_page_view
     # @see #track_self_describing_event
     #
@@ -517,6 +545,20 @@ module SnowplowTracker
     #
     # This method creates an `unstruct` event type. It is actually an alias for
     # {#track_unstruct_event}, which is depreciated due to its unhelpful name.
+    #
+    # @example
+    #   self_desc_json = SnowplowTracker::SelfDescribingJson.new(
+    #     "iglu:com.example_company/save_game/jsonschema/1-0-2",
+    #     {
+    #       "saveId" => "4321",
+    #       "level" => 23,
+    #       "difficultyLevel" => "HARD",
+    #       "dlContent" => true
+    #     }
+    #   )
+    #
+    #   SnowplowTracker::Tracker.new.track_self_describing_event(event_json: self_desc_json)
+    #
     #
     # @param event_json [SelfDescribingJson] a SelfDescribingJson object
     # @param context [Array<SelfDescribingJson>] an array of SelfDescribingJson objects

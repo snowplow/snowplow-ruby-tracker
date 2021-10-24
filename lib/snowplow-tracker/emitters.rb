@@ -37,7 +37,10 @@ module SnowplowTracker
   # | Buffer size | 1 |
   # | Path | `/i` |
   #
-  # The buffer size is 1 because GET requests can only contain one event.
+  # The buffer size is the number of events which will be buffered before they
+  # are all sent simultaneously. The process of sending all buffered events is
+  # called "flushing". The default buffer size is 1 because GET requests can
+  # only contain one event.
   #
   # If you choose to use POST requests, the buffer_size defaults to 10, and the
   # buffered events are all sent together in a single request. The default path
@@ -66,8 +69,6 @@ module SnowplowTracker
       method: 'get'
     }
 
-    # @!endgroup
-
     # @private
     attr_reader :logger
 
@@ -79,7 +80,7 @@ module SnowplowTracker
     #     puts "#{success_count} events sent successfully, #{failures.size} sent unsuccessfully"
     #   end
     #
-    #   Emitter.new(endpoint: 'collector.example.com',
+    #   SnowplowTracker::Emitter.new(endpoint: 'collector.example.com',
     #               options: { path: '/my-pipeline/1',
     #                          protocol: 'https',
     #                          port: 443,
@@ -98,8 +99,8 @@ module SnowplowTracker
     # | port | The port for the connection | Integer |
     # | method | 'get' or 'post' | String |
     # | buffer_size | Number of events to send at once | Integer |
-    # | on_success | A function to call if events were sent successfully | Function |
-    # | on_failure | A function to call if events did not send | Function |
+    # | on_success | A method to call if events were sent successfully | Method |
+    # | on_failure | A method to call if events did not send | Method |
     # | thread_count | Number of threads to use | Integer |
     # | logger | Log somewhere other than STDERR | Logger |
     #
@@ -107,6 +108,13 @@ module SnowplowTracker
     # and will be ignored if provided to an Emitter.
     #
     # If you choose to use HTTPS, we recommend using port 443.
+    #
+    # Only 2xx and 3xx status codes are considered successes.
+    #
+    # The `on_success` callback should accept one argument: the number of
+    # requests sent this way. The `on_failure` callback should accept two
+    # arguments: the number of successfully sent events, and an array containing
+    # the unsuccessful events.
     #
     # @param endpoint [String] the endpoint to send the events to
     # @param options [Hash] allowed configuration options
@@ -164,6 +172,9 @@ module SnowplowTracker
     # `options` Emitter initalization hash, that is called when events fail
     # to send. You could use {#input} as part of your callback to immediately
     # retry the failed event.
+    #
+    # The `on_failure` callback should accept two arguments: the number of
+    # successfully sent events, and an array containing the unsuccessful events.
     #
     # @example A possible `on_failure` method using `#input`
     #   def retry_on_failure(failed_event_count, failed_events)
@@ -349,7 +360,7 @@ module SnowplowTracker
     #     puts "#{success_count} events sent successfully, #{failures.size} sent unsuccessfully"
     #   end
     #
-    #   Emitter.new(endpoint: 'collector.example.com',
+    #   SnowplowTracker::Emitter.new(endpoint: 'collector.example.com',
     #               options: { path: '/my-pipeline/1',
     #                          protocol: 'https',
     #                          port: 443,
@@ -378,6 +389,13 @@ module SnowplowTracker
     # used to send events.
     #
     # If you choose to use HTTPS, we recommend using port 443.
+    #
+    # Only 2xx and 3xx status codes are considered successes.
+    #
+    # The `on_success` callback should accept one argument: the number of
+    # requests sent this way. The `on_failure` callback should accept two
+    # arguments: the number of successfully sent events, and an array containing
+    # the unsuccessful events.
     #
     # @note if you test the AsyncEmitter by using a short script to send an
     #   event, you may find that the event fails to send. This is because the
