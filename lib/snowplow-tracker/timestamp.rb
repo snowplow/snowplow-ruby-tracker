@@ -38,24 +38,31 @@ module SnowplowTracker
   #    DeviceTimestamp by the Tracker, and will still be recorded as `dtm` in
   #    the event.
   # 2. Manually create a DeviceTimestamp (e.g.
-  #    `DeviceTimestamp.new(1633596554978)`), and provide this to the
+  #    `SnowplowTracker::DeviceTimestamp.new(1633596554978)`), and provide this to the
   #    `#track_x_event` method. This will still be recorded as `dtm` in the
   #    event.
   # 3. Provide a TrueTimestamp object to the `track_x_event` method (e.g.
-  #    `TrueTimestamp.new(1633596554978)`). This will result in a `ttm` field in
+  #    `SnowplowTracker::TrueTimestamp.new(1633596554978)`). This will result in a `ttm` field in
   #    the event.
   #
   # The timestamps that are added to the event once it has been emitted are not
   # the responsibility of this class. The collector receives the event and adds a
   # `collector_tstamp`. A later part of the pipeline adds the `etl_tstamp` when
-  # the event enrichment has finished. A `derived_tstamp` is also calculated and
-  # added to the event, which represents how long it took the event to be
-  # processed. This is calculated by `collector_tstamp - (dvce_sent_tstamp -
-  # dvce_created_tstamp)`.
+  # the event enrichment has finished.
+  #
+  # When DeviceTimestamp is used, a `derived_tstamp` is also calculated and
+  # added to the event. This timestamp attempts to take latency and possible
+  # inaccuracy of the device clock into account. It is calculated by
+  # `collector_tstamp - (dvce_sent_tstamp - dvce_created_tstamp)`. When
+  # TrueTimestamp is used, the `derived_stamp` will be the same as
+  # `true_tstamp`.
   #
   # @see
   #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/snowplow-tracker-protocol
   #   the Snowplow Tracker Protocol
+  # @see
+  #   https://discourse.snowplowanalytics.com/t/which-timestamp-is-the-best-to-see-when-an-event-occurred/538
+  #   A Discourse forums post explaining timestamps
   # @api public
   class Timestamp
     # @private
@@ -85,7 +92,7 @@ module SnowplowTracker
   class TrueTimestamp < Timestamp
     # @param [Num] value timestamp in milliseconds since the Unix epoch
     # @example
-    #   TrueTimestamp.new(1633596346786)
+    #   SnowplowTracker::TrueTimestamp.new(1633596346786)
     def initialize(value)
       super 'ttm', value
     end
@@ -99,7 +106,7 @@ module SnowplowTracker
   class DeviceTimestamp < Timestamp
     # @param [Num] value timestamp in milliseconds since the Unix epoch
     # @example
-    #   DeviceTimestamp.new(1633596346786)
+    #   SnowplowTracker::DeviceTimestamp.new(1633596346786)
     def initialize(value)
       super 'dtm', value
     end

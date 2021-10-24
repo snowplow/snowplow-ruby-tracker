@@ -39,7 +39,7 @@ module SnowplowTracker
     # Page properties will directly populate the event's `page_url`, `page_title` and `referrer` parameters.
     #
     # @example Creating a Page
-    #   Page.new(page_url: 'http://www.example.com/second-page',
+    #   SnowplowTracker::Page.new(page_url: 'http://www.example.com/second-page',
     #            page_title: 'Example title',
     #            referrer: 'http://www.example.com/first-page')
     #

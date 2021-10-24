@@ -66,7 +66,7 @@ module SnowplowTracker
   #
   # Since many of the Subject parameters describe the user, different Subject
   # properties may often be desired for each event, if there are multiple users.
-  # This can be achieved in one of two ways:
+  # This can be achieved in one of three ways:
   #
   # 1. the properties of the Tracker-associated Subject can be overriden by the
   #    properties of an event-specific Subject. A Subject can be added to any
@@ -74,16 +74,21 @@ module SnowplowTracker
   #    set the platform for the event Subject if you're not using `srv`.
   # 2. the Tracker-associated Subject can be swapped for another Subject, using
   #    the Tracker method {Tracker#set_subject}.
+  # 3. the properties of the Tracker-associated Subject can be changed before
+  #    every `#track_x_event`, by calling the Subject methods via the Tracker.
   #
   # @see Tracker#set_subject
   # @see
   #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/snowplow-tracker-protocol
   #   the Snowplow Tracker Protocol
+  # @see
+  #   https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/ruby-tracker/enriching-your-events/
+  #   the Snowplow docs page about adding context and other extra data to events
   # @api public
   #
   # @note All the Subject instance methods return the Subject object, allowing
   #   method chaining, e.g.
-  #   `Subject.new.set_timezone('Europe/London').set_user_id('12345')`
+  #   `SnowplowTracker::Subject.new.set_timezone('Europe/London').set_user_id('12345')`
   class Subject
     # @private
     DEFAULT_PLATFORM = 'srv'
@@ -104,7 +109,7 @@ module SnowplowTracker
 
     # Access the Subject parameters
     # @example
-    #   Subject.new.set_user_id('12345').details
+    #   SnowplowTracker::Subject.new.set_user_id('12345').details
     #   => {"p"=>"srv", "uid"=>"12345"}
     # @api public
     attr_reader :details
@@ -118,6 +123,8 @@ module SnowplowTracker
     # @note Value is sent in the event as `p` (raw event) or `platform` (processed event).
     # @see Subject::SUPPORTED_PLATFORMS
     # @param [String] platform a valid platform choice
+    # @example
+    #   subject.set_platform('app')
     # @return self
     # @api public
     def set_platform(platform)
@@ -149,6 +156,8 @@ module SnowplowTracker
     # @note Value is sent in the event as `fp` (raw event) or `user_fingerprint` (processed event).
     # @param [Num] fingerprint a user fingerprint
     # @return self
+    # @example
+    #   subject.set_fingerprint(4048966212)
     # @api public
     def set_fingerprint(fingerprint)
       @details['fp'] = fingerprint
@@ -157,9 +166,11 @@ module SnowplowTracker
 
     # Set the device screen resolution.
     # @note Value is sent in the event as `res` (raw event) or `dvce_screenheight` and `dvce_screenwidth` (processed event).
-    # @param [Num] width the screen width, in pixels (must be a positive integer)
-    # @param [Num] height the screen height, in pixels (must be a positive integer)
+    # @param [Integer] width the screen width, in pixels (must be a positive integer)
+    # @param [Integer] height the screen height, in pixels (must be a positive integer)
     # @return self
+    # @example
+    #   subject.set_screen_resolution(width: 2880, height: 1800)
     # @api public
     def set_screen_resolution(width:, height:)
       @details['res'] = "#{width}x#{height}"
@@ -168,18 +179,22 @@ module SnowplowTracker
 
     # Set the dimensions of the current viewport.
     # @note Value is sent in the event as `vp` (raw event) or `br_viewwidth` and `br_viewheight` (processed event).
-    # @param [Num] width the viewport width, in pixels (must be a positive integer)
-    # @param [Num] height the viewport height, in pixels (must be a positive integer)
+    # @param [Integer] width the viewport width, in pixels (must be a positive integer)
+    # @param [Integer] height the viewport height, in pixels (must be a positive integer)
     # @return self
+    # @example
+    #   subject.set_viewport(width: 1440, height: 762)
     # @api public
     def set_viewport(width:, height:)
       @details['vp'] = "#{width}x#{height}"
       self
     end
 
-    # Set the color depth of the device, in bits per pixel.
+    # Set the color depth of the browser, in bits per pixel.
     # @note Value is sent in the event as `cd` (raw event) or `br_colordepth` (processed event).
     # @param [Num] depth the colour depth
+    # @example
+    #   subject.set_color_depth(24)
     # @return self
     # @api public
     def set_color_depth(depth)
@@ -295,6 +310,8 @@ module SnowplowTracker
     # @note Value is sent in the event as `ip` (raw event) or `user_ipaddress` (processed event).
     # @param [String] ip the IP address
     # @return self
+    # @example
+    #   subject.set_ip_address('37.157.33.178')
     # @api public
     def set_ip_address(ip)
       @details['ip'] = ip
