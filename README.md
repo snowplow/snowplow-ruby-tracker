@@ -20,17 +20,17 @@ Snowplow is a scalable open-source platform for rich, high quality, low-latency 
 Add this gem to your Gemfile. It is compatible with Ruby versions 2.1 to 3.0+.
 
 ```ruby
-gem "snowplow-tracker", "~> 0.7.0"
+gem "snowplow-tracker", "~> 0.8.0"
 ```
 
 See our [demo app][demoapp] for an example of implementing the Ruby tracker in a Rails app.
 
 ## Find out more
 
-| Technical Docs                 | API Docs                | Contributing                        |
+| Snowplow Docs                 | API Docs                | Contributing                        |
 | ------------------------------ | ----------------------- | ----------------------------------- |
 | ![i1][techdocs-image]          | ![i1][techdocs-image]   | ![i4][contributing-image]           |
-| **[Technical Docs][techdocs]** | **[API Docs][apidocs]** | **[Contributing](Contributing.md)** |
+| **[Snowplow Docs][techdocs]** | **[API Docs][apidocs]** | **[Contributing](Contributing.md)** |
 
 ## Maintainer Quickstart
 
