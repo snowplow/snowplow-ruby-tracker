@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Module: SnowplowTracker
+  
+    &mdash; Documentation by YARD 0.9.26
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "SnowplowTracker";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index (S)</a> &raquo;
+    
+    
+    <span class="title">SnowplowTracker</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Module: SnowplowTracker
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/snowplow-tracker/version.rb<span class="defines">,<br />
+  lib/snowplow-tracker/page.rb,<br /> lib/snowplow-tracker/payload.rb,<br /> lib/snowplow-tracker/subject.rb,<br /> lib/snowplow-tracker/tracker.rb,<br /> lib/snowplow-tracker/emitters.rb,<br /> lib/snowplow-tracker/timestamp.rb,<br /> lib/snowplow-tracker/self_describing_json.rb</span>
+</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>The Snowplow Ruby Tracker allows you to track Snowplow events in your Ruby
+applications and gems and Ruby on Rails web applications.</p>
+
+<p>It is compatible with Ruby versions 2.1 to 3.0+.</p>
+
+<p>See the <a href="https://github.com/snowplow-incubator/snowplow-ruby-tracker-examples">demo Rails
+app</a> to
+see an example of how to incorporate the Snowplow Ruby tracker in Ruby on
+Rails app.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><a href="https://github.com/snowplow/snowplow-ruby-tracker" target="_parent" title="Ruby tracker on Github">Ruby tracker on Github</a></li>
+    
+      <li><a href="https://github.com/snowplow-incubator/snowplow-ruby-tracker-examples" target="_parent" title="Snowplow Ruby tracker examples in a demo Rails app">Snowplow Ruby tracker examples in a demo Rails app</a></li>
+    
+      <li><a href="https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/ruby-tracker/" target="_parent" title="Snowplow documentation">Snowplow documentation</a></li>
+    
+      <li><a href="https://snowplowanalytics.com/" target="_parent" title="Snowplow homepage">Snowplow homepage</a></li>
+    
+  </ul>
+
+</div><h2>Defined Under Namespace</h2>
+<p class="children">
+  
+    
+  
+    
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="SnowplowTracker/AsyncEmitter.html" title="SnowplowTracker::AsyncEmitter (class)">AsyncEmitter</a></span>, <span class='object_link'><a href="SnowplowTracker/DeviceTimestamp.html" title="SnowplowTracker::DeviceTimestamp (class)">DeviceTimestamp</a></span>, <span class='object_link'><a href="SnowplowTracker/Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span>, <span class='object_link'><a href="SnowplowTracker/Page.html" title="SnowplowTracker::Page (class)">Page</a></span>, <span class='object_link'><a href="SnowplowTracker/SelfDescribingJson.html" title="SnowplowTracker::SelfDescribingJson (class)">SelfDescribingJson</a></span>, <span class='object_link'><a href="SnowplowTracker/Subject.html" title="SnowplowTracker::Subject (class)">Subject</a></span>, <span class='object_link'><a href="SnowplowTracker/Timestamp.html" title="SnowplowTracker::Timestamp (class)">Timestamp</a></span>, <span class='object_link'><a href="SnowplowTracker/Tracker.html" title="SnowplowTracker::Tracker (class)">Tracker</a></span>, <span class='object_link'><a href="SnowplowTracker/TrueTimestamp.html" title="SnowplowTracker::TrueTimestamp (class)">TrueTimestamp</a></span>
+    
+  
+</p>
+
+  
+    <h2>
+      Constant Summary
+      <small><a href="#" class="constants_summary_toggle">collapse</a></small>
+    </h2>
+
+    <dl class="constants">
+      
+        <dt id="VERSION-constant" class="">VERSION =
+          <div class="docstring">
+  <div class="discussion">
+    <p>The version of Ruby Snowplow tracker you are using</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.8.0</span><span class='tstring_end'>&#39;</span></span></pre></dd>
+      
+        <dt id="TRACKER_VERSION-constant" class="">TRACKER_VERSION =
+          <div class="docstring">
+  <div class="discussion">
+    <p>All events from this tracker will have this string</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rb-</span><span class='embexpr_beg'>#{</span><span class='const'><span class='object_link'><a href="#VERSION-constant" title="SnowplowTracker::VERSION (constant)">VERSION</a></span></span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span></pre></dd>
+      
+        <dt id="LOGGER-constant" class="">LOGGER =
+          <div class="docstring">
+  <div class="discussion">
+    <p>For logging Emitter activity messages</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="SnowplowTracker/Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></li>
+    
+  </ul>
+
+</div>
+        </dt>
+        <dd><pre class="code"><span class='const'>Logger</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>STDERR</span><span class='rparen'>)</span></pre></dd>
+      
+    </dl>
+  
+
+
+
+
+
+
+
+
+
+</div>
+
+      <div id="footer">
+  Generated on Fri Oct 29 20:03:36 2021 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.26 (ruby-2.6.8).
+</div>
+
+    </div>
+  </body>
+</html>

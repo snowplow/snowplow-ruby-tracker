@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: SnowplowTracker::AsyncEmitter
+  
+    &mdash; Documentation by YARD 0.9.26
+  
+</title>
+
+  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "SnowplowTracker::AsyncEmitter";
+  relpath = '../';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="../js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="../class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="../_index.html">Index (A)</a> &raquo;
+    <span class='title'><span class='object_link'><a href="../SnowplowTracker.html" title="SnowplowTracker (module)">SnowplowTracker</a></span></span>
+     &raquo; 
+    <span class="title">AsyncEmitter</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="../class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: SnowplowTracker::AsyncEmitter
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName"><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></li>
+          
+            <li class="next">SnowplowTracker::AsyncEmitter</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/snowplow-tracker/emitters.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>This <span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span> subclass provides asynchronous event sending. Whenever the
+buffer is flushed, the AsyncEmitter places the flushed events in a work
+queue. The AsyncEmitter asynchronously sends events in this queue using a
+thread pool of a fixed size. The size of the thread pool is 1 by default,
+but can be configured as part of the options hash during initialization.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></li>
+    
+  </ul>
+
+</div>
+
+
+  <h2>Constant Summary</h2>
+  
+  <h3 class="inherited">Constants inherited
+     from <span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Emitter.html#DEFAULT_CONFIG-constant" title="SnowplowTracker::Emitter::DEFAULT_CONFIG (constant)">Emitter::DEFAULT_CONFIG</a></span></p>
+
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(endpoint:, options: {})  &#x21d2; AsyncEmitter </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>Create a new AsyncEmitter object.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  <h3 class="inherited">Methods inherited from <span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></h3>
+  <p class="inherited"><span class='object_link'><a href="Emitter.html#input-instance_method" title="SnowplowTracker::Emitter#input (method)">#input</a></span></p>
+<div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(endpoint:, options: {})  &#x21d2; <tt><span class='object_link'><a href="" title="SnowplowTracker::AsyncEmitter (class)">AsyncEmitter</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+  <div class="note notetag">
+    <strong>Note:</strong>
+    <div class='inline'><p>if you test the AsyncEmitter by using a short script to send an
+event, you may find that the event fails to send. This is because the
+process exits before the flushing thread is finished. You can get round
+this either by adding a sleep(10) to the end of your script or by using
+the synchronous flush.</p>
+</div>
+  </div>
+
+<p>Create a new AsyncEmitter object. The endpoint is required.</p>
+
+<p>The options hash can have any of these optional parameters:</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>path</td>
+<td>Override the default path for appending to the endpoint</td>
+<td>String</td>
+</tr>
+<tr>
+<td>protocol</td>
+<td>&#39;http&#39; or &#39;https&#39;</td>
+<td>String</td>
+</tr>
+<tr>
+<td>port</td>
+<td>The port for the connection</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>method</td>
+<td>&#39;get&#39; or &#39;post&#39;</td>
+<td>String</td>
+</tr>
+<tr>
+<td>buffer_size</td>
+<td>Number of events to send at once</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>on_success</td>
+<td>A function to call if events were sent successfully</td>
+<td>Function</td>
+</tr>
+<tr>
+<td>on_failure</td>
+<td>A function to call if events did not send</td>
+<td>Function</td>
+</tr>
+<tr>
+<td>thread_count</td>
+<td>Number of threads to use</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>logger</td>
+<td>Log somewhere other than STDERR</td>
+<td>Logger</td>
+</tr>
+</tbody></table>
+
+<p>The <code>thread_count</code> determines the number of worker threads which will be
+used to send events.</p>
+
+<p>If you choose to use HTTPS, we recommend using port 443.</p>
+
+<p>Only 2xx and 3xx status codes are considered successes.</p>
+
+<p>The <code>on_success</code> callback should accept one argument: the number of
+requests sent this way. The <code>on_failure</code> callback should accept two
+arguments: the number of successfully sent events, and an array containing
+the unsuccessful events.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'><p>Initializing an AsyncEmitter with all the possible extra configuration.</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_success_callback'>success_callback</span> <span class='op'>=</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_success_count'>success_count</span><span class='rparen'>)</span> <span class='tlambeg'>{</span> <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_success_count'>success_count</span><span class='embexpr_end'>}</span><span class='tstring_content'> events sent successfully</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span>
+<span class='id identifier rubyid_failure_callback'>failure_callback</span> <span class='op'>=</span> <span class='tlambda'>-&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_success_count'>success_count</span><span class='comma'>,</span> <span class='id identifier rubyid_failures'>failures</span><span class='rparen'>)</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_success_count'>success_count</span><span class='embexpr_end'>}</span><span class='tstring_content'> events sent successfully, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_failures'>failures</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_content'> sent unsuccessfully</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span>
+
+<span class='const'><span class='object_link'><a href="../SnowplowTracker.html" title="SnowplowTracker (module)">SnowplowTracker</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Emitter.html" title="SnowplowTracker::Emitter (class)">Emitter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Emitter.html#initialize-instance_method" title="SnowplowTracker::Emitter#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='label'>endpoint:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>collector.example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+            <span class='label'>options:</span> <span class='lbrace'>{</span> <span class='label'>path:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>/my-pipeline/1</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+                       <span class='label'>protocol:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+                       <span class='label'>port:</span> <span class='int'>443</span><span class='comma'>,</span>
+                       <span class='label'>method:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>post</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span>
+                       <span class='label'>buffer_size:</span> <span class='int'>5</span><span class='comma'>,</span>
+                       <span class='label'>on_success:</span> <span class='id identifier rubyid_success_callback'>success_callback</span><span class='comma'>,</span>
+                       <span class='label'>on_failure:</span> <span class='id identifier rubyid_failure_callback'>failure_callback</span><span class='comma'>,</span>
+                       <span class='label'>logger:</span> <span class='const'>Logger</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='const'>STDOUT</span><span class='rparen'>)</span><span class='comma'>,</span>
+                       <span class='label'>thread_count:</span> <span class='int'>5</span> <span class='rbrace'>}</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>endpoint</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>the endpoint to send the events to</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>options</span>
+      
+      
+        <span class='type'>(<tt>Hash</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>{}</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'><p>allowed configuration options</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><span class='object_link'><a href="Emitter.html#initialize-instance_method" title="SnowplowTracker::Emitter#initialize (method)">Emitter#initialize</a></span></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+411
+412
+413
+414
+415
+416
+417
+418
+419</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/snowplow-tracker/emitters.rb', line 411</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='label'>endpoint:</span><span class='comma'>,</span> <span class='label'>options:</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+  <span class='ivar'>@queue</span> <span class='op'>=</span> <span class='const'>Queue</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
+  <span class='comment'># @all_processed_condition and @results_unprocessed are used to emulate Python&#39;s Queue.task_done()
+</span>  <span class='ivar'>@queue</span><span class='period'>.</span><span class='id identifier rubyid_extend'>extend</span><span class='lparen'>(</span><span class='const'>MonitorMixin</span><span class='rparen'>)</span>
+  <span class='ivar'>@all_processed_condition</span> <span class='op'>=</span> <span class='ivar'>@queue</span><span class='period'>.</span><span class='id identifier rubyid_new_cond'>new_cond</span>
+  <span class='ivar'>@results_unprocessed</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:thread_count</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='int'>1</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_times'>times</span> <span class='lbrace'>{</span> <span class='const'>Thread</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_consume'>consume</span> <span class='rbrace'>}</span> <span class='rbrace'>}</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='label'>endpoint:</span> <span class='id identifier rubyid_endpoint'>endpoint</span><span class='comma'>,</span> <span class='label'>options:</span> <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+
+
+</div>
+
+      <div id="footer">
+  Generated on Fri Oct 29 20:03:37 2021 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.26 (ruby-2.6.8).
+</div>
+
+    </div>
+  </body>
+</html>
