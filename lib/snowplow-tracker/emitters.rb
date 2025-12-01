@@ -103,6 +103,7 @@ module SnowplowTracker
     # | on_failure | A method to call if events did not send | Method |
     # | thread_count | Number of threads to use | Integer |
     # | logger | Log somewhere other than STDERR | Logger |
+    # | custom_headers | Set additional HTTP headers | Hash |
     #
     # Note that `thread_count` is relevant only to the subclass {AsyncEmitter},
     # and will be ignored if provided to an Emitter.
@@ -132,6 +133,7 @@ module SnowplowTracker
       @on_success = config[:on_success]
       @on_failure = config[:on_failure]
       @logger = config[:logger] || LOGGER
+      @custom_headers = config[:custom_headers] || {}
       logger.info("#{self.class} initialized with endpoint #{@collector_uri}")
     end
 
@@ -302,7 +304,7 @@ module SnowplowTracker
       logger.info("Sending GET request to #{@collector_uri}...")
       logger.debug("Payload: #{payload}")
       http = Net::HTTP.new(destination.host, destination.port)
-      request = Net::HTTP::Get.new(destination.request_uri)
+      request = Net::HTTP::Get.new(destination.request_uri, initheader = @custom_headers)
       http.use_ssl = true if destination.scheme == 'https'
       response = http.request(request)
       logger.add(good_status_code?(response.code) ? Logger::INFO : Logger::WARN) do
@@ -319,7 +321,7 @@ module SnowplowTracker
       logger.debug("Payload: #{payload}")
       destination = URI(@collector_uri)
       http = Net::HTTP.new(destination.host, destination.port)
-      request = Net::HTTP::Post.new(destination.request_uri)
+      request = Net::HTTP::Post.new(destination.request_uri, initheader = @custom_headers)
       http.use_ssl = true if destination.scheme == 'https'
       request.body = payload.to_json
       request.set_content_type('application/json; charset=utf-8')

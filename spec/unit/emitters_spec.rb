@@ -22,7 +22,8 @@ module SnowplowTracker
     attr_reader :collector_uri,
                 :buffer_size,
                 :on_success,
-                :on_failure
+                :on_failure,
+                :custom_headers
   end
 end
 
@@ -45,9 +46,16 @@ describe SnowplowTracker::Emitter, 'configuration' do
       method: 'post',
       buffer_size: 7,
       on_success: on_success,
-      on_failure: on_failure
+      on_failure: on_failure,
+      custom_headers: {
+        "X-header"=>"test"
+      }
     ))
+    puts e.custom_headers
     expect(e.collector_uri).to eq('https://collector.example.com:80/specific-path')
+    expect(e.custom_headers).to eq({
+      "X-header" => "test"
+    })
     expect(e.buffer_size).to eq(7)
     expect(e.on_success).to eq(on_success)
     expect(e.on_failure).to eq(on_failure)
